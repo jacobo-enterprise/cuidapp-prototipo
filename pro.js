@@ -106,14 +106,14 @@ def({ id: 'R26', name: 'Foto y presentación', kind: 'page', back: true, title: 
 
 def({ id: 'R11', name: 'Servicios y precios', kind: 'page', back: true, title: 'Servicios y precios',
   body: () => `<div class="t2 sm">Cuidapp define los servicios. Tú eliges cuáles haces, cuánto cobras y qué incluyes.</div><div class="mt8">
-  ${mySvcs().map(k => { const m = S.my[k]; return `<div class="svcrow"><button class="tog ${m.on ? 'on' : ''}" data-act="svcOn" data-arg="${k}"></button>
+  ${mySvcs().map(k => { const m = S.my[k]; return `<div class="svcrow"><span class="si">${i3(k)}</span><button class="tog ${m.on ? 'on' : ''}" data-act="svcOn" data-arg="${k}"></button>
   <button class="tx" data-act="edit" data-arg="${k}" data-go="R12"><div class="a">${CAT[k].n}</div><div class="b">${m.on ? `${m.dur} min · mínimo ${clp(S.mins[k])}${m.nOn ? ` · noche ${clp(m.night)}` : ''}` : 'No lo ofreces'}</div></button>
   <button class="end" data-act="edit" data-arg="${k}" data-go="R12">${m.on ? money(m.p) : ''}${ic('caret-right')}</button></div>`; }).join('')}</div>
   <div class="mt16">${note('info', `Cuidapp cobra ${S.comm}% de cada atención. El resto es tuyo y se deposita los martes.`)}</div>`,
   foot: () => abtn('Guardar', 'done', 'serv', '', 'back') });
 
 def({ id: 'R12', name: 'Editar servicio y precio', kind: 'page', back: true, title: '',
-  body: () => { const k = S.edit, m = S.my[k], min = S.mins[k]; return `<div class="h-l">${CAT[k].n}</div><div class="t2 sm mt4">${CAT[k].d}</div>
+  body: () => { const k = S.edit, m = S.my[k], min = S.mins[k]; return `<div class="i3hero">${i3(k)}</div><div class="h-l">${CAT[k].n}</div><div class="t2 sm mt4">${CAT[k].d}</div>
   ${lbl('Tu precio')}<div class="pricein"><button class="ib sbtn" data-act="pr" data-arg="-">${ic('minus')}</button><div class="v num">${clp(m.p)}</div><button class="ib sbtn" data-act="pr" data-arg="+">${ic('plus')}</button></div>
   <div class="pmeta"><span>Mínimo Cuidapp <b class="num">${clp(min)}</b></span><span>Promedio en Ñuñoa <b class="num">$19.500</b></span></div>
   <div class="mt8">${kv(`Tú recibes (Cuidapp cobra ${S.comm}%)`, `<b style="color:var(--text)">${clp(net(m.p))}</b>`)}</div>

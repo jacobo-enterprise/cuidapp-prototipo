@@ -73,6 +73,8 @@ const CAT = {
   son: { n: 'Instalación o cambio de sonda', s: 'Sondas', d: 'Sonda Foley o nasogástrica', ic: 'first-aid-kit', who: ['enf'], dur: 45 },
   tens4: { n: 'Cuidados TENS · 4 horas', s: 'Cuidados TENS', d: 'Higiene, movilización y compañía', ic: 'hand-heart', who: ['tens'], dur: 240 },
 };
+/* iconos 3D de servicios (img/iconos-3d); el resto de la interfaz usa Phosphor */
+const i3 = (k, c = '') => `<img class="i3d ${c}" src="img/iconos-3d/${k}.webp" alt="" draggable="false">`;
 const INC = { ins: 'Insumos: jeringa, aguja, tórulas y guantes', pre: 'Control de presión antes y después', res: 'Retiro de residuos clínicos', edu: 'Indicaciones escritas para la familia' };
 const EXAMS = { hemo: ['Hemograma', 6500], lip: ['Perfil lipídico', 8900], gli: ['Glicemia', 3900] };
 const examList = () => Object.keys(EXAMS).filter(k => S.exams[k]).map(k => EXAMS[k]);

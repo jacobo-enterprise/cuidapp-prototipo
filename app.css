@@ -687,3 +687,24 @@ body.nat .weekchip{top:12px}body.nat .navbanner{top:12px}
 .wcats{grid-template-columns:repeat(4,1fr)}
 .wcat.soon{box-shadow:0 0 0 1px var(--border) inset;background:var(--s2);opacity:.75}
 .whero .chip,.whero .chips button{background:#fff}
+/* ---------- iconos 3D de servicios ---------- */
+.i3d{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none;user-select:none;-webkit-user-drag:none}
+.cats{gap:20px 8px}
+.cat .ci{width:76px;height:76px;border-radius:22px;background:#F3F3F3;padding:9px;box-sizing:border-box}
+.cat .ci .i3d{filter:drop-shadow(0 4px 6px rgba(10,46,92,.14));transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.cat:active .ci .i3d{transform:scale(.92)}
+.cat .cn{font-size:13px;line-height:17px;font-weight:500}
+.srow .si,.svcard .si,.psvc .si,.svsel .si,.svcrow .si{width:48px;height:48px;border-radius:14px;background:#F3F3F3;padding:6px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;flex:none}
+.psvc.on .si{background:#fff}
+.svcrow .si{order:-2}.svcrow .tog{order:2}
+.row .ri.box:has(.i3d){width:44px;height:44px;border-radius:12px;background:#F3F3F3;padding:5px;box-sizing:border-box}
+table .ri.box{width:40px;height:40px;border-radius:12px;background:#F3F3F3;padding:5px;box-sizing:border-box;display:flex}
+.wcat .ci{width:72px;height:72px;border-radius:20px;background:#F3F3F3;padding:9px;box-sizing:border-box}
+.wcat .ci .i3d{filter:drop-shadow(0 4px 6px rgba(10,46,92,.14));transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.wcat:hover .ci .i3d{transform:translateY(-2px) scale(1.05)}
+.wcat.soon .ci .i3d{filter:grayscale(.15) opacity(.8)}
+.i3hero{width:88px;height:88px;border-radius:24px;background:#F3F3F3;padding:10px;box-sizing:border-box;margin-bottom:16px}
+.cat .ci i{font-size:28px}
+.svcrow{gap:12px}.svcrow .si{width:40px;height:40px;border-radius:12px;padding:4px}
+.svcrow .end > i{display:none}
+table .ri.box{flex:none;min-width:40px}
