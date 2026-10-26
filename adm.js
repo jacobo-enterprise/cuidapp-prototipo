@@ -48,7 +48,7 @@ def({ id: 'A04', name: 'Reservas de hoy', kind: 'adm', side: 'hoy',
   <div style="height:280px;border-radius:12px;overflow:hidden;margin-top:16px;position:relative"><div class="mapwrap" data-map="1"></div></div>
   <table class="t mt16"><tr><th>Hora</th><th>Paciente</th><th>Servicio</th><th>Comuna</th><th>Profesional</th><th>Precio</th><th>Estado</th></tr>
   ${[['21:00', 'Pedro Silva', 'Inyección', 'La Reina', 'Valentina Morales', '$30.000', st('warn', 'Por confirmar')], ['20:30', 'Carmen Vidal', 'Signos vitales', 'Ñuñoa', 'Camila Rojas', clp(S.my.sig.p), st('inf', 'En camino')], ['20:00', 'Jorge Tapia', 'Inyección', 'Providencia', 'Paula Godoy', '$14.000', st('warn', 'En curso')], ['19:30', 'Ana Herrera', 'Curación simple', 'Macul', 'Fernanda Araya', '$28.000', st('ok', 'Terminada')], ['19:00', 'Jorge T.', 'Curación simple', 'Providencia', 'Camila Rojas', clp(S.my.cur.p), st('ok', 'Terminada')]].map(r => `<tr>${r.map((x, j) => `<td class="${j === 5 ? 'num' : ''}">${x}</td>`).join('')}</tr>`).join('')}</table>`,
-  map: () => ({ home: G.mama, pro: G.route[20], route: G.route, dots: [[[-33.4268, -70.6123], '#1D1D1B'], [[-33.4900, -70.5990], '#1D1D1B'], [[-33.4420, -70.5480]], [[-33.4130, -70.5800], '#178244']], maxZoom: 13 }) });
+  map: () => ({ home: G.mama, pro: G.route[20], route: G.route, dots: [[[-33.4268, -70.6123], '#0A2E5C'], [[-33.4900, -70.5990], '#0A2E5C'], [[-33.4420, -70.5480]], [[-33.4130, -70.5800], '#1497DE']], maxZoom: 13 }) });
 
 def({ id: 'A05', name: 'Catálogo y comisión', kind: 'adm', side: 'tar', next: ['A07'],
   body: () => `<div class="h-l">Catálogo y comisión</div><div class="t2 mt4">Cuidapp define los servicios y un precio mínimo. Cada profesional pone su precio sobre ese mínimo.</div>

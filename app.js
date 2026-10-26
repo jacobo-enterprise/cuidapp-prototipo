@@ -83,7 +83,7 @@ const dayShort = i => DAYS[i][2] || `${DAYS[i][0]} ${DAYS[i][1]}`;
 
 /* profesionales de ejemplo (datos ficticios) */
 const PROS = [
-  { id: 'cr', n: 'Camila Rojas', i: 'CR', t: 'Enfermera', k: 'enf', g: 'f', reg: '482.317', r: '4,9', rn: 4.9, a: 132, rv: 92, km: 1.8, yrs: 6, bg: '#E3EEF6', fg: '#24496B', top: true,
+  { id: 'cr', n: 'Camila Rojas', i: 'CR', t: 'Enfermera', k: 'enf', g: 'f', reg: '482.317', r: '4,9', rn: 4.9, a: 132, rv: 92, km: 1.8, yrs: 6, bg: '#E3F1FB', fg: '#0A2E5C', top: true,
     com: ['Ñuñoa', 'Providencia', 'La Reina', 'Santiago'], tel: '+56 9 7712 3008', resp: '20 min',
     bio: 'Soy enfermera de la U. de Chile y trabajé 5 años en medicina interna del Hospital del Salvador. Atiendo a domicilio hace 3 años, sobre todo a adultos mayores. Me gusta explicar todo con calma y dejar las indicaciones por escrito para la familia.',
     spec: ['Adulto mayor', 'Inyecciones con receta', 'Curaciones', 'Paciente diabético'],
@@ -91,7 +91,7 @@ const PROS = [
     dist: [91, 7, 2, 0, 0], crit: [['Puntualidad', '4,9'], ['Trato', '5,0'], ['Técnica', '4,9'], ['Explica todo', '4,9']],
     p: { iny: 18000, cur: 24000, mue: 15000, sig: 12000 }, night: { iny: 22000 }, xinc: 'Control de presión antes y después',
     sl: [[], ['08:00', '09:00', '11:30', '19:00', '21:00'], ['08:00', '10:00', '18:30', '21:00'], ['09:00', '12:00', '19:30'], ['08:00', '08:30', '17:00'], ['10:00', '11:00']] },
-  { id: 'fa', n: 'Fernanda Araya', i: 'FA', t: 'Enfermera', k: 'enf', g: 'f', reg: '512.884', r: '5,0', rn: 5.0, a: 61, rv: 44, km: 3.2, yrs: 3, bg: '#F1EADF', fg: '#6A4B26',
+  { id: 'fa', n: 'Fernanda Araya', i: 'FA', t: 'Enfermera', k: 'enf', g: 'f', reg: '512.884', r: '5,0', rn: 5.0, a: 61, rv: 44, km: 3.2, yrs: 3, bg: '#ECECFD', fg: '#3F41A8',
     com: ['Ñuñoa', 'Macul', 'La Florida', 'Peñalolén'], tel: '+56 9 6620 1475', resp: '15 min',
     bio: 'Enfermera de la U. de Santiago. Vengo de atención primaria en el Cesfam de Macul y me especialicé en curaciones de pie diabético. Te enseño a cuidar la herida entre una visita y otra.',
     spec: ['Pie diabético', 'Heridas complejas', 'Sondas'],
@@ -99,7 +99,7 @@ const PROS = [
     dist: [98, 2, 0, 0, 0], crit: [['Puntualidad', '5,0'], ['Trato', '5,0'], ['Técnica', '5,0'], ['Explica todo', '4,9']],
     p: { iny: 22000, cur: 28000, cura: 38000, mue: 17000, son: 32000 }, night: {}, xinc: 'Fotos de control de la herida',
     sl: [['19:30', '20:30'], ['07:30', '13:00', '20:00'], ['07:30', '14:00'], ['16:00', '20:00'], ['07:30'], []] },
-  { id: 'mc', n: 'Matías Contreras', i: 'MC', t: 'Enfermero', k: 'enf', g: 'm', reg: '505.317', r: '4,7', rn: 4.7, a: 48, rv: 31, km: 0.9, yrs: 2, bg: '#E4EFE7', fg: '#2C5A3B',
+  { id: 'mc', n: 'Matías Contreras', i: 'MC', t: 'Enfermero', k: 'enf', g: 'm', reg: '505.317', r: '4,7', rn: 4.7, a: 48, rv: 31, km: 0.9, yrs: 2, bg: '#E6EDF6', fg: '#0A2E5C',
     com: ['Ñuñoa', 'Santiago'], tel: '+56 9 5531 8820', resp: '1 h',
     bio: 'Enfermero de la U. Andrés Bello. Trabajo en la urgencia de la Clínica Indisa y atiendo a domicilio en mis días libres. Rápido, ordenado y con buen precio.',
     spec: ['Inyecciones', 'Toma de muestras', 'Control de presión'],
@@ -107,7 +107,7 @@ const PROS = [
     dist: [76, 18, 4, 2, 0], crit: [['Puntualidad', '4,8'], ['Trato', '4,7'], ['Técnica', '4,8'], ['Explica todo', '4,5']],
     p: { iny: 15000, cur: 20000, mue: 13000, sig: 10000 }, night: {}, xinc: '',
     sl: [[], [], ['09:00', '10:00', '11:00'], ['09:00', '15:00'], ['18:00', '19:00'], ['09:00', '10:00', '11:00', '12:00']] },
-  { id: 'pg', n: 'Paula Godoy', i: 'PG', t: 'TENS', k: 'tens', g: 'f', reg: '311.208', r: '4,8', rn: 4.8, a: 87, rv: 63, km: 2.4, yrs: 8, bg: '#F2E6EA', fg: '#6B3346',
+  { id: 'pg', n: 'Paula Godoy', i: 'PG', t: 'TENS', k: 'tens', g: 'f', reg: '311.208', r: '4,8', rn: 4.8, a: 87, rv: 63, km: 2.4, yrs: 8, bg: '#E8F4FC', fg: '#0E5E93',
     com: ['Providencia', 'Ñuñoa', 'Santiago'], tel: '+56 9 8840 1206', resp: '25 min',
     bio: 'Técnica en enfermería (TENS) con 8 años en el Hospital Salvador. Acompaño a adultos mayores en su casa: higiene, movilización, remedios y compañía. También pongo inyecciones con receta.',
     spec: ['Cuidado de adulto mayor', 'Movilización', 'Inyecciones con receta'],
@@ -115,7 +115,7 @@ const PROS = [
     dist: [84, 12, 3, 1, 0], crit: [['Puntualidad', '4,9'], ['Trato', '5,0'], ['Técnica', '4,7'], ['Explica todo', '4,8']],
     p: { iny: 14000, mue: 12000, sig: 10000, tens4: 28000 }, night: { iny: 17000 }, xinc: 'Ayuda a ordenar los remedios de la semana',
     sl: [['20:00'], ['10:30', '12:00', '16:00'], ['10:30', '17:00'], ['08:00', '10:30'], ['10:30', '12:00'], ['09:00']] },
-  { id: 'vm', n: 'Valentina Morales', i: 'VM', t: 'Enfermera', k: 'enf', g: 'f', reg: '509.663', r: '4,9', rn: 4.9, a: 203, rv: 148, km: 4.1, yrs: 11, bg: '#ECEAE3', fg: '#4D483B', top: true,
+  { id: 'vm', n: 'Valentina Morales', i: 'VM', t: 'Enfermera', k: 'enf', g: 'f', reg: '509.663', r: '4,9', rn: 4.9, a: 203, rv: 148, km: 4.1, yrs: 11, bg: '#EFF2F6', fg: '#2B3D55', top: true,
     com: ['Las Condes', 'La Reina', 'Vitacura', 'Ñuñoa'], tel: '+56 9 9012 4477', resp: '30 min',
     bio: 'Enfermera de la PUC con 11 años en clínica. Me especialicé en heridas y en pacientes postrados. Después de cada atención te mando un informe por correo.',
     spec: ['Heridas y úlceras', 'Paciente postrado', 'Sondas', 'Post operatorio'],
@@ -123,7 +123,7 @@ const PROS = [
     dist: [90, 8, 1, 1, 0], crit: [['Puntualidad', '5,0'], ['Trato', '4,9'], ['Técnica', '5,0'], ['Explica todo', '4,9']],
     p: { iny: 25000, cur: 30000, cura: 42000, mue: 18000, son: 35000 }, night: { iny: 30000 }, xinc: 'Informe de la atención por correo',
     sl: [[], [], [], ['08:30', '10:00', '15:00'], ['08:30', '12:00'], ['10:00']] },
-  { id: 'fl', n: 'Francisca León', i: 'FL', t: 'Enfermera', k: 'enf', g: 'f', reg: '498.120', r: '4,8', rn: 4.8, a: 156, rv: 104, km: 3.6, yrs: 9, bg: '#E2EFF1', fg: '#21535C',
+  { id: 'fl', n: 'Francisca León', i: 'FL', t: 'Enfermera', k: 'enf', g: 'f', reg: '498.120', r: '4,8', rn: 4.8, a: 156, rv: 104, km: 3.6, yrs: 9, bg: '#EDEDFD', fg: '#4A4CC0',
     com: ['Las Condes', 'Providencia', 'Ñuñoa', 'Vitacura'], tel: '+56 9 7340 2291', resp: '40 min',
     bio: 'Enfermera de la U. de los Andes. Nueve años en pabellón y recuperación de la Clínica Alemana. Hoy atiendo post operatorios y toma de muestras a domicilio.',
     spec: ['Post operatorio', 'Toma de muestras', 'Inyecciones'],
@@ -131,7 +131,7 @@ const PROS = [
     dist: [85, 11, 3, 1, 0], crit: [['Puntualidad', '4,8'], ['Trato', '4,9'], ['Técnica', '4,9'], ['Explica todo', '4,7']],
     p: { iny: 20000, cur: 27000, cura: 40000, mue: 16000 }, night: { iny: 24000 }, xinc: 'Control de presión antes y después',
     sl: [[], ['18:00', '19:00'], ['08:00', '18:00'], ['08:00'], ['07:30', '09:00'], ['10:00', '11:00']] },
-  { id: 'dn', n: 'Diego Navarro', i: 'DN', t: 'Enfermero', k: 'enf', g: 'm', reg: '517.402', r: '4,7', rn: 4.7, a: 64, rv: 47, km: 2.9, yrs: 4, bg: '#EEEBE4', fg: '#56492F',
+  { id: 'dn', n: 'Diego Navarro', i: 'DN', t: 'Enfermero', k: 'enf', g: 'm', reg: '517.402', r: '4,7', rn: 4.7, a: 64, rv: 47, km: 2.9, yrs: 4, bg: '#E3F1FB', fg: '#143F78',
     com: ['Macul', 'La Florida', 'Ñuñoa', 'Peñalolén'], tel: '+56 9 6118 4420', resp: '35 min',
     bio: 'Enfermero de la U. Mayor. Trabajo en el Hospital Sótero del Río y atiendo a domicilio en la tarde. Llego con todo lo necesario y dejo todo limpio.',
     spec: ['Inyecciones', 'Signos vitales', 'Toma de muestras'],
@@ -238,7 +238,8 @@ const row = (i, a, b = '', go = '', end = ic('caret-right'), cls = '', act = '',
   ${i ? `<span class="ri ${i.startsWith('box:') ? 'box' : ''}">${ic(i.replace('box:', ''))}</span>` : ''}
   <span class="tx"><div class="a">${a}</div>${b ? `<div class="b">${b}</div>` : ''}</span>${end ? `<span class="end">${end}</span>` : ''}</${tag}>`;
 };
-const st = (k, t, i) => `<span class="st ${k}">${i ? ic(i, 1) : ''}${t}</span>`;
+const ST_I = { ok: 'check-circle', warn: 'clock', inf: 'clock-countdown', bad: 'x-circle' };
+const st = (k, t, i) => { i = i === '' ? '' : (i || ST_I[k]); return `<span class="st ${k}">${i ? ic(i, 1) : ''}${t}</span>`; };
 const av = (ini, cls = '', ver = false) => `<span class="av ${cls}">${ini}${ver ? `<span class="vb">${ic('check', 0).replace('ph ', 'ph-bold ')}</span>` : ''}</span>`;
 const kv = (k, v, cls = '') => `<div class="kv ${cls}"><span class="k">${k}</span><span class="num">${v}</span></div>`;
 const note = (i, t, k = '') => `<div class="note ${k}">${ic(i)}<div>${t}</div></div>`;
@@ -362,13 +363,13 @@ function fit() {
 window.addEventListener('resize', () => cur && fit());
 
 /* ---------- mapas ---------- */
-const pinHome = () => L.divIcon({ className: '', iconSize: [26, 26], iconAnchor: [13, 13], html: '<div style="width:26px;height:26px;border-radius:6px;background:#1D1D1B;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.3)"><div style="width:8px;height:8px;background:#fff;border-radius:2px"></div></div>' });
-const pinPro = (lbl) => L.divIcon({ className: '', iconSize: [22, 22], iconAnchor: [11, 11], html: `<div style="position:relative"><div style="width:22px;height:22px;border-radius:11px;background:#1AA7EC;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35)"></div>${lbl ? `<div style="position:absolute;left:30px;top:-3px;background:#1D1D1B;color:#fff;font:600 13px/28px var(--font);padding:0 10px;border-radius:14px;white-space:nowrap">${lbl}</div>` : ''}</div>` });
-const pinDot = (c = '#1AA7EC') => L.divIcon({ className: '', iconSize: [14, 14], iconAnchor: [7, 7], html: `<div style="width:14px;height:14px;border-radius:7px;background:${c};border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>` });
+const pinHome = () => L.divIcon({ className: '', iconSize: [26, 26], iconAnchor: [13, 13], html: '<div style="width:26px;height:26px;border-radius:6px;background:#0A2E5C;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.3)"><div style="width:8px;height:8px;background:#fff;border-radius:2px"></div></div>' });
+const pinPro = (lbl) => L.divIcon({ className: '', iconSize: [22, 22], iconAnchor: [11, 11], html: `<div style="position:relative"><div style="width:22px;height:22px;border-radius:11px;background:#1497DE;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35)"></div>${lbl ? `<div style="position:absolute;left:30px;top:-3px;background:#0A2E5C;color:#fff;font:600 13px/28px var(--font);padding:0 10px;border-radius:14px;white-space:nowrap">${lbl}</div>` : ''}</div>` });
+const pinDot = (c = '#1497DE') => L.divIcon({ className: '', iconSize: [14, 14], iconAnchor: [7, 7], html: `<div style="width:14px;height:14px;border-radius:7px;background:${c};border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>` });
 const pinPulse = () => L.divIcon({ className: '', iconSize: [160, 160], iconAnchor: [80, 80], html: '<div class="pulse"><span></span><span></span><span></span></div>' });
-const pinLabel = (t) => L.divIcon({ className: '', iconSize: [0, 0], iconAnchor: [0, 0], html: `<div style="transform:translate(-50%,-44px);background:#1D1D1B;color:#fff;font:600 13px/30px var(--font);padding:0 12px;border-radius:15px;white-space:nowrap;display:inline-block">${t}</div>` });
-const pinMe = () => L.divIcon({ className: '', iconSize: [22, 22], iconAnchor: [11, 11], html: '<div style="width:22px;height:22px;border-radius:11px;background:#1D1D1B;border:4px solid #fff;box-shadow:0 0 0 6px rgba(29,29,27,.15),0 2px 6px rgba(0,0,0,.3)"></div>' });
-const pinNav = () => L.divIcon({ className: '', iconSize: [40, 40], iconAnchor: [20, 20], html: '<div style="width:40px;height:40px;border-radius:20px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center"><i class="ph-fill ph-navigation-arrow" style="font-size:22px;color:#1AA7EC;transform:rotate(45deg)"></i></div>' });
+const pinLabel = (t) => L.divIcon({ className: '', iconSize: [0, 0], iconAnchor: [0, 0], html: `<div style="transform:translate(-50%,-44px);background:#0A2E5C;color:#fff;font:600 13px/30px var(--font);padding:0 12px;border-radius:15px;white-space:nowrap;display:inline-block">${t}</div>` });
+const pinMe = () => L.divIcon({ className: '', iconSize: [22, 22], iconAnchor: [11, 11], html: '<div style="width:22px;height:22px;border-radius:11px;background:#0A2E5C;border:4px solid #fff;box-shadow:0 0 0 6px rgba(10,46,92,.16),0 2px 6px rgba(0,0,0,.3)"></div>' });
+const pinNav = () => L.divIcon({ className: '', iconSize: [40, 40], iconAnchor: [20, 20], html: '<div style="width:40px;height:40px;border-radius:20px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center"><i class="ph-fill ph-navigation-arrow" style="font-size:22px;color:#1497DE;transform:rotate(45deg)"></i></div>' });
 
 function mkMap(el, o) {
   const m = L.map(el, { zoomControl: false, attributionControl: true, zoomSnap: 0.25, fadeAnimation: false });
@@ -377,7 +378,7 @@ function mkMap(el, o) {
   const pts = [];
   const add = (ll, icon, z) => { const mk = L.marker(ll, { icon, interactive: false, zIndexOffset: z || 0 }).addTo(m); pts.push(ll); return mk; };
   if (o.pulse) add(o.pulse, pinPulse(), -10);
-  if (o.route) { L.polyline(o.route, { color: '#1AA7EC', weight: 5, opacity: 1, lineCap: 'round', lineJoin: 'round' }).addTo(m); o.route.forEach(p => pts.push(p)); }
+  if (o.route) { L.polyline(o.route, { color: '#1497DE', weight: 5, opacity: 1, lineCap: 'round', lineJoin: 'round' }).addTo(m); o.route.forEach(p => pts.push(p)); }
   if (o.home) add(o.home, pinHome(), 100);
   if (o.homeLabel) L.marker(o.home, { icon: pinLabel(o.homeLabel), interactive: false, zIndexOffset: 200 }).addTo(m);
   if (o.me) add(o.me, pinMe(), 50);
@@ -429,7 +430,7 @@ function bar() {
   <div class="seg">${['pac', 'pro', 'adm'].map(r => `<button data-role="${r}">${ROLE_N[r]}</button>`).join('')}</div>
   <div class="seg vseg"><button data-view="m">${'iPhone'}</button><button data-view="d">Escritorio</button></div>
   <span class="sel" id="sel"></span><span class="sp"></span>
-  <button class="lnk" id="adv" style="background:var(--accent);color:#1D1D1B">${ic('fast-forward', 1)}<span class="tl">Avanzar</span></button>
+  <button class="lnk" id="adv" style="background:var(--accent);color:#fff">${ic('fast-forward', 1)}<span class="tl">Avanzar</span></button>
   <button class="lnk" id="flowbtn">${ic('flow-arrow')}<span class="tl">Mapa del flujo</span></button>
   ${NATIVE ? `<button class="lnk" id="hidebar" style="background:var(--s2);color:var(--text)">${ic('arrows-out-simple')}</button>` : ''}`;
   $('#tb').addEventListener('click', e => {

@@ -138,7 +138,7 @@ def({ id: 'P03', name: 'Tus datos', kind: 'page', back: true, noNav: true, title
   foot: () => btn('Continuar', 'P04') });
 
 def({ id: 'P04', name: 'Consentimiento de datos de salud', kind: 'page', back: true, noNav: true,
-  body: () => `${ic('shield-check', 1).replace('<i ', '<i style="font-size:44px;color:#1AA7EC" ')}<div class="h-l mt12">Tus datos de salud son tuyos</div>
+  body: () => `${ic('shield-check', 1).replace('<i ', '<i style="font-size:44px;color:#1497DE" ')}<div class="h-l mt12">Tus datos de salud son tuyos</div>
   <div class="mt8">${row('box:stethoscope', 'Para qué los usamos', 'Para que la profesional sepa qué hacer y para enviar tus exámenes al laboratorio aliado.', '', '')}
   ${row('box:eye', 'Quién los ve', 'Solo la profesional que agendas y el equipo clínico de Cuidapp.', '', '')}
   ${row('box:trash', 'Cuánto tiempo', 'Mientras tengas cuenta. Puedes pedir que los borremos cuando quieras.', '', '')}</div>
@@ -153,9 +153,9 @@ def({ id: 'P05', name: 'Dirección de atención', kind: 'page', noNav: true, bac
 
 /* ---------- Servicios (inicio de la app) ---------- */
 def({ id: 'P06', name: 'Servicios (inicio)', kind: 'page', tab: 'servicios', bodyCls: 'home',
-  body: () => `<div class="locrow"><button class="locb" data-act="set" data-arg="addrNext=P06" data-go="P08"><span class="xs t2">Atención a domicilio en</span><span class="lv">${P().n}, ${P().c}${ic('caret-down')}</span></button><button class="ib bell" data-act="toast" data-arg="No tienes notificaciones nuevas." aria-label="Notificaciones">${ic('bell')}</button></div>
+  body: () => `<div class="hero"><div class="locrow"><button class="locb" data-act="set" data-arg="addrNext=P06" data-go="P08"><span class="xs t2">Atención a domicilio en</span><span class="lv">${P().n}, ${P().c}${ic('caret-down')}</span></button><button class="ib bell" data-act="toast" data-arg="No tienes notificaciones nuevas." aria-label="Notificaciones">${ic('bell')}</button></div>
   <h1 class="h-xl mt16">¿Qué necesitas?</h1>
-  <button class="sbig mt16" data-go="P07">${ic('magnifying-glass')}<span>Inyección, curación, exámenes…</span></button>
+  <button class="sbig mt16" data-go="P07">${ic('magnifying-glass')}<span>Inyección, curación, exámenes…</span></button></div>
   ${S.booked && !S.hecho ? `<button class="upc mt16" data-act="set" data-arg="det=next" data-go="P27"><span class="db"><span>${DAYS[S.day][0]}</span><b>${DAYS[S.day][1]}</b></span><span class="tx"><span class="xs t2">Tu próxima cita</span><b>${CAT[S.item].n}</b><span class="sm t2">${S.slot} · ${PRO().n}</span></span>${ic('caret-right')}</button>` : ''}
   <div class="mt24">${catGrid()}</div>
   ${shd('Profesionales destacadas cerca de ti', 'P10', 'svc', '')}
@@ -219,7 +219,7 @@ def({ id: 'P11', name: 'Filtros', kind: 'page', back: 'x', title: 'Filtros',
   foot: () => `<div class="fbar"><button class="lk u" data-act="clearF">Limpiar todo</button><button class="btn fbtn" data-go="back">Ver ${nPro(prosFor().length)}</button></div>` });
 
 def({ id: 'P36', name: 'Resultados en mapa (opcional)', kind: 'map', back: true, sheetCls: 'lite',
-  map: () => ({ home: P().ll, dots: prosFor().map(p => [ll(p), p.id === S.pro ? '#1D1D1B' : '#1AA7EC']), maxZoom: 15 }),
+  map: () => ({ home: P().ll, dots: prosFor().map(p => [ll(p), p.id === S.pro ? '#0A2E5C' : '#1497DE']), maxZoom: 15 }),
   body: () => { const l = prosFor(); return `<div class="shd" style="margin-top:0"><h3>${nPro(l.length)}</h3><button class="lk" data-go="back">Ver lista</button></div><div class="sm t2">${svcN(S.item)} · ${P().c}</div><div class="mcar mt12">${l.map(p => `<div class="mcard ${S.pro === p.id ? 'on' : ''}" data-act="pick" data-arg="${p.id}|" data-go="P12" role="button">${pav(p, 's', true)}<div class="tx"><div class="b-m">${p.n}</div><div class="sm t2">${rate(p)} · ${kmT(p)}</div></div><b class="num">${clp(priceOf(p, S.item))}</b></div>`).join('')}</div>`; } });
 
 /* ---------- perfil de la profesional ---------- */
@@ -446,7 +446,7 @@ def({ id: 'W02', name: 'Resultados (web)', kind: 'dfree', dtab: 'servicios', she
    ${S.item && CAT[S.item].receta ? `<div class="rnote mt16">${ic('file-text')}<span>Para inyecciones necesitas receta médica. La subes al agendar.</span></div>` : ''}
    <div class="rlist mt16">${l.map(p => rcard(p, true)).join('')}</div><div class="xs t3 mt16">Profesionales y precios de ejemplo.</div></main>
   <aside class="wmap"><div class="mapbox"><div class="mapwrap" data-map="1"></div></div></aside></div>`; },
-  map: () => ({ home: P().ll, dots: prosFor().map(p => [ll(p), '#1AA7EC']), zoom: 13.5 }) });
+  map: () => ({ home: P().ll, dots: prosFor().map(p => [ll(p), '#1497DE']), zoom: 13.5 }) });
 
 def({ id: 'W03', name: 'Perfil y agenda (web)', kind: 'dfree', dtab: 'servicios', next: ['P14', 'P22', 'P32'],
   body: () => { const p = PRO(), it = S.item && priceOf(p, S.item) ? S.item : svcsOf(p)[0], l = slotsOf(p, S.day); return `<div class="wprof"><div class="wp-main"><button class="lk mb16" data-go="back">${ic('caret-left')} Volver a resultados</button>${profileBody(p, 'd')}</div>
