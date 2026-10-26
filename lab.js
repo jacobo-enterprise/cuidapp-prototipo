@@ -76,7 +76,7 @@ Object.assign(ACT, {
   scopeGo: s => { S.scope = s; S.q = ''; S.typed = true; },
   aexPg: d => { S.aexPage = Math.max(0, S.aexPage + (+d)); },
   aexF: f => { S.aexF = f; S.aexPage = 0; },
-  aord: i => { S.aord = +i; S.aordSel = i == 0 ? { hemo: true, bioq: true } : {}; S.aoq = ''; },
+  aord: i => { S.aord = +i; S.aordSel = i == 0 ? { hemo: true, lip: true } : {}; S.aoq = ''; },
   aoTog: k => { S.aordSel[k] = !S.aordSel[k]; },
   aoSend: () => { if (!S.aordDone.includes(S.aord)) S.aordDone.push(S.aord); toast(`Enviado a ${AORD[S.aord][0].split(' ')[0]}: ${Object.values(S.aordSel).filter(Boolean).length} exámenes. Le avisamos por notificación push para que confirme.`); },
 });
@@ -191,7 +191,7 @@ def({ id: 'A09', name: 'Órdenes por revisar', kind: 'adm', side: 'ord', next: [
   <div class="mt16" style="max-width:560px">${note('clock', 'Meta: responder en menos de 30 minutos en horario hábil. La paciente recibe una notificación push cuando la orden está lista.')}</div>` });
 
 QRES.aores = () => { const q = S.aoq || ''; const l = q.trim() ? exFind(q, 12) : EXPOP;
-  return `<div class="exl">${l.map(k => exRow(k, q, 'aoTog', S.aordSel[k])).join('')}</div>`; };
+  return `<div class="exl">${l.map(k => exRow(k, q, 'aoTog', !!S.aordSel[k])).join('')}</div>`; };
 def({ id: 'A10', name: 'Revisar orden', kind: 'adm', side: 'ord', back: true,
   body: () => { const o = AORD[S.aord], sel = Object.keys(S.aordSel).filter(k => S.aordSel[k]), tot = sel.reduce((a, k) => a + EXAMS[k][1], 0);
     return `<button class="lk" data-go="A09">${ic('caret-left')}Órdenes por revisar</button><div class="ahd mt8"><div><h1 class="h-xl">${o[0]}</h1><div class="t2 sm mt4">${o[1]} · ${o[3]} · ${o[2]}</div></div></div>
