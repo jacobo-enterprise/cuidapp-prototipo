@@ -13,7 +13,7 @@ const S0 = () => ({
   item: 'iny', addr: 'mama', who: 'mama', when: 'prog', pro: 'cr', day: 1, slot: '08:00', sort: 'rel', ptab: 'serv', det: 'next',
   f: { enf: true, tens: true, cuid: true }, fmax: 0, fday: 'all', frat: 0, fgen: '', fcom: '',
   fav: { cr: true, pg: true }, q: '', typed: false, sheet: '', ctab: 'next', revF: 'all', revSort: 'rec', resp: { cr4: 'Gracias, Francisco. Ese día me pilló un taco en Grecia, por eso te avisé. ¡Nos vemos en el próximo control!' }, replyTo: 'cr1', rtxt: false, rcrit: {}, pday: 1, svcFrom: '',
-  hasMed: true, receta: false, orden: '', mmode: 'cat', exq: '', kinAv: false, medAv: false, promo: 'kin', exams: {}, needOrd: false, ord: '', ordSel: null, ordFrom: false, help: '', exPage: 0, exLim: 20, scope: '', aexq: '', aexPage: 0, aord: 0, aordSel: {}, aordDone: [], pv: { mama: { t: 'fonasa', tr: 'B', is: '' }, papa: { t: 'isapre', tr: '', is: 'Colmena' }, yo: { t: 'isapre', tr: '', is: 'Banmédica' } }, isaOpen: false, blog: 'b12', blogF: '', bm: 'hba', bF: 'all', bSis: '', crit: false, incVis: false, shr: { cr: false, pg: true, lf: false }, shrLink: false, resShared: false, eduRes: false, pk: 'gen', pkOpen: '', ctl: { 0: true, 1: true, 2: false, 3: true }, lk: { w: 'yo', is: '', c1: false, c2: false, car: false, bank: false }, isa: {}, rbAuto: false, rbSel: 'r2', rbList: null, profAv: {}, labId: 'la', lbMode: 'dom', lbSuc: 0, lbEx: [], lbDay: '', lbHr: '', lbSort: '', lbDone: false, cq: { age: '', r: null, dep: 0, is: '' }, ase: 'mi', aseSent: {}, qa: { is: ['Colmena', 'Banmédica', 'Consalud'], plan: 'pro', paid: false }, lead: 0, leadSt: {}, mue: { up: false, rot: true, ord: true, fri: true, done: false }, aLab: 'la', mkG: 10, mkL: { bl: { g: 10, ex: { vitd: 12 } } }, aImp: false, aImpDone: {}, aPer: 'oct2', liqPaid: {}, rc: RC0(), rcMax: 100, rcEd: '', rbDocs: false, tensNeeds: { hig: true, mov: true, sig: true, com: false },
+  hasMed: true, receta: false, orden: '', mmode: 'cat', exq: '', kinAv: false, medAv: false, promo: 'kin', exams: {}, needOrd: false, ord: '', ordSel: null, ordFrom: false, help: '', exPage: 0, exLim: 20, scope: '', aexq: '', aexPage: 0, aord: 0, aordSel: {}, aordDone: [], pv: { mama: { t: 'fonasa', tr: 'B', is: '' }, papa: { t: 'isapre', tr: '', is: 'Colmena' }, yo: { t: 'isapre', tr: '', is: 'Banmédica' } }, isaOpen: false, blog: 'b12', blogF: '', bm: 'hba', bF: 'all', bSis: '', crit: false, incVis: false, shr: { cr: false, pg: true, lf: false }, shrLink: false, resShared: false, eduRes: false, pk: 'gen', pkOpen: '', ctl: { 0: true, 1: true, 2: false, 3: true }, lk: { w: 'yo', is: '', c1: false, c2: false, car: false, bank: false }, isa: {}, rbAuto: false, rbSel: 'r2', rbList: null, profAv: {}, labId: 'la', lbMode: 'dom', lbSuc: 0, lbEx: [], lbDay: '', lbHr: '', lbSort: '', lbDone: false, cq: { age: '', r: null, dep: 0, is: '' }, ase: 'mi', aseSent: {}, qa: { is: ['Colmena', 'Banmédica', 'Consalud'], plan: 'pro', paid: false }, lead: 0, leadSt: {}, mue: { up: false, rot: true, ord: true, fri: true, done: false }, aLab: 'la', mkG: 10, mkL: { bl: { g: 10, ex: { vitd: 12 } } }, aImp: false, aImpDone: {}, aPer: 'oct2', liqPaid: {}, cuida: true, rc: RC0(), rcMax: 100, rcEd: '', rbDocs: false, tensNeeds: { hig: true, mov: true, sig: true, com: false },
   pay: 'visa', prev: 'fonasa', consent: false, rating: 0, tags: {}, tip: 0, chat: [], phase: 'llego', cancelFrom: 'P27', booked: false, hecho: false, cr: 0,
   docs: { carnet: false, selfie: false, titulo: false, antec: false, banco: false }, prof: 'enf',
   online: false, code: '', chk: { id: false, rec: false, ale: false }, earn: 186405, done: 9, pRating: 0, pTags: {}, paid: false,
@@ -185,7 +185,10 @@ function RC0() { return [
   { id: 'dom', t: 'dia', n: 'Domingo', d: 'dom', k: '%', v: 50, on: true },
   { id: 'fes', t: 'dia', n: 'Festivos', d: 'fest', k: '%', v: 100, on: true },
   { id: 'urg', t: 'urg', n: 'Urgencia (mismo día)', k: '$', v: 5000, on: false }]; }
-const RB_FEE = 3500; /* gestión de reembolso automático, por solicitud */
+const RB_FEE = 3500;
+const CUIDA_P = 15, CUIDA_MAX = 20000; /* primera atención: 15% del servicio, hasta $20.000 */
+const cuidaOf = svc => S.cuida && svc > 0 ? Math.min(CUIDA_MAX, Math.round(svc * CUIDA_P / 100 / 10) * 10) : 0;
+const cuidaLine = svc => { const d = cuidaOf(svc); return d ? [['Descuento primera atención (CUIDA15)', -d, 'dsc']] : []; }; /* gestión de reembolso automático, por solicitud */
 const rcOf = pr => pr.id === 'cr' ? S.rc : (pr.rc || (pr.rc = RC0().map(r => pr.rcx && pr.rcx[r.id] ? { ...r, ...pr.rcx[r.id] } : r)));
 const inWin = (t, a, b) => a <= b ? t >= a && t < b : t >= a || t < b;
 const dayOf = i => new Date(2026, 9, 26 + i);
@@ -208,7 +211,7 @@ const SUR = { get dom() { return rcPct(PRO(), 'dom') / 100; }, get fest() { retu
 const FEST = { '31-10': 'Día de las Iglesias Evangélicas', '1-11': 'Todos los Santos', '8-12': 'Inmaculada Concepción' };
 /* iconos 3D de servicios (img/iconos-3d); el resto de la interfaz usa Phosphor */
 const i3k = k => CAT[k] ? (CAT[k].i || IC3[CAT[k].g] || CAT[k].g) : (IC3[k] || k);
-const i3 = (k, c = '') => `<img class="i3d ${c}" src="img/iconos-3d/${i3k(k)}.webp?v=20261026i" alt="" draggable="false">`;
+const i3 = (k, c = '') => `<img class="i3d ${c}" src="img/iconos-3d/${i3k(k)}.webp?v=20261026j" alt="" draggable="false">`;
 const INC = { ins: 'Insumos: jeringa, aguja, tórulas y guantes', pre: 'Control de presión antes y después', res: 'Retiro de residuos clínicos', edu: 'Indicaciones escritas para la familia' };
 /* catálogo del laboratorio: precios fijos, no los pone la profesional */
 const LAB = 'Laboratorio';
@@ -397,13 +400,13 @@ function prosFor(item = S.item) {
 }
 function price() {
   const pr = PRO(), L = [];
-  if (isT()) { const c = shiftCalc(pr); return { L: c.L, total: c.total, pro: c.unit, shift: c }; }
+  if (isT()) { const c = shiftCalc(pr), L2 = [...c.L, ...cuidaLine(c.total)]; return { L: L2, total: L2.reduce((a, b) => a + b[1], 0), pro: c.unit, shift: c, disc: cuidaOf(c.total) }; }
   const p = priceOf(pr, S.item);
   const rc = rcLines(pr, p, S.when === 'prog' ? S.day : 0, S.when === 'prog' ? S.slot : '', S.when !== 'prog'), rs = rc.reduce((a, b) => a + b[1], 0);
   const fee = typeof isaOf === 'function' && isaOf(S.who) && S.rbAuto ? [['Gestión de reembolso', RB_FEE]] : [];
-  if (S.item === 'mue') { L.push([`Toma a domicilio · ${first(pr)}`, p], ...rc); if (!byOrder()) L.push([`Exámenes (laboratorio) · ${examList().length}`, examSum()]); if (!byOrder() && examSum() >= 30000) L.push(['Toma gratis · exámenes sobre $30.000', -p]); L.push(...fee); return { L, total: L.reduce((a, b) => a + b[1], 0), pro: p + rs, lab: byOrder() ? 0 : examSum(), pend: byOrder() }; }
-  L.push([CAT[S.item].n, p], ...rc, ...fee);
-  return { L, total: L.reduce((a, b) => a + b[1], 0), pro: p + rs, rc: rs };
+  if (S.item === 'mue') { L.push([`Toma a domicilio · ${first(pr)}`, p], ...rc); if (!byOrder()) L.push([`Exámenes (laboratorio) · ${examList().length}`, examSum()]); if (!byOrder() && examSum() >= 30000) L.push(['Toma gratis · exámenes sobre $30.000', -p]); const svc = p + rs - (!byOrder() && examSum() >= 30000 ? p : 0); L.push(...cuidaLine(svc), ...fee); return { L, total: L.reduce((a, b) => a + b[1], 0), pro: p + rs, lab: byOrder() ? 0 : examSum(), pend: byOrder(), disc: cuidaOf(svc) }; }
+  L.push([CAT[S.item].n, p], ...rc, ...cuidaLine(p + rs), ...fee);
+  return { L, total: L.reduce((a, b) => a + b[1], 0), pro: p + rs, rc: rs, disc: cuidaOf(p + rs) };
 }
 /* ---------- turnos (cuidadoras y TENS) ---------- */
 const SH0 = new Date(2026, 9, 27);   // mar 27 oct: primer día que se puede iniciar un turno
@@ -460,7 +463,7 @@ const row = (i, a, b = '', go = '', end = ic('caret-right'), cls = '', act = '',
 const ST_I = { ok: 'check-circle', warn: 'clock', inf: 'clock-countdown', bad: 'x-circle' };
 const st = (k, t, i) => { i = i === '' ? '' : (i || ST_I[k]); return `<span class="st ${k}">${i ? ic(i, 1) : ''}${t}</span>`; };
 const PHOTO = ['CR', 'FA', 'MC', 'PG', 'VM', 'FL', 'DN', 'JS', 'CD', 'IP', 'RS', 'XV', 'MP'];
-const V = '?v=20261026i';
+const V = '?v=20261026j';
 const slug = n => n.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\./g, '').trim().replace(/\s+/g, '-');
 const PACPH = { DF: 'daniela-fuentes', RM: 'rosa-m', LF: 'luis-fuentes', MIb: 'isabel-montt', RVa: 'rodrigo-vial', CHe: 'valeria-cortes', FAr: 'francisco-lagos', JCa: 'soledad-rios' };
 const phSrc = ini => PHOTO.includes(ini) ? `img/pro/${ini.toLowerCase()}.webp${V}` : PACPH[ini] ? `img/pac/${PACPH[ini]}.webp${V}` : '';

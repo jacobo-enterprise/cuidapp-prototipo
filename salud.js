@@ -89,7 +89,7 @@ Object.assign(ACT, {
 
 /* ---------- P70 · Biomarcadores (resumen) ---------- */
 const bmCard = k => { const b = BIOM[k], v = bval(k), p = prevL(b), s = bst(k);
-  return `<button class="bmc ${s}" data-act="bm" data-arg="${k}" data-go="P71"><div class="bmh"><div><b>${b.n}</b><span class="xs t3">${b.t} · ${b.s}</span></div>${bchip(s)}</div>
+  return `<button class="bmc s-${s}" data-act="bm" data-arg="${k}" data-go="P71"><div class="bmh"><div><b>${b.n}</b><span class="xs t3">${b.t} · ${b.s}</span></div>${bchip(s)}</div>
   <div class="bmv"><span class="num big">${nf(v, b.d)}</span><span class="u">${b.u}</span>${p ? `<span class="xs t2 dl">${v < p[1] ? '↓' : v > p[1] ? '↑' : '='} ${nf(Math.abs(v - p[1]), b.d)} desde ${p[0]}</span>` : ''}${spark(k)}</div>${rbar(k)}</button>`; };
 def({ id: 'P70', name: 'Biomarcadores', kind: 'page', back: true, title: 'Exámenes de Rosa', next: ['P71', 'P72', 'P73', 'P76', 'P77'],
   body: () => { const f = S.bF || 'all', out = outK(); let l = [...out, ...BKEYS.filter(k => !out.includes(k))]; if (f === 'rev') l = out; if (S.bSis) l = l.filter(k => BIOM[k].sis === S.bSis);
