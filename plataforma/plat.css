@@ -176,10 +176,10 @@ body.pd .dpage .row:hover{background:var(--s2)}
  .plat .wres .wmap{display:none}
 }
 @media (max-width:1120px){
- .plat .dpage.wide{flex-direction:column;align-items:center;gap:24px}
+ .plat .dpage.wide{flex-direction:column;align-items:center;justify-content:flex-start;gap:24px}
+ body.phome .dpage.wide{display:block}
+ body.phome .dpage.wide .col{margin:0 auto}
  .plat .dpage.wide .aside,.plat .dpage.wide .aside.book{width:min(720px,100%);position:static}
- .pdh nav button span{display:none}
- .pdh nav button{padding:0 11px}
  .px-in{grid-template-columns:1fr}
  .px-r{display:none}
  .px-tiles,.px-blog,.px-how{grid-template-columns:repeat(2,1fr)}
@@ -224,3 +224,36 @@ body.pm .scr > .nav{padding-top:env(safe-area-inset-top)}
 .pauto span{font-size:11px;font-weight:600;background:rgba(255,255,255,.14);border-radius:999px;padding:4px 9px;color:#C9C3F5}
 .pauto i{font-size:16px;color:#C9C3F5}
 body.pm .pauto{bottom:calc(96px + env(safe-area-inset-bottom));right:50%;transform:translateX(50%)}
+
+/* ===== v2 · Inicio (P06) en escritorio: mismo contenido y orden que la app, más ancho ===== */
+.plat .pdh nav{margin-left:0}
+body.phome .dpage{background:linear-gradient(180deg,#F4F1FE 0,#FAF9FF 300px,#fff 520px)}
+body.phome .dpage.wide .col{width:min(1120px,100%)}
+body.phome .dpage .hero{max-width:760px}
+body.phome .dpage .hero .h-xl{font-size:44px;line-height:50px;letter-spacing:-.8px;margin-top:20px}
+body.phome .dpage .hero .sbig{height:60px;border-radius:30px;background:#fff;box-shadow:0 0 0 1px var(--border),0 6px 24px rgba(40,30,110,.07);font-size:16px;margin-top:20px}
+body.phome .dpage .hero .locrow{max-width:none}
+body.phome .dpage .pcar{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:0;padding:0;overflow:visible}
+body.phome .dpage .pslim{width:auto;height:84px}
+body.phome .dpage .pdots{display:none}
+body.phome .dpage .cats{grid-template-columns:repeat(8,1fr);gap:16px}
+body.phome .dpage .prfr{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:12px;margin:12px 0 0;padding:0;overflow:visible}
+body.phome .dpage .prf{width:auto}
+body.phome .dpage .hcar{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:0;padding:0 0 4px;overflow:visible}
+body.phome .dpage .hcar > *{width:auto}
+body.phome .dpage .hcar.bcar{grid-template-columns:repeat(4,1fr)}
+body.phome .dpage .hcar.bcar > :nth-child(n+5){display:none}
+body.phome .dpage .recent{display:grid;grid-template-columns:repeat(3,1fr);gap:0 24px}
+body.phome .dpage .recent .rrow{border-top:0}
+body.phome .dpage .llist{display:grid;grid-template-columns:1fr 1fr;gap:0 40px}
+body.phome .dpage .llist .lcard{border-top:1px solid var(--border)}
+body.phome .dpage .llist .lcard:nth-child(-n+2){border-top:0}
+body.phome .dpage .upc{max-width:560px}
+@media (max-width:1120px){
+ body.phome .dpage .cats{grid-template-columns:repeat(4,1fr)}
+ body.phome .dpage .hcar.bcar{grid-template-columns:repeat(2,1fr)}
+ body.phome .dpage .recent{grid-template-columns:1fr}
+}
+.plat .wp-side .bbox > .xs.t3.center{display:none}
+.plat .dpage .ptop{margin:0 0 16px;display:flex;flex-direction:column;gap:12px}.plat .dpage .ptop .srch{padding:0 0 0 0;margin-left:-8px}.plat .dpage .ptop .sinput{flex:1}.plat .dpage .ptop .sloc{align-self:flex-start}
+.plat .dpage .ptop .srch{width:calc(100% + 8px)}.plat .dpage .ptop .sinput{width:auto;min-width:0}.plat .dpage .ptop .scw{margin-left:-12px}
