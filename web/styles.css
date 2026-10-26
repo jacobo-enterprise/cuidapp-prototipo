@@ -183,3 +183,97 @@ footer{background:#fff;padding:52px 0 36px;border-top:1px solid var(--line)}
 @media (max-width:860px){.hero h1{font-size:34px}.outline{height:470px}}
 .outline{height:500px}
 @media (max-width:860px){.prices{grid-template-columns:1fr 1fr;gap:10px}.price{padding:16px}.price .v{font-size:20px}.price .v em{display:block;margin:2px 0 0}}
+/* v3.1: hero propio (guía Jacob) */
+.strip{background:#fff;border-bottom:1px solid var(--line)}
+.strip .wrap{align-items:center;gap:22px}
+.strip a{padding:0;border-radius:0;color:var(--ink-3)}
+.strip a.on{background:none;color:var(--ink);font-weight:600}
+.promo{background:var(--g1);color:var(--ink-2);border-bottom:1px solid var(--line)}
+.promo b{color:var(--lav-t)}
+.hero{background:var(--g1);padding:88px 0 104px}
+.hero .wrap{grid-template-columns:1fr 1.1fr;gap:56px}
+.hero-txt{max-width:460px;justify-self:end}
+.hero h1.cond{font-size:64px;line-height:1.04;font-weight:600;letter-spacing:-.005em}
+.hero .body{margin-top:22px}
+.hero-cta{margin-top:30px}
+.hero-stage{position:relative;padding:0 0 40px 40px}
+.hero-photo{border-radius:24px}
+.hc{position:absolute;padding:14px 16px}
+.hc1{left:0;bottom:0;width:290px}
+.hc2{right:-24px;top:-28px;width:230px}
+.avp{width:30px;height:30px;border-radius:999px;object-fit:cover;flex:none}
+.row .avp{width:32px;height:32px}
+.steps-mini{display:grid;gap:6px;margin-top:10px;font-size:12px;color:var(--ink-2)}
+.steps-mini span{display:flex;align-items:center;gap:8px}
+.steps-mini span::before{content:"";width:14px;height:14px;border-radius:999px;background:var(--lav) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M3 6.2l2 2L9 4' fill='none' stroke='%23fff' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") center/10px no-repeat}
+.feat:first-of-type{background:var(--g2)}
+@media (max-width:1000px){.hero h1.cond{font-size:54px}}
+@media (max-width:860px){
+  .hero{padding:40px 0 56px}
+  .hero .wrap{gap:36px}
+  .hero-txt{justify-self:start}
+  .hero h1.cond{font-size:46px}
+  .hero-stage{order:2;padding:20px 0 56px 0}
+  .hero-photo{order:0}
+  .hc1{left:12px;bottom:0;width:250px}
+  .hc2{right:8px;top:0;width:190px}
+  .hc2 .row:nth-of-type(3){display:none}
+}
+.two{gap:16px}
+.two .ui{width:260px}
+.two .ui:nth-child(2){margin:48px 0 0 0}
+@media (max-width:860px){
+  .hero .wrap{grid-template-columns:1fr}
+  .hero-stage{padding:24px 0 48px}
+  .hc1{left:12px;bottom:0;width:240px}
+  .hc2{right:8px;top:0;width:180px}
+  .two .ui{width:min(320px,100%)}
+  .two .ui:nth-child(2){margin:-8px 0 0 0}
+}
+/* v4: hero inspirado en Hims (titular + accesos por servicio) */
+.hero2{background:#FAFAFA;padding:72px 0 56px}
+.h2-top{display:grid;grid-template-columns:1.35fr 1fr;gap:48px;align-items:end}
+.hero2 h1{font-family:Oswald,'Inter Tight',sans-serif;font-weight:600;font-size:76px;line-height:1.02;letter-spacing:-.5px;color:#111;margin:0;text-transform:none}
+.h2-side p{color:#5b5b66;font-size:18px;line-height:1.55;margin:0 0 20px;max-width:420px}
+.h2-side .btn{margin-bottom:16px}
+.ec-row{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:56px}
+.ec{display:flex;flex-direction:column;background:#F2F2F5;border-radius:20px;padding:8px;text-decoration:none;color:#111;transition:transform .2s,box-shadow .2s;min-height:280px}
+.ec:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(42,31,102,.10)}
+.ec-m{display:flex;align-items:center;justify-content:center;height:150px;border-radius:14px;background:#F5F3FD;overflow:hidden}
+.ec-m img{width:96px;height:96px;object-fit:contain}
+.ec-m img.photo{width:100%;height:100%;object-fit:cover}
+.ec:first-child .ec-m{background:#EEEAFB}
+.ec-l{display:flex;justify-content:space-between;align-items:flex-end;gap:8px;margin-top:auto;padding:16px 10px 10px;font-weight:600;font-size:17px;line-height:1.25}
+.ec-l svg{width:20px;height:20px;flex:none;color:#5557D9}
+.facts{display:flex;flex-wrap:wrap;gap:10px 28px;margin-top:24px;padding:16px 22px;background:#F2F2F5;border-radius:16px;font-size:14px;color:#5557D9;font-weight:500}
+.facts span::before{content:"✓";margin-right:8px}
+.end{background:#F2F2F5;padding:96px 0}
+.end .wrap{display:grid;grid-template-columns:1.2fr 1fr;gap:56px;align-items:start}
+.end h2{font-family:Oswald,sans-serif;font-weight:600;font-size:52px;line-height:1.05;margin:0 0 28px}
+.end details{background:#fff;border-radius:14px;padding:18px 22px;margin-bottom:10px}
+.end summary{font-weight:600;cursor:pointer;font-size:16px}
+.end details p{color:#5b5b66;margin:12px 0 0;line-height:1.55}
+.ally{background:#fff;border-radius:22px;padding:30px}
+.ally h3{margin:0 0 18px;font-size:22px}
+.ally ul{list-style:none;padding:0;margin:0 0 22px}
+.ally li{display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-top:1px solid #eee}
+.ally li img{width:40px;height:40px;border-radius:10px;background:#F5F3FD;padding:4px;flex:none}
+.ally li b{display:block;font-size:15px}.ally li span{font-size:14px;color:#5b5b66;line-height:1.45}
+.ally li em{font-style:normal;color:#5557D9}
+.ally-cta{display:flex;flex-wrap:wrap;gap:10px}
+@media (max-width:900px){
+.hero2{padding:40px 0 40px}
+.h2-top{grid-template-columns:1fr;gap:20px}
+.hero2 h1{font-size:46px}
+.h2-side p{font-size:16px}
+.ec-row{grid-template-columns:repeat(2,1fr);gap:10px;margin-top:32px}
+.ec{min-height:0}.ec:first-child{grid-column:1/-1}
+.ec-m{height:110px}.ec:first-child .ec-m{height:190px}
+.ec-m img{width:70px;height:70px}
+.ec-l{font-size:15px;padding:12px 8px 8px}
+.end{padding:64px 0}.end .wrap{grid-template-columns:1fr;gap:32px}.end h2{font-size:40px}
+}
+.ec-mini{background:#fff;border-radius:14px;padding:14px 18px;box-shadow:0 10px 24px rgba(42,31,102,.10);display:flex;flex-direction:column;gap:2px;min-width:120px}
+.ec-mini small{font-size:11px;color:#77758A;text-transform:uppercase;letter-spacing:.06em}
+.ec-mini b{font-family:Oswald,sans-serif;font-size:28px;font-weight:600;color:#111}
+.ec-mini i{font-style:normal;font-size:12px;font-weight:600;color:#5557D9;background:#EEEAFB;border-radius:999px;padding:2px 10px;align-self:flex-start}
