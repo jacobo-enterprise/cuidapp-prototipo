@@ -803,3 +803,20 @@ table .ri.box{flex:none;min-width:40px}
 .codebox{display:flex;align-items:center;justify-content:space-between;width:100%;padding:16px 18px;border-radius:14px;border:1.5px dashed #C9CAF7}
 .codebox b{display:block;font-size:20px;letter-spacing:1.5px;margin-top:2px}.codebox .lk{display:inline-flex;gap:6px;align-items:center}
 .wpromo{padding-top:8px!important}.wprow{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.wprow .promo{width:auto}
+/* ===== banner delgado ===== */
+.pcar{gap:8px}
+.pslim{flex:none;width:calc(100% - 32px);scroll-snap-align:start;display:flex;align-items:center;gap:12px;height:76px;border-radius:16px;padding:0 12px 0 10px;cursor:pointer;background:var(--s2);color:var(--text)}
+.pslim .ps-ic{width:48px;height:48px;flex:none;display:flex;align-items:center;justify-content:center}
+.pslim .ps-ic .i3d{width:44px;height:44px;object-fit:contain}
+.pslim .ps-tx{flex:1;min-width:0;display:flex;flex-direction:column}
+.pslim .ps-eb{font-size:11px;line-height:14px;font-weight:600;color:var(--lav-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pslim .ps-t{font-size:15px;line-height:20px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.1px}
+.pslim .ps-d{font-size:12px;line-height:16px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pslim .pcta{flex:none;height:28px;padding:0 12px;border-radius:14px;background:#fff;color:var(--text);font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:4px;box-shadow:inset 0 0 0 1px var(--border)}
+.pslim .pcta i{font-size:13px}
+.pslim .pchev{flex:none;width:28px;height:28px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1px var(--border)}.pslim .pchev i{font-size:14px;color:var(--t2)}
+.pslim.dark{background:#111111;color:#fff}.pslim.dark .ps-eb{color:#B9BAF8}.pslim.dark .ps-d{color:#A9A9B3}
+.pslim.dark .pcta{background:#fff;color:#111;box-shadow:none}.pslim.dark .pcta.on{background:#2A2A2E;color:#fff;box-shadow:inset 0 0 0 1px #48484F}
+.pslim.lav{background:var(--lav-soft)}.pslim.lav .pcta{color:var(--lav-text);box-shadow:inset 0 0 0 1px #DCDCFB;letter-spacing:.4px}
+.pdots{margin-top:8px;gap:4px}.pdots i{width:5px;height:5px;border-radius:3px}.pdots i.on{width:14px}
+.wprow .pslim{width:auto;height:80px}

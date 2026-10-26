@@ -171,10 +171,12 @@ const PROMO = {
   first: { cls: 'lav', eb: 'Primera atención', t: '20% de descuento', d: 'Con el código CUIDA20 · tope $10.000', ic: 'iny' },
   lab: { cls: 'neu', eb: 'Exámenes a domicilio', t: 'Toma gratis sobre $30.000', d: 'Pagas solo los exámenes del laboratorio.', ic: 'mue' },
 };
-const promoBtn = k => k === 'kin' ? `<button class="pbtn ${S.kinAv ? 'on' : ''}" data-act="kinAv">${S.kinAv ? ic('check', 0).replace('ph ', 'ph-bold ') + 'Te avisaremos' : ic('bell') + 'Avísame'}</button>`
-  : k === 'first' ? `<button class="pbtn" data-act="code">${ic('copy')}CUIDA20</button>` : `<button class="pbtn" data-act="grp" data-arg="mue" data-go="P40">Elegir exámenes</button>`;
-const promoCard = k => { const p = PROMO[k]; return `<div class="promo ${p.cls}" data-act="promo" data-arg="${k}" data-go="P45" role="button"><div class="pr-tx"><span class="pr-eb">${p.eb}</span><b class="pr-t">${p.t}</b><span class="pr-d">${p.d}</span>${promoBtn(k)}</div><span class="pr-ic">${i3(p.ic)}</span></div>`; };
-window.pdots = el => { const n = Math.round(el.scrollLeft / (el.firstElementChild.offsetWidth + 10)); el.nextElementSibling.querySelectorAll('i').forEach((d, i) => d.classList.toggle('on', i === n)); };
+const PSUB = { kin: 'Motora y respiratoria', first: 'Primera atención · tope $10.000', lab: 'Pagas solo los exámenes' };
+const PT = { kin: 'Kinesiología', first: '20% de descuento', lab: 'Toma gratis sobre $30.000' };
+const promoEnd = k => k === 'kin' ? `<button class="pcta ${S.kinAv ? 'on' : ''}" data-act="kinAv">${S.kinAv ? ic('check', 0).replace('ph ', 'ph-bold ') + 'Avisado' : 'Avísame'}</button>`
+  : k === 'first' ? `<button class="pcta" data-act="code">CUIDA20</button>` : `<span class="pchev">${ic('caret-right')}</span>`;
+const promoCard = k => { const p = PROMO[k]; return `<div class="pslim ${p.cls}" data-act="promo" data-arg="${k}" data-go="P45" role="button"><span class="ps-ic">${i3(p.ic)}</span><span class="ps-tx"><span class="ps-eb">${p.eb}</span><b class="ps-t">${PT[k]}</b><span class="ps-d">${PSUB[k]}</span></span>${promoEnd(k)}</div>`; };
+window.pdots = el => { const n = Math.round(el.scrollLeft / (el.firstElementChild.offsetWidth + 8)); el.nextElementSibling.querySelectorAll('i').forEach((d, i) => d.classList.toggle('on', i === n)); };
 const promoCar = () => `<div class="pcar" onscroll="pdots(this)">${Object.keys(PROMO).map(promoCard).join('')}</div><div class="pdots"><i class="on"></i><i></i><i></i></div>`;
 
 def({ id: 'P06', name: 'Servicios (inicio)', kind: 'page', tab: 'servicios', bodyCls: 'home',
@@ -182,7 +184,7 @@ def({ id: 'P06', name: 'Servicios (inicio)', kind: 'page', tab: 'servicios', bod
   <h1 class="h-xl mt16">¿Qué necesitas?</h1>
   <button class="sbig mt16" data-go="P07">${ic('magnifying-glass')}<span>Inyección, curación, exámenes…</span></button></div>
   ${S.booked && !S.hecho ? `<button class="upc mt16" data-act="set" data-arg="det=next" data-go="P27"><span class="db"><span>${DAYS[S.day][0]}</span><b>${DAYS[S.day][1]}</b></span><span class="tx"><span class="xs t2">Tu próxima cita</span><b>${CAT[S.item].n}</b><span class="sm t2">${S.slot} · ${PRO().n}</span></span>${ic('caret-right')}</button>` : ''}
-  <div class="mt20">${promoCar()}</div>
+  <div class="mt16">${promoCar()}</div>
   <div class="mt24">${catGrid()}</div>
   ${shd('Destacadas cerca de ti', 'P10', 'svc', '')}
   <div class="hcar">${featured().map(fcard).join('')}</div>
