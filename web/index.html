@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Cuidapp · La super app de salud</title>
+<meta name="description" content="La super app de salud: enfermería a domicilio, exámenes, vitaminas, ficha clínica y reembolso de Isapre en una sola app. Muy pronto, cotiza tu Isapre y farmacia.">
+<meta name="theme-color" content="#EEEAFB">
+<meta property="og:title" content="Cuidapp · La super app de salud">
+<meta property="og:description" content="Enfermeras y TENS a domicilio, exámenes sin salir de casa y la ficha de cada visita en tu teléfono.">
+<meta property="og:image" content="assets/screens/P06.webp">
+<link rel="icon" href="assets/logo/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/logo/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/InterTight.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <defs>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.2 4.2L19 7"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7.5 3v5.6c0 4.6-3.2 8.4-7.5 9.4-4.3-1-7.5-4.8-7.5-9.4V6z"/><path d="M8.8 12.2l2.2 2.2 4.3-4.4"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.8l-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12.3V4.5a1 1 0 0 1 1-1h7.8l8.2 8.2a1.4 1.4 0 0 1 0 2l-6.6 6.6a1.4 1.4 0 0 1-2 0z"/><circle cx="8.3" cy="8.3" r="1.4"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a7.5 7.5 0 0 1-11 6.6L4 20l1.4-4.6A7.5 7.5 0 1 1 20 12z"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M3 10h18M7 15h3"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-id" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="9" cy="11" r="2.2"/><path d="M5.8 16.2c.6-1.6 1.8-2.3 3.2-2.3s2.6.7 3.2 2.3M15 10h3M15 13.5h3"/></symbol>
+  <symbol id="i-receipt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.6-2.5h6.8L17 8h3v11H4z"/><circle cx="12" cy="13.2" r="3.4"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8.5" r="3.3"/><path d="M3 19.5c.7-3.2 3-5 6-5s5.3 1.8 6 5"/><path d="M15.5 5.6a3.2 3.2 0 0 1 0 6M17.5 14.8c1.8.6 3 2.3 3.5 4.7"/></symbol>
+  <symbol id="i-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2.2-5 4.2 10 2.2-5H21"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18v4"/><rect x="4" y="9" width="17" height="11" rx="2.5"/><circle cx="16.5" cy="14.5" r="1.2"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></symbol>
+ </defs>
+</svg>
+
+<header class="nav" id="top">
+ <div class="nav-in">
+  <a class="logo" href="#top" aria-label="Cuidapp, inicio"><img src="assets/logo/cuidapp-horizontal-color.svg" alt="Cuidapp" width="70" height="30"></a>
+  <nav class="nav-links" aria-label="Secciones">
+   <a href="#servicios">Enfermería</a>
+   <a href="#examenes">Exámenes</a>
+   <a href="#ficha">Ficha clínica</a>
+   <a href="#isapre">Isapre</a>
+   <a href="#profesionales">Profesionales</a>
+   <a href="#aliados">Aliados</a>
+  </nav>
+  <a class="btn btn-dark" href="../?v=m#/P06">Reservar</a>
+ </div>
+</header>
+
+<main>
+<!-- HERO -->
+<section class="hero">
+ <div class="wrap hero-grid">
+  <div>
+   <span class="eyebrow">La super app de salud</span>
+   <h1>Tu salud y la de tu familia, <em>en una sola app</em>.</h1>
+   <p class="lead">Enfermeras y TENS a domicilio, exámenes, vitaminas, tu ficha clínica y el reembolso de tu Isapre, en un mismo lugar. Compara, agenda y paga desde el teléfono.</p>
+   <div class="hero-cta">
+    <a class="btn btn-dark" href="../?v=m#/P06">Reservar una atención <svg><use href="#i-arrow"/></svg></a>
+    <a class="btn btn-light" href="#descargar">Descargar la app</a>
+   </div>
+   <div class="chips" aria-label="Servicios más pedidos">
+    <a class="chip" href="#servicios"><img src="assets/icons/tens4.webp" alt="">Enfermería a domicilio</a>
+    <a class="chip" href="#examenes"><img src="assets/icons/mue.webp" alt="">Exámenes</a>
+    <a class="chip" href="#examenes"><img src="assets/icons/son.webp" alt="">Vitaminas</a>
+    <a class="chip" href="#ficha"><img src="assets/icons/sig.webp" alt="">Ficha clínica</a>
+    <a class="chip" href="#reembolso-automatico"><img src="assets/icons/cura.webp" alt="">Reembolso Isapre</a>
+   </div>
+  </div>
+  <div class="hero-phones" aria-hidden="true">
+   <div class="iphone p2"><img src="assets/screens/P12.webp" alt=""></div>
+   <div class="iphone p1"><img src="assets/screens/P06.webp" alt=""></div>
+   <div class="float-card fc1"><div class="dot"><svg><use href="#i-shield"/></svg></div><div><b>Registro SIS verificado</b><span>Identidad y antecedentes revisados</span></div></div>
+   <div class="float-card fc2"><div class="dot"><svg><use href="#i-pin"/></svg></div><div><b>Va en camino</b><span>Sigue su llegada en el mapa</span></div></div>
+  </div>
+ </div>
+</section>
+
+<!-- SUPER APP -->
+<section id="todo" style="padding-bottom:40px">
+ <div class="wrap">
+  <div class="sec-head rv">
+   <span class="eyebrow">Todo en una app</span>
+   <h2>Una sola app para cuidarte, de punta a punta.</h2>
+   <p>Desde agendar a la enfermera hasta recuperar parte de lo que pagaste. Sin saltar entre apps, llamadas y planillas.</p>
+  </div>
+  <div class="mods">
+   <a class="mod rv" href="#servicios"><img src="assets/icons/tens4.webp" alt=""><div><h3>Enfermería a domicilio</h3><p>Inyecciones, curaciones, adulto mayor, postrados y turnos.</p></div></a>
+   <a class="mod rv" href="#examenes"><img src="assets/icons/mue.webp" alt=""><div><h3>Exámenes</h3><p>655 exámenes, con o sin orden. En casa o en un laboratorio cerca.</p></div></a>
+   <a class="mod rv" href="#examenes"><img src="assets/icons/son.webp" alt=""><div><h3>Vitaminas y sueros</h3><p>Con tu receta y una profesional que te acompaña.</p></div></a>
+   <a class="mod rv" href="#ficha"><img src="assets/icons/sig.webp" alt=""><div><h3>Ficha clínica compartida</h3><p>Notas, signos vitales e indicaciones de cada visita.</p></div></a>
+   <a class="mod rv" href="#reembolso-automatico"><img src="assets/icons/cura.webp" alt=""><div><h3>Reembolso automático</h3><p>Vincula tu Isapre una vez y enviamos los documentos por ti.</p><span class="tag">Muy pronto</span></div></a>
+   <a class="mod rv" href="#isapre"><img src="assets/icons/edu.webp" alt=""><div><h3>Cotiza tu Isapre</h3><p>Compara planes con asesores, sin salir de la app.</p><span class="tag">Muy pronto</span></div></a>
+   <div class="mod soon rv"><img src="assets/icons/med.webp" alt=""><div><h3>Farmacia</h3><p>Los medicamentos de tu tratamiento, en la misma app.</p><span class="tag">Muy pronto</span></div></div>
+   <a class="mod dark rv" href="../?v=m#/P06"><div><h3>Pruébala ahora</h3><p>Recorre la app en su versión web.</p></div><span class="go"><svg><use href="#i-arrow"/></svg></span></a>
+  </div>
+  <div class="profs rv">
+   <div class="profs-h"><b>Varias ramas de la salud, en una app</b><span>Hoy con enfermería y TENS; pronto con más especialidades.</span></div>
+   <ul class="prof-list">
+    <li class="on">Enfermería</li>
+    <li class="on">TENS</li>
+    <li>Kinesiología <span class="tag">Muy pronto</span></li>
+    <li>Psicología <span class="tag">Muy pronto</span></li>
+    <li>Telemedicina <span class="tag">Muy pronto</span></li>
+    <li>Nutrición <span class="tag">Muy pronto</span></li>
+   </ul>
+  </div>
+ </div>
+</section>
+
+<!-- CÓMO FUNCIONA -->
+<section id="como">
+ <div class="wrap">
+  <div class="sec-head rv">
+   <span class="eyebrow">Cómo funciona</span>
+   <h2>Enfermería a domicilio en tres pasos.</h2>
+   <p>Sin llamar a nadie ni esperar que te devuelvan el mensaje.</p>
+  </div>
+  <div class="steps">
+   <article class="step rv">
+    <span class="n">1</span>
+    <h3>Elige el servicio</h3>
+    <p>Inyecciones, exámenes, curaciones, vitaminas, turnos y más, cada uno con lo que incluye.</p>
+    <div class="crop"><div class="iphone"><img src="assets/screens/P33.webp" alt="Pantalla de todas las categorías de servicios" loading="lazy"></div></div>
+   </article>
+   <article class="step rv">
+    <span class="n">2</span>
+    <h3>Compara y agenda</h3>
+    <p>Mira precios, reseñas y horarios. Eliges día y hora, y pagas en la app.</p>
+    <div class="crop"><div class="iphone"><img src="assets/screens/P13.webp" alt="Pantalla para agendar día y hora" loading="lazy"></div></div>
+   </article>
+   <article class="step rv">
+    <span class="n">3</span>
+    <h3>Te atiende en casa</h3>
+    <p>Sigue su llegada, escríbele por chat y recibe el resumen de la visita al terminar.</p>
+    <div class="crop"><div class="iphone"><img src="assets/screens/P21.webp" alt="Pantalla con la profesional en camino en el mapa" loading="lazy"></div></div>
+   </article>
+  </div>
+ </div>
+</section>
+
+<!-- SERVICIOS -->
+<section id="servicios" class="tint">
+ <div class="wrap">
+  <div class="sec-head rv">
+   <span class="eyebrow">Servicios</span>
+   <h2>Lo que necesitas, hecho por profesionales de salud.</h2>
+   <p>Cada profesional pone su precio y dice qué incluye. Lo ves antes de agendar.</p>
+  </div>
+  <div class="svc-grid">
+   <a class="svc rv" href="../?v=m#/P33"><img src="assets/icons/iny.webp" alt=""><h3>Inyecciones</h3><p>Intramusculares y subcutáneas, con tu receta.</p></a>
+   <a class="svc rv" href="#examenes"><img src="assets/icons/mue.webp" alt=""><h3>Exámenes de laboratorio</h3><p>Toma de muestra en tu casa, con o sin orden.</p></a>
+   <a class="svc rv" href="#examenes"><img src="assets/icons/son.webp" alt=""><h3>Vitaminas y sueros</h3><p>Vitaminas inyectables e hidratación endovenosa.</p></a>
+   <a class="svc rv" href="../?v=m#/P33"><img src="assets/icons/cur.webp" alt=""><h3>Curaciones</h3><p>Heridas, úlceras y cuidados después de una cirugía.</p></a>
+   <a class="svc rv" href="../?v=m#/P33"><img src="assets/icons/tens4.webp" alt=""><h3>Adulto mayor</h3><p>Acompañamiento, control y cuidados diarios.</p></a>
+   <a class="svc rv" href="../?v=m#/P33"><img src="assets/icons/pd.webp" alt=""><h3>Pacientes postrados</h3><p>Higiene, cambios de posición y cuidados en cama.</p></a>
+   <a class="svc rv" href="../?v=m#/P33"><img src="assets/icons/turn.webp" alt=""><h3>Turnos</h3><p>Enfermera o TENS por turnos, en tu casa.</p></a>
+   <a class="svc rv" href="../?v=m#/P33"><img src="assets/icons/sig.webp" alt=""><h3>Paliativos y crónicos</h3><p>Control de signos vitales y apoyo a la familia.</p></a>
+   <a class="svc rv" href="../?v=m#/P33"><img src="assets/icons/post.webp" alt=""><h3>Postoperatorio</h3><p>Curaciones, retiro de puntos y control en casa.</p></a>
+   <a class="svc rv" href="../?v=m#/P33"><img src="assets/icons/edu.webp" alt=""><h3>Educación</h3><p>Te enseñan a cuidar y a manejar tratamientos en casa.</p></a>
+   <div class="svc soon rv"><img src="assets/icons/kin.webp" alt=""><h3>Kinesiología</h3><p>Motora y respiratoria.</p><span class="tag">Muy pronto</span></div>
+   <div class="svc soon rv"><img src="assets/icons/med.webp" alt=""><h3>Medicamentos</h3><p>Para tu tratamiento en casa.</p><span class="tag">Muy pronto</span></div>
+  </div>
+ </div>
+</section>
+
+<!-- EXÁMENES + VITAMINAS -->
+<section id="examenes">
+ <div class="wrap split">
+  <div class="txt rv">
+   <span class="eyebrow">Exámenes a domicilio</span>
+   <h2 style="font-size:clamp(34px,4.4vw,56px);margin:14px 0 18px">Tus exámenes, sin salir de casa.</h2>
+   <p style="font-size:19px;color:var(--ink-2)">La toma de muestra la hace una profesional en tu casa. La orden médica es opcional: elige tú los exámenes o sube la foto de la orden y los seleccionamos por ti.</p>
+   <div class="three-ways">
+    <div class="way"><b>Elige tus exámenes</b><span>Busca por nombre o código Fonasa.</span></div>
+    <div class="way"><b>Sube la foto de tu orden</b><span>Leemos la orden y marcamos los exámenes.</span></div>
+    <div class="way"><b>Ayúdame a elegir</b><span>Según para qué los necesitas.</span></div>
+   </div>
+   <div class="bignum"><b>655</b><span>exámenes disponibles, con precio claro antes de pagar.</span></div>
+   <div class="vit"><img src="assets/icons/vit.webp" alt=""><p><b>Vitaminas y sueros.</b> Vitamina B12, vitamina D e hidratación endovenosa, con tu receta y una profesional que te acompaña. <span class="tag" style="margin-left:4px">Biomarcadores · muy pronto</span></p></div>
+  </div>
+  <div class="phones rv">
+   <div class="iphone"><img src="assets/screens/P40.webp" alt="Pantalla de exámenes de laboratorio" loading="lazy"></div>
+   <div class="iphone lo"><img src="assets/screens/P60.webp" alt="Pantalla para subir la foto de la orden médica" loading="lazy"></div>
+  </div>
+ </div>
+</section>
+
+<!-- LABORATORIOS CERCA -->
+<section id="laboratorios" style="padding-top:0">
+ <div class="wrap">
+  <div class="labs rv">
+   <div class="labs-txt">
+    <span class="eyebrow">Laboratorios cerca de ti</span>
+    <h2>Elige el laboratorio y cómo quieres atenderte.</h2>
+    <p>Mira los laboratorios de tu zona y agenda con ellos directo en la app: que vayan a tu casa o ir tú a su sucursal, a la hora que te acomode.</p>
+    <div class="seg" role="group" aria-label="Modalidad"><span class="on">A domicilio</span><span>En sucursal</span></div>
+   </div>
+   <div class="labs-list" aria-label="Ejemplo de laboratorios cerca">
+    <div class="lab"><div class="lab-ic"><svg><use href="#i-pin"/></svg></div><div><b>Laboratorio ejemplo · Ñuñoa</b><small>A domicilio y en sucursal · a 1,2 km</small></div><span class="lab-t">Hoy</span></div>
+    <div class="lab"><div class="lab-ic"><svg><use href="#i-pin"/></svg></div><div><b>Laboratorio ejemplo · Providencia</b><small>En sucursal · a 2,8 km</small></div><span class="lab-t">Mañana</span></div>
+    <div class="lab"><div class="lab-ic"><svg><use href="#i-pin"/></svg></div><div><b>Laboratorio ejemplo · La Reina</b><small>A domicilio · cubre tu comuna</small></div><span class="lab-t">Mañana</span></div>
+    <p class="example-note" style="margin-top:12px">Ejemplo ilustrativo: los nombres y distancias no son reales.</p>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- ELIGE TU PROFESIONAL -->
+<section class="tint" id="profesional">
+ <div class="wrap split rev">
+  <div class="phones rv">
+   <div class="iphone"><img src="assets/screens/P10.webp" alt="Listado de profesionales con precios" loading="lazy"></div>
+   <div class="iphone lo"><img src="assets/screens/P12.webp" alt="Perfil de una enfermera" loading="lazy"></div>
+  </div>
+  <div class="txt rv">
+   <span class="eyebrow">Elige a tu profesional</span>
+   <h2 style="font-size:clamp(34px,4.4vw,56px);margin:14px 0 18px">Tú decides quién entra a tu casa.</h2>
+   <p style="font-size:19px;color:var(--ink-2)">Compara enfermeras y TENS cerca de ti: quiénes son, su experiencia, lo que dicen otras familias y cuánto cobran.</p>
+   <ul class="feat-list">
+    <li><span class="ico"><svg><use href="#i-shield"/></svg></span><div><b>Verificadas antes de atender</b><span>Revisamos su registro en la Superintendencia de Salud, su identidad y sus antecedentes.</span></div></li>
+    <li><span class="ico"><svg><use href="#i-tag"/></svg></span><div><b>Precio claro desde el inicio</b><span>Cada profesional fija su precio e indica qué incluye. Sin sorpresas al pagar.</span></div></li>
+    <li><span class="ico"><svg><use href="#i-star"/></svg></span><div><b>Reseñas de otras familias</b><span>Después de cada atención, la familia puede dejar su opinión.</span></div></li>
+    <li><span class="ico"><svg><use href="#i-chat"/></svg></span><div><b>Chat y pago en la app</b><span>Coordina detalles con ella y paga con tarjeta, sin efectivo.</span></div></li>
+   </ul>
+  </div>
+ </div>
+</section>
+
+<!-- FICHA Y FAMILIA -->
+<section id="ficha">
+ <div class="wrap">
+  <div class="sec-head rv">
+   <span class="eyebrow">Ficha clínica compartida</span>
+   <h2>Todo lo que pasó en cada visita, en un solo lugar.</h2>
+   <p>Las profesionales dejan notas, curaciones, signos vitales e indicaciones de cuidado. Tú y tu familia las ven en la app.</p>
+  </div>
+  <div class="bento">
+   <article class="tile lav big rv">
+    <h3>Una ficha por cada persona que cuidas</h3>
+    <p>Tú, tu mamá o tu papá: alergias siempre visibles, diagnósticos, medicamentos y previsión.</p>
+    <div class="crop"><div class="iphone"><img src="assets/screens/P51.webp" alt="Ficha de salud de una paciente" loading="lazy"></div></div>
+   </article>
+   <article class="tile rv">
+    <h3>Qué hacer en casa</h3>
+    <p>Al terminar, la profesional deja el resumen y las señales de alerta.</p>
+    <div class="crop"><div class="iphone"><img src="assets/screens/P58.webp" alt="Resumen de la visita con indicaciones" loading="lazy"></div></div>
+   </article>
+   <article class="tile rv">
+    <h3>Signos vitales en el tiempo</h3>
+    <p>Presión, glicemia y saturación, medidos en cada visita.</p>
+    <div class="crop"><div class="iphone"><img src="assets/screens/P54.webp" alt="Gráficos de signos vitales" loading="lazy"></div></div>
+   </article>
+  </div>
+  <ul class="mini-list rv" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin-top:28px">
+   <li><svg><use href="#i-users"/></svg>Comparte la ficha con hermanos o cuidadores.</li>
+   <li><svg><use href="#i-eye"/></svg>Ves quién abrió la ficha y cuándo.</li>
+   <li><svg><use href="#i-file"/></svg>Descárgala en PDF para tu médico.</li>
+  </ul>
+ </div>
+</section>
+
+<!-- REEMBOLSO (documentos) -->
+<section id="reembolso" class="tint">
+ <div class="wrap split">
+  <div class="txt rv">
+   <span class="eyebrow">Reembolso Fonasa e Isapre</span>
+   <h2 style="font-size:clamp(34px,4.4vw,56px);margin:14px 0 18px">Los documentos para tu reembolso, listos.</h2>
+   <p style="font-size:19px;color:var(--ink-2)">Guarda tu previsión una vez. Después de cada atención descargas en PDF la boleta de honorarios y el detalle de prestaciones, o te los enviamos a tu correo.</p>
+   <ul class="feat-list">
+    <li><span class="ico"><svg><use href="#i-receipt"/></svg></span><div><b>Boleta y detalle por atención</b><span>Con los datos de la profesional y las prestaciones.</span></div></li>
+    <li><span class="ico"><svg><use href="#i-file"/></svg></span><div><b>Códigos Fonasa en tus exámenes</b><span>Cada examen muestra su código para que sea más fácil pedir el reembolso.</span></div></li>
+    <li><span class="ico"><svg><use href="#i-wallet"/></svg></span><div><b>Te explicamos cómo pedirlo</b><span>En la app de tu Isapre, o en Fonasa si aplica bono o reembolso para esa prestación.</span></div></li>
+   </ul>
+   <p class="example-note" style="margin-top:22px">Lo que te devuelven depende de tu plan y tu previsión.</p>
+  </div>
+  <div class="phones rv">
+   <div class="iphone"><img src="assets/screens/P64.webp" alt="Pantalla para elegir la previsión de salud" loading="lazy"></div>
+   <div class="iphone lo"><img src="assets/screens/P65.webp" alt="Documentos para el reembolso" loading="lazy"></div>
+  </div>
+ </div>
+</section>
+
+<!-- REEMBOLSO AUTOMÁTICO -->
+<section id="reembolso-automatico" style="padding-top:100px">
+ <div class="wrap full-sm">
+  <div class="auto rv">
+   <div style="position:relative;z-index:1">
+    <span class="eyebrow">Reembolso automático <span class="tag">Muy pronto</span></span>
+    <h2>Tu Isapre, sin trámites.</h2>
+    <p class="lead">Vincula tu Isapre una vez y el agente de Cuidapp envía la boleta, la orden médica y tu carnet por ti después de cada atención.</p>
+    <ol>
+     <li><div><b>Vincula tu Isapre una vez</b>Desde tu perfil, cuando quieras.</div></li>
+     <li><div><b>El agente envía tu solicitud</b>Boleta, orden médica y carnet, al terminar cada atención.</div></li>
+     <li><div><b>Sigues el estado en la app</b>Te avisamos cuando tu Isapre responda.</div></li>
+    </ol>
+    <p class="fine">Sujeto a las condiciones de cada Isapre. El monto del reembolso depende de tu plan de salud.</p>
+   </div>
+   <div class="claim" aria-label="Ejemplo de solicitud de reembolso">
+    <div class="claim-h">
+     <div class="av"><img src="assets/logo/cuidapp-simbolo-color.svg" alt=""></div>
+     <div><b>Solicitud de reembolso</b><span>Inyección intramuscular · ejemplo</span></div>
+     <span class="st">Enviada</span>
+    </div>
+    <div class="claim-row"><span class="fi"><svg><use href="#i-receipt"/></svg></span><div>Boleta de honorarios<small>Emitida por la profesional</small></div><span class="ok"><svg><use href="#i-check"/></svg></span></div>
+    <div class="claim-row"><span class="fi"><svg><use href="#i-file"/></svg></span><div>Orden médica<small>La que subiste al agendar</small></div><span class="ok"><svg><use href="#i-check"/></svg></span></div>
+    <div class="claim-row"><span class="fi"><svg><use href="#i-id"/></svg></span><div>Carnet de identidad<small>De la paciente</small></div><span class="ok"><svg><use href="#i-check"/></svg></span></div>
+    <div class="claim-foot"><svg><use href="#i-bell"/></svg>Te avisamos cuando tu Isapre responda.</div>
+    <div class="linked"><i></i>Isapre vinculada</div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- COTIZA TU ISAPRE -->
+<section id="isapre">
+ <div class="wrap split">
+  <div class="txt rv">
+   <span class="eyebrow">Cotiza tu Isapre <span class="tag">Muy pronto</span></span>
+   <h2 style="margin:14px 0 18px">Encuentra un plan que calce contigo.</h2>
+   <p style="font-size:19px;color:var(--ink-2)">Cuéntanos qué necesitas y compara planes de distintas Isapres con asesores, sin llamadas en frío ni formularios repetidos.</p>
+   <ul class="feat-list">
+    <li><span class="ico"><svg><use href="#i-users"/></svg></span><div><b>Tus datos, una vez</b><span>Edad, cargas, comuna y las clínicas que prefieres.</span></div></li>
+    <li><span class="ico"><svg><use href="#i-tag"/></svg></span><div><b>Compara lado a lado</b><span>Precio del plan, cobertura y prestadores en una misma vista.</span></div></li>
+    <li><span class="ico"><svg><use href="#i-chat"/></svg></span><div><b>Habla con un asesor cuando quieras</b><span>Por chat en la app, y solo si tú lo pides.</span></div></li>
+   </ul>
+   <p class="example-note" style="margin-top:22px">Las condiciones de cada plan las define cada Isapre. Información general, no constituye asesoría legal ni financiera.</p>
+  </div>
+  <div class="quote-mock rv" aria-label="Ejemplo de cotización">
+   <div class="qm-h"><b>Tu cotización</b><span>Ejemplo ilustrativo</span></div>
+   <div class="qm-form">
+    <div><small>Edad</small><b>34 años</b></div><div><small>Cargas</small><b>1</b></div><div><small>Comuna</small><b>Ñuñoa</b></div>
+   </div>
+   <div class="qm-plan"><div class="qm-logo">A</div><div><b>Plan ejemplo A</b><small>Cobertura preferente</small></div><span class="qm-p">$ —</span></div>
+   <div class="qm-plan"><div class="qm-logo">B</div><div><b>Plan ejemplo B</b><small>Libre elección</small></div><span class="qm-p">$ —</span></div>
+   <div class="qm-plan"><div class="qm-logo">C</div><div><b>Plan ejemplo C</b><small>Plan cerrado</small></div><span class="qm-p">$ —</span></div>
+   <a class="btn btn-dark" style="width:100%;margin-top:14px" href="#isapre">Hablar con un asesor</a>
+  </div>
+ </div>
+</section>
+
+<!-- CONSEJOS -->
+<section id="consejos">
+ <div class="wrap consejos">
+  <div class="rv">
+   <span class="eyebrow">Consejos</span>
+   <h2 style="font-size:clamp(34px,4.4vw,56px);margin:14px 0 18px">Guías cortas para cuidar mejor.</h2>
+   <p style="font-size:19px;color:var(--ink-2)">Cuándo conviene una vitamina, qué exámenes hacerte según tu edad o cómo cuidar una curación. Escritas para entender, no reemplazan la indicación de tu médico.</p>
+  </div>
+  <div class="posts rv">
+   <article class="post"><img src="assets/blog/b12.webp" alt="" loading="lazy"><div><span class="tag">Vitaminas</span><h3>¿Cuándo conviene inyectarse vitamina B12?</h3></div></article>
+   <article class="post"><img src="assets/blog/preventivos.webp" alt="" loading="lazy"><div><span class="tag">Exámenes</span><h3>Exámenes preventivos según tu edad</h3></div></article>
+   <article class="post"><img src="assets/blog/adulto-mayor.webp" alt="" loading="lazy"><div><span class="tag">Exámenes</span><h3>Cómo preparar a un adulto mayor para la toma de muestra</h3></div></article>
+  </div>
+ </div>
+</section>
+
+<!-- PROFESIONALES -->
+<section id="profesionales" style="padding-top:40px">
+ <div class="wrap full-sm">
+  <div class="pros rv">
+   <div>
+    <span class="eyebrow">Para profesionales de la salud</span>
+    <h2>Atiende con tu propia agenda.</h2>
+    <p class="lead">Cuidapp define los servicios. Tú eliges cuáles haces, cuánto cobras, en qué comunas atiendes y en qué horario.</p>
+    <ul class="prof-list dark" aria-label="Profesiones">
+     <li class="on">Enfermería</li><li class="on">TENS</li>
+     <li>Kinesiología <span class="tag">Muy pronto</span></li><li>Psicología <span class="tag">Muy pronto</span></li><li>Telemedicina <span class="tag">Muy pronto</span></li><li>Nutrición <span class="tag">Muy pronto</span></li>
+    </ul>
+    <ul class="feat-list">
+     <li><span class="ico"><svg><use href="#i-cal"/></svg></span><div><b>Tu horario, tus comunas</b><span>Bloquea días cuando quieras y aparece en «Disponible hoy».</span></div></li>
+     <li><span class="ico"><svg><use href="#i-mic"/></svg></span><div><b>Dicta la nota de la visita</b><span>Hablas, la app ordena la nota y tú la revisas y firmas.</span></div></li>
+     <li><span class="ico"><svg><use href="#i-card"/></svg></span><div><b>Cobro en la app</b><span>La paciente paga al reservar. Sin cobrar en efectivo.</span></div></li>
+    </ul>
+    <div class="pros-cta">
+     <a class="btn btn-white" href="../?v=m#/R01">Postula como profesional <svg><use href="#i-arrow"/></svg></a>
+    </div>
+    <p class="pros-note">¿Eres kinesiólogo, psicólogo, nutricionista o médico? Postula y te avisamos cuando abramos tu especialidad.</p>
+   </div>
+   <div class="phones">
+    <div class="iphone"><img src="assets/screens/R16.webp" alt="Inicio de la app para profesionales" loading="lazy"></div>
+    <div class="iphone lo"><img src="assets/screens/R41.webp" alt="Nota de la visita dictada por voz" loading="lazy"></div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- ALIADOS B2B -->
+<section id="aliados">
+ <div class="wrap">
+  <div class="sec-head rv">
+   <span class="eyebrow">Aliados</span>
+   <h2>Súmate a la super app de salud.</h2>
+   <p>Buscamos farmacias, laboratorios y asesores de Isapre que quieran llegar a pacientes y familias que se cuidan con Cuidapp.</p>
+  </div>
+  <div class="allies">
+   <article class="ally rv"><img src="assets/icons/med.webp" alt=""><h3>Farmacias</h3><p>Recibe pedidos de los medicamentos del tratamiento de cada paciente y entrégalos a domicilio.</p></article>
+   <article class="ally rv"><img src="assets/icons/mue.webp" alt=""><h3>Laboratorios</h3><p>Aparece en «Laboratorios cerca de ti» y recibe reservas de pacientes, a domicilio o en tu sucursal.</p><span class="tag">Súmate gratis</span></article>
+   <article class="ally rv"><img src="assets/icons/edu.webp" alt=""><h3>Asesores de Isapre</h3><p>Aparece en «Cotiza tu Isapre» con un plan mensual y responde a quienes piden asesoría.</p><span class="tag">Con plan mensual</span></article>
+  </div>
+  <div class="ally-cta rv">
+   <div><b>¿Quieres ser aliado?</b><span>Cuéntanos de tu empresa y te contamos cómo trabajamos juntos.</span></div>
+   <a class="btn btn-dark" href="mailto:?subject=Quiero%20ser%20aliado%20de%20Cuidapp">Quiero ser aliado <svg><use href="#i-arrow"/></svg></a>
+  </div>
+ </div>
+</section>
+
+<!-- TESTIMONIOS -->
+<section class="tint" id="testimonios">
+ <div class="wrap">
+  <div class="sec-head rv">
+   <span class="eyebrow">Testimonios de ejemplo</span>
+   <h2>Lo que buscamos que digan las familias.</h2>
+  </div>
+  <div class="quotes">
+   <figure class="quote rv"><p>“Llegó puntual, le explicó todo a mi mamá y dejó las indicaciones por escrito. Ahora mis hermanos también ven la ficha.”</p><figcaption class="who"><span class="ini">D</span><div><b>Hija de paciente</b><span>Ejemplo · Ñuñoa</span></div></figcaption></figure>
+   <figure class="quote rv"><p>“Subí la foto de la orden y me marcaron los exámenes. La toma de muestra fue en la casa, antes de ir al trabajo.”</p><figcaption class="who"><span class="ini">C</span><div><b>Paciente</b><span>Ejemplo · Providencia</span></div></figcaption></figure>
+   <figure class="quote rv"><p>“Elijo mis comunas y mi horario. Dicto la nota al salir de la casa de la paciente y la firmo en un minuto.”</p><figcaption class="who"><span class="ini">V</span><div><b>Enfermera</b><span>Ejemplo · La Reina</span></div></figcaption></figure>
+  </div>
+  <p class="example-note">Textos ilustrativos: no corresponden a personas ni opiniones reales.</p>
+ </div>
+</section>
+
+<!-- FAQ -->
+<section id="preguntas">
+ <div class="wrap faq">
+  <div class="rv">
+   <span class="eyebrow">Preguntas frecuentes</span>
+   <h2 style="font-size:clamp(34px,4.4vw,52px);margin:14px 0 18px">Lo que más nos preguntan.</h2>
+   <p style="color:var(--ink-2)">¿Te quedó una duda? Escríbenos desde la app.</p>
+  </div>
+  <div class="rv">
+   <details open><summary>¿Quiénes me atienden?</summary><p>Enfermeras y TENS. Antes de atender revisamos su registro en la Superintendencia de Salud, su identidad y sus antecedentes. En su perfil ves su experiencia, sus servicios y las reseñas de otras familias.</p></details>
+   <details><summary>¿Necesito orden médica para hacerme exámenes?</summary><p>No es obligatoria. Puedes elegir tus exámenes, subir la foto de tu orden para que los seleccionemos por ti, o pedir ayuda para elegir según para qué los necesitas. Para inyecciones y algunos tratamientos sí te pediremos la receta.</p></details>
+   <details><summary>¿Puedo ir yo al laboratorio?</summary><p>Sí. En «Laboratorios cerca de ti» eliges el laboratorio y si quieres que vayan a tu casa o ir tú a su sucursal, y agendas en la app.</p></details>
+   <details><summary>¿Cómo pago?</summary><p>Pagas en la app al reservar, con tarjeta. Antes de confirmar ves el precio total y lo que incluye.</p></details>
+   <details><summary>¿Puedo pedir reembolso a Fonasa o a mi Isapre?</summary><p>Te entregamos la boleta y el detalle de las prestaciones para que lo pidas. Si aplica y cuánto te devuelven depende de tu plan y tu previsión. Esto es información general y no constituye asesoría legal.</p></details>
+   <details><summary>¿Cómo funciona el reembolso automático?</summary><p>Vinculas tu Isapre una vez y el agente de Cuidapp envía la boleta, la orden médica y tu carnet después de cada atención. Está sujeto a las condiciones de cada Isapre y estará disponible muy pronto.</p></details>
+   <details><summary>¿Qué es «Cotiza tu Isapre»?</summary><p>Una forma de comparar planes de distintas Isapres con asesores desde la app. Estará disponible muy pronto. Las condiciones de cada plan las define cada Isapre.</p></details>
+   <details><summary>¿Quién puede ver la ficha de salud?</summary><p>Tú decides quién tiene acceso. Puedes compartirla con tu familia o cuidadores y ver quién la abrió y cuándo.</p></details>
+   <details><summary>¿En qué comunas están?</summary><p>Partimos en Santiago. Al poner tu dirección ves qué profesionales atienden en tu comuna.</p></details>
+   <details><summary>Tengo una farmacia, un laboratorio o soy asesor de Isapre. ¿Cómo me sumo?</summary><p>Escríbenos desde la sección Aliados. Los laboratorios se suman gratis y los asesores de Isapre aparecen en «Cotiza tu Isapre» con un plan mensual.</p></details>
+   <details><summary>Soy profesional de la salud, ¿cómo me sumo?</summary><p>Hoy atienden enfermeras y TENS; kinesiología, psicología, telemedicina y nutrición vienen muy pronto, y ya puedes postular. Postula desde la app: subes tu carnet, una selfie y tu título, y agregas la cuenta donde quieres recibir tus pagos. Luego armas tu perfil con tus servicios, precios, comunas y horario.</p></details>
+  </div>
+ </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="final" id="descargar">
+ <div class="wrap">
+  <h2 class="rv">Toda tu salud, en tu teléfono.</h2>
+  <p class="rv">Muy pronto en App Store y Google Play. Mientras tanto, puedes recorrer la app en su versión web.</p>
+  <div class="hero-cta rv">
+   <a class="btn btn-dark" href="../?v=m#/P06">Abrir la app web <svg><use href="#i-arrow"/></svg></a>
+   <a class="btn btn-light" href="../?v=m#/R01">Soy profesional</a>
+  </div>
+  <div class="final-phones" aria-hidden="true">
+   <div class="iphone"><img src="assets/screens/P66.webp" alt="" loading="lazy"></div>
+   <div class="iphone"><img src="assets/screens/P06.webp" alt="" loading="lazy"></div>
+   <div class="iphone"><img src="assets/screens/P58.webp" alt="" loading="lazy"></div>
+  </div>
+ </div>
+</section>
+</main>
+
+<footer>
+ <div class="wrap">
+  <div class="foot-grid">
+   <div><a class="logo" href="#top"><img src="assets/logo/cuidapp-horizontal-blanco.svg" alt="Cuidapp" width="80" height="34"></a><p>La super app de salud: enfermería a domicilio, exámenes, ficha clínica e Isapre, en Santiago.</p></div>
+   <div><h4>Pacientes</h4><ul><li><a href="#servicios">Servicios</a></li><li><a href="#examenes">Exámenes</a></li><li><a href="#ficha">Ficha de salud</a></li><li><a href="#reembolso">Reembolso</a></li><li><a href="#isapre">Cotiza tu Isapre</a></li></ul></div>
+   <div><h4>Profesionales</h4><ul><li><a href="#profesionales">Trabaja con Cuidapp</a></li><li><a href="../?v=m#/R01">Postular</a></li></ul></div>
+   <div><h4>Cuidapp</h4><ul><li><a href="#aliados">Aliados</a></li><li><a href="#consejos">Consejos</a></li><li><a href="#preguntas">Preguntas frecuentes</a></li></ul></div>
+  </div>
+  <div class="legal"><span>© 2026 Cuidapp</span><span>Cuidapp no reemplaza la atención de urgencia. En una emergencia llama al 131 (SAMU).</span></div>
+ </div>
+</footer>
+
+<script>
+(function(){var els=document.querySelectorAll('.rv');if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in')});return}
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{rootMargin:'0px 0px -8% 0px'});els.forEach(function(e){io.observe(e)})})();
+</script>
+</body>
+</html>
