@@ -92,7 +92,7 @@ const rcard = (pr, wide) => {
 const grpGo = k => GRP[k].l.length > 1 ? 'P37' : svcGo(GRP[k].l[0]);
 const svcGo = k => k === 'mue' ? 'P40' : 'P10';
 const grpStats = k => { const ps = PROS.filter(p => GRP[k].l.some(x => priceOf(p, x))); const mn = Math.min(...GRP[k].l.flatMap(x => PROS.map(p => priceOf(p, x)).filter(Boolean))); return [ps.length, mn]; };
-const catGrid = () => `<div class="cats">${GK.map(k => `<button class="cat${GRP[k].lab ? ' labc' : ''}" data-act="grp" data-arg="${k}" data-go="${grpGo(k)}"><span class="ci">${i3(k)}</span><span class="cn">${GRP[k].c}</span></button>`).join('')}<button class="cat" data-go="P33"><span class="ci">${i3('todos')}</span><span class="cn">Ver todas</span></button></div>`;
+const catGrid = () => `<div class="cats">${GK.map(k => `<button class="cat" data-act="grp" data-arg="${k}" data-go="${grpGo(k)}"><span class="ci">${i3(k)}</span><span class="cn">${GRP[k].c}</span></button>`).join('')}<button class="cat" data-go="P33"><span class="ci">${i3('todos')}</span><span class="cn">Ver todas</span></button></div>`;
 const SCOPES = [['iny', 'Inyecciones'], ['vit', 'Vitaminas'], ['mue', 'Exámenes'], ['cuid', 'Cuidados']];
 const SCG = { iny: ['iny'], vit: ['vit'], mue: ['mue'], cuid: ['am', 'pd', 'turn', 'cur', 'post', 'pal'] };
 const scopeRow = (go = '') => `<div class="scopes">${SCOPES.map(s => `<button class="chip ${S.scope === s[0] ? 'on' : ''}" data-act="${go ? 'scopeGo' : 'scope'}" data-arg="${s[0]}" ${go ? `data-go="${go}"` : ''}>${s[1]}</button>`).join('')}</div>`;
@@ -350,7 +350,7 @@ const shareBlock = () => `<div class="lbl2">¿Qué puede ver ${first()} de la fi
   <button class="row" data-act="tog" data-arg="sharePh"><span class="tx"><div class="a">Compartir fotos de heridas</div><div class="b">Aparte. Solo si ${first()} las necesita para la curación</div></span><span class="tog ${S.sharePh ? 'on' : ''}"></span></button>
   <div class="xs t2 mt4">El acceso dura hasta 7 días después de la visita. Lo puedes revocar cuando quieras en <button class="lk u" data-go="P56">Privacidad de la ficha</button>.</div>`;
 function nextAfterP14() { return CAT[S.item].receta ? 'P15' : 'P17'; }
-def({ id: 'P14', name: 'Dirección y detalles', kind: 'page', back: true, title: 'Detalles', next: ['P15', 'P17', 'P40'],
+def({ id: 'P14', name: 'Dirección y detalles', kind: 'page', back: true, title: 'Detalles', next: ['P15', 'P17', 'P40', 'P78', 'P94'],
   body: () => {
     const who = `<div class="lbl2">¿Para quién es?</div>${row('box:user', whoTxt(), S.who === 'mama' ? '78 años · Alergia a penicilina' : S.who === 'papa' ? '80 años · Hipertenso' : '37 años', 'P29', '<span class="lk">Cambiar</span>')}`;
     const addr = `<div class="lbl2">Dirección</div>${row('box:map-pin', P().n, P().full.split(', ').slice(1).join(', '), 'P08', '<span class="lk">Cambiar</span>', '', 'set', 'addrNext=P14')}`;
@@ -363,7 +363,7 @@ def({ id: 'P14', name: 'Dirección y detalles', kind: 'page', back: true, title:
     else x = `<div class="lbl2">Cuéntanos qué necesitas</div>${field('', S.item === 'son' ? 'Cambio de sonda Foley.' : S.item === 'sig' ? 'Control de presión y glicemia.' : 'Herida en el talón, curación cada 2 días.')}`;
     return `${head}${addr}${who}${x}${shareBlock()}${rbq}<div class="lbl2">${('Nota para ' + first() + ' (opcional)')}</div>${field('', '', 'Ej.: el timbre no funciona, llamar al llegar')}`;
   },
-  foot: () => `<button class="btn" data-go="${nextAfterP14()}">Continuar</button>` });
+  foot: () => `<button class="btn" data-go="${nextAfterP14()}" ${rbReady() ? '' : 'disabled'}>Continuar</button>` });
 
 def({ id: 'P15', name: 'Receta médica', kind: 'page', back: true, title: 'Receta médica',
   body: () => `${steps(1)}<div class="h-m mt16">Sube la receta médica</div><div class="t2 mt8 sm">Sin receta no se ponen inyecciones. ${first()} la revisa antes de confirmar.</div>
@@ -513,7 +513,7 @@ def({ id: 'P34', name: 'Favoritos', kind: 'page', tab: 'favoritos',
 def({ id: 'P28', name: 'Cuenta', kind: 'page', tab: 'cuenta',
   body: () => `<div class="acct mt8"><div><h1 class="h-xl">Daniela</h1><div class="sm t2 mt4">${st('ok', 'Cuenta verificada', 'seal-check')}</div></div>${av('DF', 'l')}</div>
   <div class="tiles2 mt24">${[['lifebuoy', 'Ayuda', '', 'toast', 'Te escribimos por WhatsApp en menos de 10 minutos.'], ['credit-card', 'Pagos', 'P18'], ['calendar-blank', 'Mis citas', 'P26']].map(t => `<button class="tile" ${t[2] ? `data-go="${t[2]}"` : `data-act="${t[3]}" data-arg="${t[4]}"`}>${ic(t[0])}<span class="n">${t[1]}</span></button>`).join('')}</div>
-  <div class="mt16">${row('users', 'Pacientes', 'Tú, Rosa y Luis', 'P29')}${row('receipt', 'Reembolsos', Object.keys(S.isa).length ? Object.keys(S.isa).map(w => S.isa[w].is + ' vinculada').join(' · ') : 'Vincula tu Isapre y los enviamos por ti', 'P80', Object.keys(S.isa).length ? st('ok', 'Isapre vinculada', 'link') : ic('caret-right'))}${row('notebook', 'Fichas de salud', 'Notas de cada visita, curaciones y signos vitales', 'P50')}${row('map-pin', 'Direcciones', 'Casa y Mamá', 'P08', ic('caret-right'), '', 'set', 'addrNext=P28')}${row('heart', 'Favoritos', `${Object.values(S.fav).filter(Boolean).length} profesionales`, 'P34')}${row('shield-check', 'Datos de salud y privacidad', 'Consentimiento y descarga de tus datos', 'P04')}${row('stethoscope', 'Trabaja con Cuidapp', 'Para enfermeras y TENS', 'R01')}${row('sign-out', 'Cerrar sesión', '', 'P01', '')}</div>` });
+  <div class="mt16">${row('users', 'Pacientes', 'Tú, Rosa y Luis', 'P29')}${Object.keys(S.isa).length ? row('link', 'Mi Isapre', Object.keys(S.isa).map(w => S.isa[w].is + ' vinculada').join(' · '), 'P82', st('ok', 'Vinculada', 'link'), '', 'lkW', Object.keys(S.isa)[0]) : row('link', 'Mi Isapre · Vincular', 'Conecta tu Isapre y enviamos tus reembolsos por ti', 'P78', '<span class="lk">Vincular</span>', '', 'lkW', 'yo')}${row('receipt', 'Reembolsos', Object.keys(S.isa).length ? Object.keys(S.isa).map(w => S.isa[w].is + ' vinculada').join(' · ') : 'Vincula tu Isapre y los enviamos por ti', 'P80', Object.keys(S.isa).length ? st('ok', 'Isapre vinculada', 'link') : ic('caret-right'))}${row('notebook', 'Fichas de salud', 'Notas de cada visita, curaciones y signos vitales', 'P50')}${row('map-pin', 'Direcciones', 'Casa y Mamá', 'P08', ic('caret-right'), '', 'set', 'addrNext=P28')}${row('heart', 'Favoritos', `${Object.values(S.fav).filter(Boolean).length} profesionales`, 'P34')}${row('shield-check', 'Datos de salud y privacidad', 'Consentimiento y descarga de tus datos', 'P04')}${row('stethoscope', 'Trabaja con Cuidapp', 'Para enfermeras y TENS', 'R01')}${row('sign-out', 'Cerrar sesión', '', 'P01', '')}</div>` });
 
 def({ id: 'P29', name: 'Pacientes guardados', kind: 'page', back: true, title: 'Pacientes',
   body: () => `<div class="t2 sm">¿Para quién es la atención?</div><div class="mt8">

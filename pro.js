@@ -101,7 +101,9 @@ def({ id: 'R10', name: 'Arma tu perfil', kind: 'page', back: true, title: 'Tu pe
   foot: () => abtn('Publicar mi perfil', 'publish', '', '', 'R16') });
 
 def({ id: 'R26', name: 'Foto y presentación', kind: 'page', back: true, title: 'Presentación',
-  body: () => `<div style="display:flex;align-items:center;gap:16px">${av('CR', 'l', true)}<button class="pill" data-act="toast" data-arg="Foto actualizada.">${ic('camera')}Cambiar foto</button></div>
+  body: () => `<div class="phed">${av('CR', 'xl', true)}<div class="tx"><b>Tu foto de perfil</b><span class="xs t2">${S.proPh ? 'Foto nueva · ya se ve en tu perfil público' : 'Es lo primero que ven las pacientes'}</span><button class="pill mt8" data-act="tog" data-arg="phOpt">${ic('camera')}Cambiar foto</button></div></div>
+  ${S.phOpt ? `<div class="phop mt12"><label class="row nodiv"><span class="ri box">${ic('camera')}</span><span class="tx"><div class="a">Tomar foto</div><div class="b">Con la cámara frontal</div></span><input class="phin" type="file" accept="image/*" capture="user" hidden></label><label class="row nodiv"><span class="ri box">${ic('image')}</span><span class="tx"><div class="a">Elegir de galería</div><div class="b">JPG o PNG</div></span><input class="phin" type="file" accept="image/*" hidden></label>${S.proPh ? `<button class="row nodiv" data-act="phRm"><span class="ri box">${ic('arrow-counter-clockwise')}</span><span class="tx"><div class="a">Volver a la foto anterior</div></span></button>` : ''}</div>` : ''}
+  <div class="phg mt12"><div class="b-m sm">Para que te aprueben la foto</div><ul>${['Rostro visible y centrado, mirando a la cámara', 'Fondo claro y liso, con buena luz', 'Solo tú, sin lentes de sol, gorro ni filtros', 'Puedes usar tu uniforme o ropa de trabajo'].map(t => `<li>${ic('check')}${t}</li>`).join('')}</ul></div>
   ${lbl('Sobre ti')}<div class="field" style="height:auto;min-height:96px;align-items:flex-start;padding-top:12px"><span>${PRO('cr').bio}</span></div>
   ${lbl('Años de experiencia')}${field('', '6 años')}
   ${lbl('En qué tienes más experiencia')}<div class="chips">${[['am', 'Adulto mayor'], ['pd', 'Pie diabético'], ['ped', 'Pediatría'], ['pal', 'Cuidados paliativos']].map(x => chip(x[1], S.spec[x[0]], 'tog', 'spec.' + x[0])).join('')}</div>`,
@@ -229,7 +231,7 @@ def({ id: 'R24', name: 'Agenda', kind: 'page', tab: 'agenda', next: ['R17', 'R18
 
 def({ id: 'R25', name: 'Perfil profesional', kind: 'page', tab: 'perfil',
   body: () => `<div style="display:flex;align-items:center;gap:16px;margin-top:8px">${av('CR', 'l', true)}<div><div class="h-l">Camila Rojas</div><div class="sm t2">Enfermera · SIS 482.317 · ★ 4,9</div></div></div>
-  <div class="mt16">${row('storefront', 'Ver mi perfil público', 'Como lo ven las pacientes', 'R29', ic('caret-right'), '', 'pick', 'cr|')}${row('star', 'Mis reseñas', `★ 4,9 · ${REVIEWS.cr.filter(r => !S.resp[r.id]).length} sin responder`, 'R27')}${row('user-circle', 'Foto y presentación', '', 'R26')}${row('megaphone', 'Destacar mi perfil', S.dest.cr ? 'Activo · apareces primero' : `Aparece primero · ${clp(S.pz.pdest)} al mes`, 'R44', S.dest.cr ? st('ok', 'Destacado') : ic('caret-right'))}${row('currency-circle-dollar', 'Servicios y precios', `${mySvcs().filter(k => S.my[k].on).length} servicios`, 'R11')}${row('map-pin-area', 'Comunas', comTxt().join(', '), 'R13')}${row('calendar-blank', 'Horario semanal', 'Lun a sáb', 'R14')}
+  <div class="mt16">${row('camera', 'Cambiar foto', S.proPh ? 'Foto nueva publicada' : 'Tomar foto o elegir de galería', 'R26')}${row('flask', 'Laboratorios afiliados', 'Dónde entregar las muestras', 'R45')}${row('storefront', 'Ver mi perfil público', 'Como lo ven las pacientes', 'R29', ic('caret-right'), '', 'pick', 'cr|')}${row('star', 'Mis reseñas', `★ 4,9 · ${REVIEWS.cr.filter(r => !S.resp[r.id]).length} sin responder`, 'R27')}${row('user-circle', 'Foto y presentación', '', 'R26')}${row('megaphone', 'Destacar mi perfil', S.dest.cr ? 'Activo · apareces primero' : `Aparece primero · ${clp(S.pz.pdest)} al mes`, 'R44', S.dest.cr ? st('ok', 'Destacado') : ic('caret-right'))}${row('currency-circle-dollar', 'Servicios y precios', `${mySvcs().filter(k => S.my[k].on).length} servicios`, 'R11')}${row('map-pin-area', 'Comunas', comTxt().join(', '), 'R13')}${row('calendar-blank', 'Horario semanal', 'Lun a sáb', 'R14')}
   ${row('identification-card', 'Documentos', 'Todos vigentes', 'R03', st('ok', 'Verificada', 'seal-check'))}${row('bank', 'Cuenta para pagos', 'BancoEstado CuentaRUT', 'R07')}${row('first-aid-kit', 'Pedir una atención para mí', 'Ir a la app de pacientes', 'P06')}${row('sign-out', 'Cerrar sesión', '', 'R01', '')}</div>` });
 
 /* ===== Destacado (pagado por la profesional; precio en S.pz.pdest) ===== */
@@ -269,5 +271,10 @@ def({ id: 'R30', name: 'Solicitud de toma de muestras', kind: 'page', back: true
   <div class="lbl2">Lleva</div><div class="tubes">${tb.map(t => `<span class="tube"><span class="dot" style="background:${TUBE[t]}"></span>${t} × ${ex.filter(e => e[2] === t).length}</span>`).join('')}</div>
   <div class="mt16">${row('box:clock-countdown', 'Paciente en ayuno de 8 horas', 'Perfil bioquímico', '', '')}
   ${row('box:map-pin', 'Providencia · 2,4 km de tu casa', 'La dirección exacta aparece al aceptar', '', '')}
-  ${row('box:flask', 'Entrega en el laboratorio · Providencia', 'Antes de las 12:00, en la caja refrigerada', '', '')}</div>`; },
+  ${row('box:flask', 'Entrega en el laboratorio · Providencia', 'Antes de las 12:00, en la caja refrigerada', 'R45', '<span class="lk">Ver laboratorios</span>')}</div>`; },
   foot: () => `${abtn('Aceptar solicitud', 'req', 'r2:ok', '', 'R16')}<button class="btn danger" data-act="req" data-arg="r2:no" data-go="R16">Rechazar</button>` });
+
+/* foto de perfil: la elegida se previsualiza y reemplaza la foto en el perfil público (solo en este navegador) */
+Object.assign(ACT, { phRm: () => { S.proPh = ''; S.phOpt = false; toast('Volviste a tu foto anterior.'); } });
+document.addEventListener('change', e => { const t = e.target; if (!t.classList || !t.classList.contains('phin') || !t.files || !t.files[0]) return;
+  const r = new FileReader(); r.onload = () => { S.proPh = r.result; S.phOpt = false; render(); toast('Foto actualizada. Ya se ve en tu perfil público.'); }; r.readAsDataURL(t.files[0]); });

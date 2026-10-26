@@ -1256,3 +1256,24 @@ input[type=search]::-webkit-search-cancel-button{display:none}
 .dpz{display:flex;align-items:center;gap:12px}.dpz .tx{flex:1;display:flex;flex-direction:column}.dpz .pkp{display:flex;flex-direction:column;align-items:flex-end}
 .pzg{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .stp{display:flex;align-items:center;gap:16px}.stp b{font-size:22px;font-weight:600;min-width:110px;text-align:center}.stp .ib{box-shadow:0 0 0 1px var(--border);border-radius:50%;width:36px;height:36px;display:grid;place-items:center}
+/* toma a domicilio · pasos */
+.tsteps{display:flex;flex-direction:column;gap:10px;padding:14px 16px;border-radius:16px;background:var(--s2,#F5F5F7)}
+.tst{display:flex;align-items:center;gap:10px}.tsn{width:20px;height:20px;border-radius:50%;background:#111;color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;flex:none}.tsi{color:#7A7CF0;font-size:18px;display:flex}
+/* isapre en Mi salud */
+.isac{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:16px;box-shadow:0 0 0 1px var(--border);background:#fff;cursor:pointer}.isac .tx{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}.isac b{font-weight:600}
+.btn.sm2{width:auto;height:36px;padding:0 16px;font-size:14px;flex:none}
+/* laboratorios afiliados */
+.alab{border-radius:16px;box-shadow:0 0 0 1px var(--border);background:#fff;overflow:hidden}.alab.on{box-shadow:0 0 0 1.5px var(--text)}
+.alab-h{display:flex;width:100%;gap:12px;align-items:center;padding:14px 16px;text-align:left}.alab-h .tx{flex:1;display:flex;flex-direction:column;gap:2px}.alab-h b{font-weight:600}
+.alab-b{padding:0 16px 16px}.entr{margin:8px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+/* foto de perfil */
+.phed{display:flex;gap:16px;align-items:center}.phed .tx{display:flex;flex-direction:column;gap:2px;align-items:flex-start}.phed b{font-weight:600}
+.phop{border-radius:16px;box-shadow:0 0 0 1px var(--border);padding:4px 12px}.phop label{cursor:pointer}
+.phg{padding:14px 16px;border-radius:16px;background:var(--s2,#F5F5F7)}.phg ul{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:14px}.phg li{display:flex;gap:8px;align-items:flex-start}.phg li i{color:#7A7CF0;margin-top:2px}
+/* reembolso: requisitos y carnet */
+.rbreq{border-top:1px solid var(--border);padding-top:10px}.warnt{color:#9A5B00}
+.carg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cart{border-radius:16px;box-shadow:0 0 0 1px var(--border);overflow:hidden;background:#fff;min-height:150px;display:flex;flex-direction:column}
+.cart img{width:100%;aspect-ratio:1.58;object-fit:cover;display:block}.cart-f{display:flex;justify-content:space-between;align-items:center;padding:8px 10px}.cart-f i{color:#1E8E4E}
+.cart-up{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:16px;text-align:center;cursor:pointer;border:1.5px dashed var(--border);border-radius:16px;margin:0}.cart-up b{font-weight:600}
+.carph{font-size:28px;color:#7A7CF0;display:flex;justify-content:center;padding:12px}

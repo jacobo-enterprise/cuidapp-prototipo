@@ -90,7 +90,8 @@ def({ id: 'P40', name: 'Exámenes de laboratorio', kind: 'page', back: true, tit
   body: () => {
     const orden = S.mmode === 'orden';
     const paths = `<div class="paths mt16">${pathCard('cat', 'list-checks', 'Elegir mis exámenes', 'Busca y marca', !orden)}${pathCard('orden', 'camera', 'Subir foto de mi orden', 'Los elegimos por ti', orden)}${pathCard('', 'chat-circle-dots', 'Ayúdame a elegir', 'Según para qué es', false, 'P63')}</div>`;
-    const head = `<div class="t2 sm">${Object.keys(EXAMS).length} exámenes. ${first()} solo cobra la toma a domicilio.</div>${paths}`;
+    const head = `<div class="tsteps">${[['file-arrow-up', 'Sube tu orden médica o elige tus exámenes'], ['house-line', 'Una enfermera o TENS va a tu casa y toma la muestra'], ['flask', 'La entrega en un laboratorio afiliado y te avisamos con los resultados']].map((t, i) => `<div class="tst"><span class="tsn">${i + 1}</span><span class="tsi">${ic(t[0])}</span><span class="sm">${t[1]}</span></div>`).join('')}</div>
+    <div class="t2 sm mt12">${Object.keys(EXAMS).length} exámenes. La profesional solo cobra la toma; los exámenes los pagas a Cuidapp.</div>${paths}`;
     if (orden) {
       const stt = S.ord === 'rev' ? row('box:hourglass-medium', 'Estamos revisando tu orden', 'Te avisamos por notificación push', 'P61', st('inf', 'En revisión', ''))
         : S.ord === 'listo' ? row('box:list-checks', `Seleccionamos ${ORD5.length} exámenes`, 'Revísalos y confírmalos', 'P62', st('ok', 'Lista', ''))
@@ -100,7 +101,7 @@ def({ id: 'P40', name: 'Exámenes de laboratorio', kind: 'page', back: true, tit
     return `${head}<div class="mt16">${note('check-circle', 'No necesitas orden: nosotros la gestionamos por ti.', 'ok')}</div>
     ${pkAct() ? `<div class="pkon mt16"><span class="ri box">${ic('package')}</span><span class="tx"><b>Pack ${pkAct()[1]}</b><span class="xs t2">${pkAct()[4].length} exámenes · ahorras ${clp(pkD())}</span></span><button class="lk sm" data-act="pkOff">Quitar</button></div>` : S.pack ? `<div class="mt16">${note('info', 'Quitaste un examen del pack, así que ahora se cobran por separado.')}</div>` : ''}
     ${pkSec()}
-    ${labsNear()}
+    <div class="soonr mt24"><button class="soonc" data-go="P83"><span class="ri box">${ic('storefront')}</span><span class="tx"><b>Agendar directo en un laboratorio</b><span class="xs t2">Elige laboratorio, día y si vas tú o te visitan</span></span><span class="pr soonb">Muy pronto</span></button></div>
     <div class="lbl2">Buscar exámenes</div><div>${qin('exq', 'exres', 'Busca: hemograma, vitamina D, 0301045…', 'exLim')}</div><div id="exres">${QRES.exres()}</div>
     <div class="lbl2">Orden médica</div>${checkRow('Necesito orden médica', S.needOrd, 'tog', 'needOrd', 'La gestionamos con un médico · precio por confirmar')}
     <div class="xs t3 mt8">Precio Cuidapp: precio convenido con el laboratorio. Precio particular: valor de lista cuando no hay precio Cuidapp.</div>`;

@@ -80,7 +80,8 @@ Object.assign(ACT, {
   /* Isapre */
   lkW: w => { S.lk.w = w; const p = S.pv[w]; if (p.t === 'isapre') S.lk.is = p.is; },
   lkIs: i => { S.lk.is = i; },
-  lkC: k => { S.lk[k] = !S.lk[k]; },
+  lkC: k => { S.lk[k] = !S.lk[k]; if (k === 'car') { S.car = S.car || {}; S.car[S.lk.w] = S.lk.car ? { f: 'ok', b: 'ok' } : null; } },
+  carRm: s => { S.car[S.who][s] = ''; },
   isaLink: () => { S.isa[S.lk.w] = { is: S.lk.is, desde: '26 oct 2026' }; S.pv[S.lk.w].t = 'isapre'; S.pv[S.lk.w].is = S.lk.is; S.rbAuto = true; if (S.lkNext) S.rbAsk = 'si'; toast(`${S.lk.is} vinculada. Desde ahora enviamos tus reembolsos por ti.`); },
   isaUn: w => { delete S.isa[w]; S.rbAuto = false; toast('Isapre desvinculada. Borramos el acceso y dejamos de enviar reembolsos.'); },
   rbAuto: () => { S.rbAuto = !S.rbAuto; S.rbAsk = S.rbAuto ? 'si' : 'no'; },
@@ -217,12 +218,28 @@ const RBST = ['listos', 'env', 'rev', 'res', 'pag'];
 const RBN = { listos: 'Documentos listos', env: 'Enviado a la Isapre', rev: 'En revisión', apr: 'Aprobado', rech: 'Rechazado', pag: 'Pagado' };
 const rbChip = s => s === 'pag' ? st('ok', 'Pagado', 'check-circle') : s === 'apr' ? st('ok', 'Aprobado', 'check') : s === 'rech' ? st('bad', 'Rechazado', 'x-circle') : s === 'rev' ? st('inf', 'En revisión', 'hourglass-medium') : s === 'env' ? st('inf', 'Enviado', 'paper-plane-tilt') : st('neu', 'Documentos listos', 'file-text');
 const rbIdx = s => s === 'pag' ? 4 : s === 'apr' || s === 'rech' ? 3 : RBST.indexOf(s);
-/* pregunta en la reserva: ¿gestionamos el reembolso? (antes de pagar) */
+/* pregunta en la reserva: ¿gestionamos el reembolso? (antes de pagar). Requisitos: Isapre vinculada + carnet por ambos lados */
+const carOk = w => !!(S.car && S.car[w] && S.car[w].f && S.car[w].b);
+const rbReady = () => { const w = S.who; return S.rbAsk !== 'si' || (S.pv[w] || {}).t === 'fonasa' || (!!isaOf(w) && carOk(w)); };
+document.addEventListener('change', e => { const t = e.target; if (!t.classList || !t.classList.contains('carin') || !t.files || !t.files[0]) return;
+  const r = new FileReader(); r.onload = () => { S.car = S.car || {}; S.car[S.who] = S.car[S.who] || {}; S.car[S.who][t.dataset.side] = r.result; if (carOk(S.who) && S.lk.w === S.who) S.lk.car = true; render(); toast(t.dataset.side === 'f' ? 'Frente del carnet subido.' : 'Reverso del carnet subido.'); }; r.readAsDataURL(t.files[0]); });
+const carTile = (s, n) => { const v = ((S.car || {})[S.who] || {})[s]; return `<div class="cart ${v ? 'on' : ''}">${v ? `${String(v).startsWith('data:') ? `<img src="${v}" alt="${n} del carnet">` : `<span class="carph">${ic('identification-card')}</span>`}<div class="cart-f"><span class="sm">${ic('check-circle', 1)} ${n}</span><button class="lk sm" data-act="carRm" data-arg="${s}">Cambiar</button></div>`
+  : `<label class="cart-up"><span class="carph">${ic(s === 'f' ? 'identification-card' : 'identification-badge')}</span><b>${n}</b><span class="xs t2">Tomar foto o elegir de galería</span><input class="carin" data-side="${s}" type="file" accept="image/*" hidden></label>`}</div>`; };
+def({ id: 'P94', name: 'Carnet para el reembolso', kind: 'page', back: true, title: 'Tu carnet',
+  body: () => `<div class="sm t2">Tu Isapre pide el carnet de ${whoTxt().split(' ')[0]} para cada reembolso. Lo subes una vez y lo guardamos cifrado.</div>
+    <div class="carg mt16">${carTile('f', 'Frente')}${carTile('b', 'Reverso')}</div>
+    <div class="phg mt16"><div class="b-m sm">Para que se lea bien</div><ul>${['Carnet completo, sin cortar las esquinas', 'Con luz, sin reflejos ni dedos encima', 'Vigente'].map(t => `<li>${ic('check')}${t}</li>`).join('')}</ul></div>
+    <div class="mt12">${note('lock-simple', 'Solo lo usa el agente de Cuidapp para presentar tus reembolsos. Lo puedes borrar desde Cuenta.')}</div>`,
+  foot: () => btn('Listo', 'back', '', carOk(S.who) ? '' : 'disabled') });
+
 const rbAsk = () => { const w = S.who, p = S.pv[w] || {}; if (p.t === 'fonasa') return '';
   const lk = isaOf(w), is = lk ? lk.is : p.is || 'tu Isapre';
   return `<div class="rbq mt16"><div class="rbq-h"><span class="ri box">${ic('lightning')}</span><div><b>¿Quieres que gestionemos tu reembolso automáticamente?</b><div class="sm t2 mt4">Cuidapp envía tu boleta a ${is} · ${clp(RB_FEE)}</div></div></div>
   <div class="row8 mt12"><button class="btn ${S.rbAsk === 'si' ? '' : 'sec'} sm" data-act="rbAsk" data-arg="si">${S.rbAsk === 'si' ? ic('check') : ''}Sí</button><button class="btn ${S.rbAsk === 'no' ? '' : 'sec'} sm" data-act="rbAsk" data-arg="no">${S.rbAsk === 'no' ? ic('check') : ''}No, gracias</button></div>
-  ${S.rbAsk === 'si' ? (lk ? `<div class="xs t2 mt12">${ic('check-circle')} Listo. Al terminar la atención enviamos la boleta a ${lk.is}. La gestión (${clp(RB_FEE)}) aparece en el desglose.</div>` : `<div class="mt12">${row('box:link', 'Vincular mi Isapre', `Para enviarlo por ti necesitamos conectar ${is}. Toma 2 minutos.`, 'P78', '<span class="lk">Vincular</span>', '', 'lkBook', '')}</div>`) : S.rbAsk === 'no' ? `<div class="xs t2 mt12">Igual te dejamos la boleta para que la presentes tú.</div>` : ''}</div>`; };
+  ${S.rbAsk === 'si' ? `<div class="rbreq mt12"><div class="xs t2">Para enviarlo por ti necesitamos 2 cosas, una sola vez:</div>
+    ${lk ? row('box:check-circle', `1. ${lk.is} vinculada`, 'Listo', '', st('ok', 'Hecho')) : row('box:link', '1. Vincular tu Isapre', `Conecta ${is}. Toma 2 minutos.`, 'P78', '<span class="lk">Vincular</span>', '', 'lkBook', '')}
+    ${carOk(w) ? row('box:check-circle', '2. Carnet por ambos lados', 'Subido', 'P94', st('ok', 'Hecho')) : row('box:identification-card', '2. Subir tu carnet', 'Foto por delante y por detrás', 'P94', '<span class="lk">Subir</span>')}
+    ${rbReady() ? `<div class="xs t2 mt8">${ic('check-circle')} Listo. Al terminar la atención enviamos la boleta a ${is}. La gestión (${clp(RB_FEE)}) aparece en el desglose.</div>` : `<div class="xs warnt mt8">Completa los 2 pasos para continuar, o elige «No, gracias».</div>`}</div>` : S.rbAsk === 'no' ? `<div class="xs t2 mt12">Igual te dejamos la boleta para que la presentes tú.</div>` : ''}</div>`; };
 const rbAutoRow = () => { const w = S.who, p = S.pv[w] || {};
   if (p.t !== 'isapre') return p.t === 'fonasa' ? row('box:receipt', 'Reembolso Fonasa', 'Descarga los documentos y preséntalos en Fonasa', 'P65') : '';
   if (!isaOf(w)) return row('box:link', 'Reembolso automático', `Vincula ${p.is || 'tu Isapre'} y lo enviamos por ti · gestión ${clp(RB_FEE)}`, 'P78', '<span class="lk">Vincular</span>', '', 'lkW', w);
@@ -288,7 +305,11 @@ const MSX = {
 const msTrend = k => { const b = BIOM[k], v = bval(k), p = prevL(b);
   return `<button class="mstr" data-act="bm" data-arg="${k}" data-go="P71"><span class="tx"><b>${b.n}</b><span class="sm t2"><b class="num">${nf(v, b.d)}</b> ${b.u}${p ? ` · ${v < p[1] ? '↓' : v > p[1] ? '↑' : '='} desde ${nf(p[1], b.d)} (${p[0]})` : ''}</span><span class="msst ${bst(k) === 'ok' ? 'ok' : 'warn'}">${{ ok: 'En rango', hi: 'Sobre el rango', lo: 'Bajo el rango', crit: 'Requiere atención hoy' }[bst(k)]}</span></span>${spark(k)}${ic('caret-right')}</button>`; };
 Object.assign(ACT, { msFm: k => { S.fm = k; } });
-def({ id: 'P93', name: 'Mi salud', kind: 'page', tab: 'salud', next: ['P70', 'P71', 'P74', 'P75', 'P77', 'P51', 'P52', 'P55', 'P59', 'P80', 'P81', 'P26'],
+const msIsa = k => { const p = S.pv[k] || {}, l = isaOf(k), nm = k === 'yo' ? 'tu' : 'la';
+  if (l) return `<div class="isac on mt12" role="button" data-act="lkW" data-arg="${k}" data-go="P82"><span class="ri box">${ic('link')}</span><span class="tx"><b>${l.is} vinculada</b><span class="xs t2">Enviamos los reembolsos por ti · desde ${l.desde}</span></span>${st('ok', 'Activa')}</div>`;
+  if (p.t === 'fonasa') return `<div class="isac mt12"><span class="ri box">${ic('shield-check')}</span><span class="tx"><b>${FAM[k].c} es de Fonasa ${p.tr ? 'tramo ' + p.tr : ''}</b><span class="xs t2">Descarga los documentos para tu reembolso. ¿Se cambió a Isapre? Vincúlala.</span></span><button class="pill" data-act="lkW" data-arg="${k}" data-go="P78">Vincular</button></div>`;
+  return `<div class="isac mt12"><span class="ri box">${ic('link')}</span><span class="tx"><b>Vincula ${nm} Isapre${p.is ? ' · ' + p.is : ''}</b><span class="xs t2">Y enviamos tus reembolsos por ti al terminar cada atención</span></span><button class="btn sm2" data-act="lkW" data-arg="${k}" data-go="P78">Vincular</button></div>`; };
+def({ id: 'P93', name: 'Mi salud', kind: 'page', tab: 'salud', next: ['P70', 'P71', 'P74', 'P75', 'P77', 'P51', 'P52', 'P55', 'P59', 'P80', 'P81', 'P26', 'P78', 'P82', 'P65'],
   body: () => { const k = FAM[S.fm] ? S.fm : 'mama', f = FAM[k], x = MSX[k], m = k === 'mama', out = outK(), rbs = RBS().filter(r => r.w === k);
     const res = m ? `<div class="msc"><div class="msc-h"><div><b>Exámenes del 24 oct</b><span class="xs t2">${BKEYS.length} biomarcadores · Paula Godoy</span></div><button class="lk sm" data-go="P70">Ver todos</button></div>
       <div class="bcnt mt12"><div class="ok">${ic('check-circle', 1)}<b class="num">${BKEYS.length - out.length}</b><span>en rango</span></div><div class="warn">${ic('arrows-down-up', 1)}<b class="num">${out.length}</b><span>para revisar</span></div></div>
@@ -297,6 +318,7 @@ def({ id: 'P93', name: 'Mi salud', kind: 'page', tab: 'salud', next: ['P70', 'P7
     return `<h1 class="h-xl mt8">Mi salud</h1><div class="t2 sm mt4">Resultados, controles y documentos de tu familia.</div>
     <div class="pers mt16" role="tablist">${['mama', 'papa', 'yo'].map(w => `<button class="${w === k ? 'on' : ''}" data-act="msFm" data-arg="${w}" role="tab" aria-selected="${w === k}">${av(FAM[w].i, 's')}<span>${w === 'yo' ? 'Tú' : FAM[w].c}</span></button>`).join('')}</div>
     <div class="mt16">${pinAl(f)}</div>
+    ${msIsa(k)}
     <div class="lbl2">Últimos resultados</div>${res}
     <div class="lbl2">Próximos y recordatorios</div>${x.prox.map(p => row('box:' + p[0], p[1], p[2], p[3], p[4] ? st('ok', p[4]) : '', '', p[3] === 'P51' ? 'fm' : p[3] === 'P75' ? 'pk' : '', p[3] === 'P51' ? k : p[3] === 'P75' ? 'pre' : '')).join('')}
     <div class="shd mt24"><h3>Chequeos sugeridos</h3><button class="lk sm" data-go="P74">Ver packs</button></div><div class="pkl2">${x.pk.map(id => pkCard(pkOf(id), 1)).join('')}</div>

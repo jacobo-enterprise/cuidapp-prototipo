@@ -21,10 +21,10 @@ const profRow = () => `<div class="shd mt24"><h3>Buscar por profesional</h3></di
 
 /* ---------- Laboratorios (ficticios) ---------- */
 const LABS = [
-  { id: 'la', n: 'LabAndes Clínico', ini: 'LA', c: '#E9E8FD', fg: '#4447C2', km: 1.2, r: '4,8', nr: 412, hrs: 'Lun a vie 07:00–19:00 · sáb 08:00–13:00', ab: 'Abierto hasta 19:00', mods: ['dom', 'pre'], dir: 'Av. Irarrázaval 3120, Ñuñoa', sucs: [['Ñuñoa', 'Av. Irarrázaval 3120', 1.2], ['Providencia', 'Av. Providencia 2155', 3.4]], f: 1.0, freq: 'quincenal', no: [] },
-  { id: 'pz', n: 'Laboratorio Plaza Egaña', ini: 'PE', c: '#F3ECFF', fg: '#6B3FC9', km: 2.1, r: '4,7', nr: 236, hrs: 'Lun a sáb 07:30–14:00', ab: 'Abierto hasta 14:00', mods: ['pre'], dir: 'Av. Larraín 5862, La Reina', sucs: [['La Reina', 'Av. Larraín 5862', 2.1]], f: 0.94, freq: 'mensual', no: ['x191'] },
-  { id: 'bl', n: 'Biocentro Los Leones', ini: 'BL', c: '#EAF0FF', fg: '#3E5BB8', km: 2.8, r: '4,9', nr: 588, hrs: 'Lun a vie 07:00–20:00 · sáb 08:00–14:00', ab: 'Abierto hasta 20:00', mods: ['dom', 'pre'], dir: 'Av. Los Leones 1240, Providencia', sucs: [['Providencia', 'Av. Los Leones 1240', 2.8], ['Las Condes', 'Av. Apoquindo 4499', 6.1]], f: 1.06, freq: 'semanal', no: [] },
-  { id: 'ls', n: 'LabSur Macul', ini: 'LS', c: '#F0EEF8', fg: '#5557D9', km: 3.5, r: '4,6', nr: 154, hrs: 'Lun a vie 07:30–17:00', ab: 'Abierto hasta 17:00', mods: ['dom'], dir: 'Av. Macul 2890, Macul', sucs: [['Macul', 'Av. Macul 2890', 3.5]], f: 0.9, freq: 'mensual', no: ['tsh', 't4'] },
+  { id: 'la', n: 'LabAndes Clínico', ini: 'LA', c: '#E9E8FD', fg: '#4447C2', km: 1.2, r: '4,8', nr: 412, hrs: 'Lun a vie 07:00–19:00 · sáb 08:00–13:00', ab: 'Abierto hasta 19:00', mods: ['dom', 'pre'], dir: 'Av. Irarrázaval 3120, Ñuñoa', sucs: [['Ñuñoa', 'Av. Irarrázaval 3120', 1.2], ['Providencia', 'Av. Providencia 2155', 3.4]], f: 1.0, freq: 'quincenal', no: [], rec: 'Lun a vie hasta 12:00 · sáb hasta 11:00', mes: 'Mesón «Recepción de muestras», 1.er piso' },
+  { id: 'pz', n: 'Laboratorio Plaza Egaña', ini: 'PE', c: '#F3ECFF', fg: '#6B3FC9', km: 2.1, r: '4,7', nr: 236, hrs: 'Lun a sáb 07:30–14:00', ab: 'Abierto hasta 14:00', mods: ['pre'], dir: 'Av. Larraín 5862, La Reina', sucs: [['La Reina', 'Av. Larraín 5862', 2.1]], f: 0.94, freq: 'mensual', no: ['x191'], rec: 'Lun a sáb hasta 11:30', mes: 'Ventanilla 2, entrada por Av. Larraín' },
+  { id: 'bl', n: 'Biocentro Los Leones', ini: 'BL', c: '#EAF0FF', fg: '#3E5BB8', km: 2.8, r: '4,9', nr: 588, hrs: 'Lun a vie 07:00–20:00 · sáb 08:00–14:00', ab: 'Abierto hasta 20:00', mods: ['dom', 'pre'], dir: 'Av. Los Leones 1240, Providencia', sucs: [['Providencia', 'Av. Los Leones 1240', 2.8], ['Las Condes', 'Av. Apoquindo 4499', 6.1]], f: 1.06, freq: 'semanal', no: [], rec: 'Lun a vie hasta 13:00 · sáb hasta 12:00', mes: 'Recepción de muestras externas, piso -1' },
+  { id: 'ls', n: 'LabSur Macul', ini: 'LS', c: '#F0EEF8', fg: '#5557D9', km: 3.5, r: '4,6', nr: 154, hrs: 'Lun a vie 07:30–17:00', ab: 'Abierto hasta 17:00', mods: ['dom'], dir: 'Av. Macul 2890, Macul', sucs: [['Macul', 'Av. Macul 2890', 3.5]], f: 0.9, freq: 'mensual', no: ['tsh', 't4'], rec: 'Lun a vie hasta 11:00', mes: 'Mesón de toma de muestras' },
 ];
 const labOf = id => LABS.find(l => l.id === id) || LABS[0];
 const labHas = (l, k) => !l.no.includes(k);
@@ -98,7 +98,8 @@ Object.assign(ACT, {
 /* ===== Paciente · laboratorios ===== */
 def({ id: 'P83', name: 'Laboratorios cerca de ti', kind: 'page', back: true, title: 'Laboratorios', next: ['P84'],
   body: () => { const s = S.lbSort || 'km', l = [...LABS].sort((a, b) => s === 'km' ? a.km - b.km : parseFloat(b.r.replace(',', '.')) - parseFloat(a.r.replace(',', '.')));
-    return `<div class="sm t2">Cerca de ${P().n}, ${P().c}. Agenda la toma a domicilio o ve a una sucursal.</div>
+    return `${note('hourglass-medium', '<b>Muy pronto.</b> Podrás elegir un laboratorio y sacar hora, a domicilio o presencial. Por ahora, pide la toma de muestras a domicilio: una enfermera o TENS va a tu casa.')}${btn(`${ic('house-line')}Pedir toma a domicilio`, 'P40', 'sec mt12')}
+    <div class="sm t2 mt16">Vista previa · cerca de ${P().n}, ${P().c}</div><button class="lk sm mt4" data-act="lbFrom" data-go="P88">${ic('arrows-down-up')}Comparar precios entre laboratorios</button>
     <div class="seg mt16">${[['km', 'Más cerca'], ['r', 'Mejor evaluados']].map(t => `<button class="${s === t[0] ? 'on' : ''}" data-act="lbSort" data-arg="${t[0]}">${t[1]}</button>`).join('')}</div>
     <div class="labl mt16">${l.map(labCard).join('')}</div>`; } });
 
@@ -110,7 +111,7 @@ def({ id: 'P84', name: 'Perfil del laboratorio', kind: 'page', back: true, title
     <div class="lbl2">Exámenes y precios</div><div class="exl">${EXPOP.filter(k => labHas(l, k)).slice(0, 8).map(k => `<div class="exr"><span class="tx"><span class="a">${EXAMS[k][0]}</span><span class="b">${EXAMS[k][7] || EXAMS[k][2]} · ${EXAMS[k][3] ? 'ayuno' : 'sin ayuno'} · ${EXAMS[k][8]}</span></span><span class="exp"><span class="pp num">${clp(lpp(l, k))}</span></span></div>`).join('')}</div>
     <div class="xs t3 mt8">Precio final que pagas en Cuidapp. Precios de ejemplo.</div>
     <div class="lbl2">Preparación</div>${row('box:fork-knife', 'Ayuno de 8 a 12 horas', 'Para glicemia, perfil lipídico y bioquímico. Puedes tomar agua.', '', '')}${row('box:drop', 'Orina', 'Primera orina de la mañana, en frasco estéril', '', '')}${row('box:pill', 'Tus medicamentos', 'Tómalos como siempre, salvo que tu médico diga otra cosa', '', '')}`; },
-  foot: () => { const l = labOf(S.labId); return `<div class="row8">${l.mods.map((m, i) => abtn(ic(m === 'dom' ? 'house-line' : 'storefront') + MODN[m], 'lbMode', m, i && l.mods.length > 1 ? 'sec' : (l.mods.length > 1 ? '' : ''), 'P85')).join('')}</div>`; } });
+  foot: () => `${btn('Agendar en laboratorio · Muy pronto', '', '', 'disabled')}${btn(`${ic('house-line')}Pedir toma a domicilio`, 'P40', 'sec')}`, footOld: () => { const l = labOf(S.labId); return `<div class="row8">${l.mods.map((m, i) => abtn(ic(m === 'dom' ? 'house-line' : 'storefront') + MODN[m], 'lbMode', m, i && l.mods.length > 1 ? 'sec' : (l.mods.length > 1 ? '' : ''), 'P85')).join('')}</div>`; } });
 
 const LDAYS = ['Mié 28', 'Jue 29', 'Vie 30', 'Sáb 31'], LHRS = ['07:30', '08:00', '08:30', '09:00', '10:00'];
 def({ id: 'P85', name: 'Agendar en laboratorio', kind: 'page', back: true, title: 'Agendar', next: ['P86'],
@@ -192,13 +193,13 @@ def({ id: 'P92', name: 'Solicitud de cotización enviada', kind: 'page', title: 
 
 /* ===== Asesor de Isapre (rol) =====
    Modelo: Gratis (aparece, ve solicitudes con el contacto oculto; desbloquea cada contacto por S.pz.unl),
-   Membresía (S.pz.mem al mes, contactos ilimitados) y Plus (add-on, S.pz.plus al mes: primero en la búsqueda con «Destacado»). */
+   Membresía (S.pz.mem al mes, contactos ilimitados) y Destacado (S.pz.plus por 1 mes, pago único: primero en la búsqueda con la etiqueta «Destacado»). */
 const AP = () => [['free', 'Gratis', 0, 'Apareces en «Cotiza tu Isapre»', `Ves cada solicitud, pero el contacto está oculto. Desbloqueas cada uno por ${clp(S.pz.unl)}.`], ['mem', 'Membresía', S.pz.mem, 'Contactos ilimitados', 'Ves nombre y teléfono de todas las solicitudes, sin pagar por cada una.']];
 const LEADS = [['Daniela Fuentes', '30–39', '$1.500.000 – $2.500.000', 1, 'Fonasa', 'Hace 12 min', '+56 9 8123 4471', 'Ñuñoa'], ['Luis Morales', '60 o más', '$800.000 – $1.500.000', 0, 'Colmena', 'Hace 1 h', '+56 9 6650 2210', 'Providencia'], ['Carolina Pizarro', '40–49', '$2.500.000 – $4.000.000', 3, 'Banmédica', 'Ayer', '+56 9 7344 0982', 'Las Condes'], ['Tomás Riveros', '18–29', 'Hasta $800.000', 0, 'Fonasa', 'Ayer', '+56 9 5521 7730', 'Santiago']];
 const qMem = () => S.qa.plan === 'mem' && S.qa.paid;
 const lOpen = i => qMem() || !!S.unl[i];
 const blur = t => `<span class="blr" aria-label="Oculto">${t}</span>`;
-const qPlanTxt = () => `${qMem() ? 'Membresía' : 'Gratis'}${S.qa.plus ? ' + Plus' : ''}`;
+const qPlanTxt = () => `${qMem() ? 'Membresía' : 'Gratis'}${S.qa.plus ? ' + Destacado' : ''}`;
 def({ id: 'Q01', name: 'Registro de asesor', kind: 'page', title: 'Únete como Asesor de Isapre', next: ['Q02'],
   body: () => `<div class="sm t2">Aparece gratis en «Cotiza tu Isapre» y recibe solicitudes de personas que quieren cotizar.</div>
   <div class="lbl2">Tus datos</div>${field('user', 'Macarena Ibáñez')}${field('identification-card', '15.482.903-1')}${field('certificate', 'AS-10482', 'N.º de registro de agente de ventas')}
@@ -209,9 +210,9 @@ def({ id: 'Q01', name: 'Registro de asesor', kind: 'page', title: 'Únete como A
 def({ id: 'Q02', name: 'Planes del asesor', kind: 'page', back: true, title: 'Elige tu plan', next: ['Q03'],
   body: () => `<div class="sm t2">Mensual, sin permanencia. Cancelas cuando quieras.</div>
   <div class="pll mt16">${AP().map(p => `<button class="plc ${S.qa.plan === p[0] ? 'on' : ''}" data-act="qPlan" data-arg="${p[0]}"><span class="tx"><b>${p[1]}</b><span class="sm">${p[3]}</span><span class="xs t2">${p[4]}</span></span><span class="pkp"><b class="num">${p[2] ? clp(p[2]) : '$0'}</b><span class="xs t2">${p[2] ? 'al mes' : 'siempre'}</span></span></button>`).join('')}</div>
-  <div class="lbl2">Agrega</div><div class="plc plus ${S.qa.plus ? 'on' : ''}"><span class="tx"><b>Plus <span class="dtag">Destacado</span></b><span class="sm">Apareces primero en la búsqueda</span><span class="xs t2">Con la etiqueta «Destacado» entre los asesores de ${S.qa.is[0]}.</span></span><span class="pkp"><b class="num">+${clp(S.pz.plus)}</b><span class="xs t2">al mes</span></span>${swc(S.qa.plus, 'qPlus', '', 'Agregar Plus')}</div>
-  ${S.qa.plan === 'mem' || S.qa.plus ? `<div class="lbl2">Pago</div>${row('box:wallet', 'Mercado Pago', 'Suscripción mensual · cancelas cuando quieras', '', '')}` : ''}`,
-  foot: () => { const t = (S.qa.plan === 'mem' ? S.pz.mem : 0) + (S.qa.plus ? S.pz.plus : 0); return abtn(t ? `Pagar ${clp(t)} al mes con Mercado Pago` : 'Empezar gratis', 'qPay', '', '', 'Q03'); } });
+  <div class="lbl2">Agrega</div><div class="plc plus ${S.qa.plus ? 'on' : ''}"><span class="tx"><b>Destacado</b><span class="sm">Apareces primero en la búsqueda durante 1 mes</span><span class="xs t2">Con la etiqueta «Destacado» entre los asesores de ${S.qa.is[0]}.</span></span><span class="pkp"><b class="num">+${clp(S.pz.plus)}</b><span class="xs t2">por 1 mes</span></span>${swc(S.qa.plus, 'qPlus', '', 'Agregar Destacado')}</div>
+  ${S.qa.plan === 'mem' || S.qa.plus ? `<div class="lbl2">Pago</div>${row('box:wallet', 'Mercado Pago', S.qa.plan === 'mem' ? 'Membresía mensual · cancelas cuando quieras' + (S.qa.plus ? ' · Destacado: pago único por 1 mes' : '') : 'Pago único · Destacado por 1 mes', '', '')}` : ''}`,
+  foot: () => { const t = (S.qa.plan === 'mem' ? S.pz.mem : 0) + (S.qa.plus ? S.pz.plus : 0); return abtn(t ? `Pagar ${clp(t)} con Mercado Pago` : 'Empezar gratis', 'qPay', '', '', 'Q03'); } });
 def({ id: 'Q03', name: 'Solicitudes (leads)', kind: 'page', title: 'Solicitudes', next: ['Q04', 'Q02', 'Q05'],
   body: () => { const nl = LEADS.filter((l, i) => !lOpen(i)).length;
     return `<div class="row8" style="justify-content:space-between;align-items:center"><span class="sm t2">Plan ${qPlanTxt()} · ${LEADS.length} solicitudes este mes</span><button class="lk sm" data-go="Q02">Cambiar plan</button></div>
@@ -230,19 +231,31 @@ def({ id: 'Q05', name: 'Desbloquear contacto', kind: 'page', back: true, title: 
     return `<div class="sm t2">Pagas una vez y ves el nombre y teléfono de esta persona.</div>
     <div class="msc mt16">${kv('Solicitud', `${l[1]} años · ${l[4]} · ${l[7]}`)}${kv('Desbloqueo de contacto', clp(S.pz.unl))}${kv('Total', clp(S.pz.unl), 'tot')}</div>
     <div class="lbl2">Pago</div>${row('box:wallet', 'Mercado Pago', 'Visa •••• 2290', '', '<span class="lk">Cambiar</span>')}
-    <div class="mt16">${row('box:infinity', `Membresía · ${clp(S.pz.mem)} al mes`, 'Contactos ilimitados. Conviene desde el 3.er contacto del mes.', 'Q02', '<span class="lk">Ver</span>', '', 'qPlan', 'mem')}</div>`; },
+    <div class="mt16">${row('box:infinity', `Membresía · ${clp(S.pz.mem)} al mes`, 'Contactos ilimitados. Conviene desde el 7.º contacto del mes.', 'Q02', '<span class="lk">Ver</span>', '', 'qPlan', 'mem')}</div>`; },
   foot: () => abtn(`Pagar ${clp(S.pz.unl)} con Mercado Pago`, 'unl', S.lead || 0, '', 'Q04') });
 
+/* ===== Profesional · laboratorios afiliados (nombres de ejemplo) ===== */
+Object.assign(ACT, { alab: id => { S.alab = S.alab === id ? '' : id; }, labMap: id => { window.open('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(labOf(id).dir), '_blank', 'noopener'); } });
+const ENTR = ['Entrega en el mesón de recepción y di que vienes de Cuidapp, con el código de la orden', 'Tubos rotulados con nombre completo y RUT de la paciente', 'Orden médica o lista de exámenes (en la app o impresa)', 'Caja térmica de 2 a 8 °C; entrega dentro de 4 horas desde la toma', 'Pide el acta o comprobante de recepción y súbelo en la app'];
+def({ id: 'R45', name: 'Laboratorios afiliados', kind: 'page', back: true, title: 'Laboratorios afiliados',
+  body: () => { const on = S.alab === undefined ? 'la' : S.alab;
+    return `<div class="sm t2">Aquí entregas las muestras que tomas en visitas de Cuidapp. Revisa el horario de recepción antes de salir.</div>
+    <div class="labl mt16">${LABS.map(l => { const o = on === l.id; return `<div class="alab ${o ? 'on' : ''}"><button class="alab-h" data-act="alab" data-arg="${l.id}">${labLogo(l, 'sm')}<span class="tx"><b>${l.n} <span class="ptag p">Ejemplo</span></b><span class="xs t2">${l.dir}</span><span class="xs t2">${ic('clock')} Recibe ${l.rec.toLowerCase()}</span></span>${ic(o ? 'caret-up' : 'caret-down')}</button>
+      ${o ? `<div class="alab-b">${row('box:map-pin', l.dir, l.mes, '', '')}${row('box:clock', 'Atención', l.hrs, '', '')}${row('box:test-tube', 'Qué recibe', 'Sangre (tubos lila, amarillo y celeste), orina y deposiciones', '', '')}${l.no.length ? row('box:x-circle', 'No procesa', l.no.map(k => EXAMS[k][0]).join(', ') + ' · llévalos a otro laboratorio', '', '') : ''}
+      <div class="lbl2">Cómo entregar</div><ol class="entr">${ENTR.map(t => `<li>${t}</li>`).join('')}</ol>
+      <div class="row8 mt12"><button class="pill" data-act="labMap" data-arg="${l.id}">${ic('navigation-arrow')}Cómo llegar</button></div></div>` : ''}</div>`; }).join('')}</div>
+    <div class="xs t3 mt12">Nombres, direcciones y horarios de ejemplo.</div>`; } });
+
 /* ===== Admin · planes y destacados ===== */
-const PZN = [['unl', 'Desbloqueo de contacto (asesor)', 'Por cada contacto, en plan Gratis', 1000, false], ['mem', 'Membresía de asesor', 'Al mes · contactos ilimitados', 1000, false], ['plus', 'Plus de asesor · Destacado', 'Al mes · primero en «Cotiza tu Isapre»', 1000, true], ['pdest', 'Destacado de profesional', 'Al mes · enfermeras y TENS primero en los resultados', 500, true]];
-const REVQ = { unl: 38, mem: 12, plus: 5, pdest: 24 };
+const PZN = [['unl', 'Desbloqueo de contacto (asesor)', 'Por cada contacto, en plan Gratis', 1000, false], ['mem', 'Membresía de asesor', 'Al mes · contactos ilimitados', 1000, false], ['plus', 'Destacado de asesor', 'Por 1 mes · primero en «Cotiza tu Isapre»', 1000, false], ['pdest', 'Destacado de profesional', 'Al mes · enfermeras y TENS primero en los resultados', 500, false]];
+const REVQ = { unl: 46, mem: 9, plus: 6, pdest: 24 };
 def({ id: 'A14', name: 'Planes y destacados', kind: 'adm', side: 'pln',
   body: () => { const tot = Object.keys(REVQ).reduce((a, k) => a + REVQ[k] * S.pz[k], 0);
     return `<div class="h-l">Planes y destacados</div><div class="t2 mt4">Precios que pagan asesores de Isapre y profesionales por aparecer o destacar. Los cambios rigen para cobros nuevos.</div>
   <div class="pzg mt24">${PZN.map(p => `<div class="box" style="border:1px solid var(--border);border-radius:12px;padding:16px"><div class="b-m">${p[1]} </div><div class="t2 sm mt4">${p[2]}</div><div class="stp mt12"><button class="ib" data-act="pz" data-arg="${p[0]}:-${p[3]}" aria-label="Bajar">${ic('minus')}</button><b class="num">${clp(S.pz[p[0]])}</b><button class="ib" data-act="pz" data-arg="${p[0]}:${p[3]}" aria-label="Subir">${ic('plus')}</button></div></div>`).join('')}</div>
   <div class="h-m mt32">Ingresos del mes · oct 2026 (ejemplo)</div>
   <table class="t mt16"><tr><th>Línea</th><th>Cantidad</th><th>Precio</th><th>Ingreso</th></tr>${PZN.map(p => `<tr><td><b style="font-weight:600">${p[1]}</b></td><td class="num">${REVQ[p[0]]}</td><td class="num">${clp(S.pz[p[0]])}</td><td class="num"><b style="font-weight:600">${clp(REVQ[p[0]] * S.pz[p[0]])}</b></td></tr>`).join('')}<tr><td><b style="font-weight:700">Total</b></td><td></td><td></td><td class="num"><b style="font-weight:700">${clp(tot)}</b></td></tr></table>
-  <div class="t2 sm mt12">Asesores: el listado es gratis; cobramos por desbloquear contactos, la Membresía y el Plus. Cantidades de ejemplo.</div>`; } });
+  <div class="t2 sm mt12">Asesores: el listado es gratis; cobramos por desbloquear contactos, la Membresía y el Destacado. Cantidades de ejemplo.</div>`; } });
 
 /* ===== Profesional · entregar muestra ===== */
 def({ id: 'R42', name: 'Entregar muestra en laboratorio', kind: 'page', back: true, title: 'Entregar muestra', next: ['R22'],
@@ -253,6 +266,7 @@ def({ id: 'R42', name: 'Entregar muestra en laboratorio', kind: 'page', back: tr
     <div class="mt12">${mapThumb(l)}</div>
     <div class="lbl2">Antes de entregar</div>${checkRow('Tubos rotulados con nombre y RUT', S.mue.rot, 'mueChk', 'rot')}${checkRow('Orden y lista de exámenes impresa', S.mue.ord, 'mueChk', 'ord')}${checkRow('Cadena de frío en caja térmica', S.mue.fri, 'mueChk', 'fri')}
     <div class="lbl2">Comprobante</div>${row('box:camera', 'Foto del acta o comprobante de recepción', S.mue.up ? 'Subida · acta n.º 58213' : 'Firmada o timbrada por el laboratorio', '', S.mue.up ? st('ok', 'Lista') : '<span class="lk">Subir</span>', '', 'mueUp', '')}
+    <div class="mt12">${row('box:flask', 'Laboratorios afiliados', 'Direcciones, horarios de recepción e instrucciones', 'R45')}</div>
     <div class="mt16">${note('info', 'Tú solo entregas la muestra. Cuidapp paga al laboratorio en la liquidación del período.')}</div>`; },
   foot: () => S.mue.done ? btn('Volver a la agenda', 'R04', 'sec') : abtn(ic('check') + 'Marcar entregada', 'mueDone', '', '', '', !S.mue.up) });
 
