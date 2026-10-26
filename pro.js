@@ -24,13 +24,13 @@ const docsOk = () => Object.values(S.docs).every(Boolean);
 const docRow = (k, i, a, b, go, act) => row('box:' + i, a, S.docs[k] ? b : 'Pendiente', go, S.docs[k] ? st('ok', 'Listo', 'check-circle') : ic('caret-right'), '', act || '', act ? k : '');
 const money = n => `<span class="num" style="color:var(--text);font-weight:600">${clp(n)}</span>`;
 const mySvcs = () => Object.keys(CAT).filter(k => S.my[k] && CAT[k].who.includes(S.prof));
-const TUBE = { 'Tubo lila': '#A78BFA', 'Tubo rojo': '#E5484D', 'Tubo gris': '#9AA4B2', 'Frasco estéril': '#F5C542' };
+const TUBE = { 'Tubo lila': '#A78BFA', 'Tubo rojo': '#E5484D', 'Tubo gris': '#9A9AA2', 'Frasco estéril': '#F5C542' };
 const COMUNAS = [['Oriente', [['prov', 'Providencia'], ['nun', 'Ñuñoa'], ['lr', 'La Reina'], ['lc', 'Las Condes'], ['vit', 'Vitacura'], ['pen', 'Peñalolén']]], ['Centro y sur', [['stgo', 'Santiago'], ['mac', 'Macul'], ['sjo', 'San Joaquín'], ['flo', 'La Florida']]]];
 const comTxt = () => COMUNAS.flatMap(g => g[1]).filter(c => S.com[c[0]]).map(c => c[1]);
 const WEEK = [['lun', 'Lunes', '08:00 a 12:00 · 18:00 a 22:00'], ['mar', 'Martes', '08:00 a 12:00 · 18:00 a 22:00'], ['mie', 'Miércoles', '08:00 a 12:00 · 18:00 a 22:00'], ['jue', 'Jueves', '09:00 a 13:00 · 19:00 a 22:00'], ['vie', 'Viernes', '08:00 a 12:00 · 17:00 a 20:00'], ['sab', 'Sábado', '10:00 a 14:00'], ['dom', 'Domingo', '10:00 a 13:00']];
 
 def({ id: 'R01', name: 'Postula como profesional', kind: 'page', noNav: true, back: true,
-  body: () => `<div style="padding-top:8px">${logoImg('horizontal-color', 30)}</div><div class="h-xl mt24">Atiende pacientes a tu manera</div>
+  body: () => `<div style="padding-top:8px">${logoImg('horizontal-nm', 30)}</div><div class="h-xl mt24">Atiende pacientes a tu manera</div>
   <div class="t2 mt8">Para enfermeras, enfermeros y TENS con registro en la Superintendencia de Salud.</div>
   <div class="mt16">${row('box:currency-circle-dollar', 'Tú pones tus precios', 'Sobre un mínimo por servicio. Cuidapp cobra 15% solo cuando atiendes.', '', '')}
   ${row('box:calendar-blank', 'Tú eliges horarios y comunas', 'Las pacientes agendan solo en tus horas libres', '', '')}
@@ -77,7 +77,7 @@ def({ id: 'R07', name: 'Cuenta bancaria', kind: 'page', back: true, noNav: true,
   foot: () => abtn('Guardar', 'doc', 'banco', '', 'R03') });
 
 def({ id: 'R08', name: 'En revisión', kind: 'page', noNav: true, auto: 'R09', enter: () => T(() => go('R09'), 5000),
-  body: () => `<div style="margin-top:40px">${ic('hourglass-medium', 1).replace('<i ', '<i style="font-size:56px;color:#1497DE" ')}</div><div class="h-l mt16">Estamos revisando tus documentos</div>
+  body: () => `<div style="margin-top:40px">${ic('hourglass-medium', 1).replace('<i ', '<i style="font-size:56px;color:#7A7CF0" ')}</div><div class="h-l mt16">Estamos revisando tus documentos</div>
   <div class="t2 mt8">Te avisamos por SMS en menos de 48 horas hábiles. Mientras, puedes ir pensando tus precios y horarios.</div><div class="mt24">
   ${row('box:check', 'Documentos recibidos', 'Hoy 10:42', '', '')}${row('box:magnifying-glass', 'Revisión del registro SIS', 'En curso', '', st('inf', 'Revisando'))}${row('box:video-camera', 'Entrevista corta por videollamada', 'Después de la revisión', '', '')}</div>` });
 

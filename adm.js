@@ -21,7 +21,7 @@ Object.assign(ACT, {
 const stOf = i => S.aprob.includes(i) ? st('ok', 'Aprobada') : S.rech.includes(i) ? st('bad', 'Rechazada') : i === 2 ? st('warn', 'Falta título') : st('neu', 'Por revisar');
 
 def({ id: 'A01', name: 'Ingreso admin', kind: 'adm', side: 'none',
-  body: () => `<div style="max-width:380px;margin:80px auto 0">${logoImg('horizontal-color', 34)}<div class="h-l mt24">Panel de operaciones</div><div class="t2 mt8">Solo para el equipo de Cuidapp.</div>
+  body: () => `<div style="max-width:380px;margin:80px auto 0">${logoImg('horizontal-nm', 34)}<div class="h-l mt24">Panel de operaciones</div><div class="t2 mt8">Solo para el equipo de Cuidapp.</div>
   ${lbl('Correo')}${field('', 'operaciones@cuidapp.cl')}${lbl('Contraseña')}${field('', '••••••••••••')}<div class="mt24">${btn('Entrar', 'A02')}</div></div>` });
 
 def({ id: 'A02', name: 'Cola de verificación', kind: 'adm', side: 'ver',
@@ -48,7 +48,7 @@ def({ id: 'A04', name: 'Reservas de hoy', kind: 'adm', side: 'hoy',
   <div style="height:280px;border-radius:12px;overflow:hidden;margin-top:16px;position:relative"><div class="mapwrap" data-map="1"></div></div>
   <table class="t mt16"><tr><th>Hora</th><th>Paciente</th><th>Servicio</th><th>Comuna</th><th>Profesional</th><th>Precio</th><th>Estado</th></tr>
   ${[['21:00', 'Pedro Silva', 'Inyección', 'La Reina', 'Valentina Morales', '$30.000', st('warn', 'Por confirmar')], ['20:30', 'Carmen Vidal', 'Signos vitales', 'Ñuñoa', 'Camila Rojas', clp(S.my.sig.p), st('inf', 'En camino')], ['20:00', 'Jorge Tapia', 'Inyección', 'Providencia', 'Paula Godoy', '$14.000', st('warn', 'En curso')], ['19:30', 'Ana Herrera', 'Curación simple', 'Macul', 'Fernanda Araya', '$28.000', st('ok', 'Terminada')], ['19:00', 'Jorge T.', 'Curación simple', 'Providencia', 'Camila Rojas', clp(S.my.cur.p), st('ok', 'Terminada')]].map(r => `<tr>${r.map((x, j) => `<td class="${j === 5 ? 'num' : ''}">${x}</td>`).join('')}</tr>`).join('')}</table>`,
-  map: () => ({ home: G.mama, pro: G.route[20], route: G.route, dots: [[[-33.4268, -70.6123], '#0A2E5C'], [[-33.4900, -70.5990], '#0A2E5C'], [[-33.4420, -70.5480]], [[-33.4130, -70.5800], '#1497DE']], maxZoom: 13 }) });
+  map: () => ({ home: G.mama, pro: G.route[20], route: G.route, dots: [[[-33.4268, -70.6123], '#111111'], [[-33.4900, -70.5990], '#111111'], [[-33.4420, -70.5480]], [[-33.4130, -70.5800], '#7A7CF0']], maxZoom: 13 }) });
 
 def({ id: 'A05', name: 'Catálogo y comisión', kind: 'adm', side: 'tar', next: ['A07'],
   body: () => `<div class="h-l">Catálogo y comisión</div><div class="t2 mt4">Cuidapp define las categorías, los servicios y un precio mínimo. Cada profesional pone su precio sobre ese mínimo; en exámenes, solo su tarifa de toma.</div>

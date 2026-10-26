@@ -8,6 +8,9 @@ Object.assign(ACT, {
   mmode: m => { S.mmode = m; },
   ordenUp: () => { S.orden = 'si'; },
   exq: q => { S.exq = q; },
+  kinAv: () => { S.kinAv = !S.kinAv; toast(S.kinAv ? 'Listo. Te avisaremos cuando Kinesiología abra en tu comuna.' : 'Ya no te avisaremos.'); },
+  promo: k => { S.promo = k; },
+  code: () => toast('Código CUIDA20 copiado.'),
   kin: () => toast('Kinesiología llega muy pronto. Te avisamos cuando abra en tu comuna.'),
   pick: a => { const [pro, d, t] = a.split('|'); S.pro = pro; S.when = 'prog'; if (!S.item || !priceOf(PRO(), S.item)) S.item = svcsOf(PRO())[0]; if (d !== undefined && d !== '') { S.day = +d; S.slot = t; } else { const x = nextOf(PRO()); if (x) { S.day = x[0]; S.slot = x[1]; } } S.pday = S.day; },
   day: d => { S.day = +d; fixSlot(); },
@@ -86,7 +89,7 @@ const rcard = (pr, wide) => {
 const grpGo = k => k === 'mue' ? 'P40' : GRP[k].l.length > 1 ? 'P37' : 'P10';
 const svcGo = k => k === 'mue' ? 'P40' : 'P10';
 const grpStats = k => { const ps = PROS.filter(p => GRP[k].l.some(x => priceOf(p, x))); const mn = Math.min(...GRP[k].l.flatMap(x => PROS.map(p => priceOf(p, x)).filter(Boolean))); return [ps.length, mn]; };
-const catGrid = () => `<div class="cats">${GK.map(k => `<button class="cat" data-act="grp" data-arg="${k}" data-go="${grpGo(k)}"><span class="ci">${i3(k)}</span><span class="cn">${GRP[k].c}</span></button>`).join('')}<button class="cat dim" data-act="kin"><span class="ci">${i3('kin')}</span><span class="cn">Kinesiología</span><span class="pr">Pronto</span></button><button class="cat" data-go="P33"><span class="ci">${i3('todos')}</span><span class="cn">Ver todos</span></button></div>`;
+const catGrid = () => `<div class="cats">${GK.map(k => `<button class="cat" data-act="grp" data-arg="${k}" data-go="${grpGo(k)}"><span class="ci">${i3(k)}</span><span class="cn">${GRP[k].c}</span></button>`).join('')}<button class="cat dim" data-act="kin"><span class="ci">${i3('kin')}</span><span class="cn">Kinesiología</span><span class="pr">Muy pronto</span></button><button class="cat" data-go="P33"><span class="ci">${i3('todos')}</span><span class="cn">Ver todos</span></button></div>`;
 const featured = () => PROS.filter(p => priceOf(p, '')).sort((a, b) => (b.top ? 1 : 0) - (a.top ? 1 : 0) || a.km - b.km).slice(0, 5);
 const topRated = () => PROS.slice().sort((a, b) => b.rn - a.rn || b.rv - a.rv).slice(0, 3);
 const range = l => { const ps = l.map(p => priceOf(p, S.item)); return ps.length ? [Math.min(...ps), Math.max(...ps)] : [0, 0]; };
@@ -122,7 +125,7 @@ const acts = l => `<div class="acts">${l.map(a => `<button class="act" ${a[4] ? 
 
 /* ---------- ingreso ---------- */
 def({ id: 'P01', name: 'Ingreso', kind: 'page', noNav: true,
-  body: () => `<div style="padding-top:40px">${logoImg('simbolo-color', 64)}</div>
+  body: () => `<div style="padding-top:40px">${logoImg('simbolo-nm', 64)}</div>
   <div class="h-l mt24">Enfermeras y TENS que van a tu casa</div><div class="t2 mt8">Busca el servicio, compara precios y reseñas, y agenda con la profesional que elijas.</div>
   ${lbl('Tu celular')}<div style="display:flex;gap:8px"><div class="field" style="width:96px;flex:none">🇨🇱&nbsp;+56</div>${field('', '9 8765 4321', '', 'focus')}</div>`,
   foot: () => `${btn('Continuar', 'P02')}
@@ -147,7 +150,7 @@ def({ id: 'P03', name: 'Tus datos', kind: 'page', back: true, noNav: true, title
   foot: () => btn('Continuar', 'P04') });
 
 def({ id: 'P04', name: 'Consentimiento de datos de salud', kind: 'page', back: true, noNav: true,
-  body: () => `${ic('shield-check', 1).replace('<i ', '<i style="font-size:44px;color:#1497DE" ')}<div class="h-l mt12">Tus datos de salud son tuyos</div>
+  body: () => `${ic('shield-check', 1).replace('<i ', '<i style="font-size:44px;color:#7A7CF0" ')}<div class="h-l mt12">Tus datos de salud son tuyos</div>
   <div class="mt8">${row('box:stethoscope', 'Para qué los usamos', 'Para que la profesional sepa qué hacer y para enviar tus exámenes al laboratorio aliado.', '', '')}
   ${row('box:eye', 'Quién los ve', 'Solo la profesional que agendas y el equipo clínico de Cuidapp.', '', '')}
   ${row('box:trash', 'Cuánto tiempo', 'Mientras tengas cuenta. Puedes pedir que los borremos cuando quieras.', '', '')}</div>
@@ -161,11 +164,25 @@ def({ id: 'P05', name: 'Dirección de atención', kind: 'page', noNav: true, bac
   <div class="mt24">${note('lock-simple', 'Tu dirección exacta solo la ve la profesional que agendas, cuando confirma la cita.')}</div>` });
 
 /* ---------- Servicios (inicio de la app) ---------- */
+
+/* ---------- promociones (ejemplos del prototipo) ---------- */
+const PROMO = {
+  kin: { cls: 'dark', eb: 'Muy pronto en Cuidapp', t: 'Kinesiología a domicilio', d: 'Motora y respiratoria, en tu casa.', ic: 'kin' },
+  first: { cls: 'lav', eb: 'Primera atención', t: '20% de descuento', d: 'Con el código CUIDA20 · tope $10.000', ic: 'iny' },
+  lab: { cls: 'neu', eb: 'Exámenes a domicilio', t: 'Toma gratis sobre $30.000', d: 'Pagas solo los exámenes del laboratorio.', ic: 'mue' },
+};
+const promoBtn = k => k === 'kin' ? `<button class="pbtn ${S.kinAv ? 'on' : ''}" data-act="kinAv">${S.kinAv ? ic('check', 0).replace('ph ', 'ph-bold ') + 'Te avisaremos' : ic('bell') + 'Avísame'}</button>`
+  : k === 'first' ? `<button class="pbtn" data-act="code">${ic('copy')}CUIDA20</button>` : `<button class="pbtn" data-act="grp" data-arg="mue" data-go="P40">Elegir exámenes</button>`;
+const promoCard = k => { const p = PROMO[k]; return `<div class="promo ${p.cls}" data-act="promo" data-arg="${k}" data-go="P45" role="button"><div class="pr-tx"><span class="pr-eb">${p.eb}</span><b class="pr-t">${p.t}</b><span class="pr-d">${p.d}</span>${promoBtn(k)}</div><span class="pr-ic">${i3(p.ic)}</span></div>`; };
+window.pdots = el => { const n = Math.round(el.scrollLeft / (el.firstElementChild.offsetWidth + 10)); el.nextElementSibling.querySelectorAll('i').forEach((d, i) => d.classList.toggle('on', i === n)); };
+const promoCar = () => `<div class="pcar" onscroll="pdots(this)">${Object.keys(PROMO).map(promoCard).join('')}</div><div class="pdots"><i class="on"></i><i></i><i></i></div>`;
+
 def({ id: 'P06', name: 'Servicios (inicio)', kind: 'page', tab: 'servicios', bodyCls: 'home',
   body: () => `<div class="hero"><div class="locrow"><button class="locb" data-act="set" data-arg="addrNext=P06" data-go="P08"><span class="xs t2">Atención a domicilio en</span><span class="lv">${P().n}, ${P().c}${ic('caret-down')}</span></button><button class="ib bell" data-act="toast" data-arg="No tienes notificaciones nuevas." aria-label="Notificaciones">${ic('bell')}</button></div>
   <h1 class="h-xl mt16">¿Qué necesitas?</h1>
   <button class="sbig mt16" data-go="P07">${ic('magnifying-glass')}<span>Inyección, curación, exámenes…</span></button></div>
   ${S.booked && !S.hecho ? `<button class="upc mt16" data-act="set" data-arg="det=next" data-go="P27"><span class="db"><span>${DAYS[S.day][0]}</span><b>${DAYS[S.day][1]}</b></span><span class="tx"><span class="xs t2">Tu próxima cita</span><b>${CAT[S.item].n}</b><span class="sm t2">${S.slot} · ${PRO().n}</span></span>${ic('caret-right')}</button>` : ''}
+  <div class="mt20">${promoCar()}</div>
   <div class="mt24">${catGrid()}</div>
   ${shd('Destacadas cerca de ti', 'P10', 'svc', '')}
   <div class="hcar">${featured().map(fcard).join('')}</div>
@@ -255,7 +272,7 @@ def({ id: 'P11', name: 'Filtros', kind: 'page', back: 'x', title: 'Filtros',
   foot: () => `<div class="fbar"><button class="lk u" data-act="clearF">Limpiar todo</button><button class="btn fbtn" data-go="back">Ver ${nPro(prosFor().length)}</button></div>` });
 
 def({ id: 'P36', name: 'Resultados en mapa (opcional)', kind: 'map', back: true, sheetCls: 'lite',
-  map: () => ({ home: P().ll, dots: prosFor().map(p => [ll(p), p.id === S.pro ? '#0A2E5C' : '#1497DE']), maxZoom: 15 }),
+  map: () => ({ home: P().ll, dots: prosFor().map(p => [ll(p), p.id === S.pro ? '#111111' : '#7A7CF0']), maxZoom: 15 }),
   body: () => { const l = prosFor(); return `<div class="shd" style="margin-top:0"><h3>${nPro(l.length)}</h3><button class="lk" data-go="back">Ver lista</button></div><div class="sm t2">${svcN(S.item)} · ${P().c}</div><div class="mcar mt12">${l.map(p => `<div class="mcard ${S.pro === p.id ? 'on' : ''}" data-act="pick" data-arg="${p.id}|" data-go="P12" role="button">${pav(p, 's', true)}<div class="tx"><div class="b-m">${p.n}</div><div class="sm t2">${rate(p)} · ${kmT(p)}</div></div><b class="num">${clp(priceOf(p, S.item))}</b></div>`).join('')}</div>`; } });
 
 /* ---------- perfil de la profesional ---------- */
@@ -441,6 +458,17 @@ def({ id: 'P42', name: 'Resultados de exámenes', kind: 'page', back: true, titl
   <div class="xs t3 mt12">Valores en negrita fuera de rango. Este informe no reemplaza la evaluación de tu médico.</div></div>`,
   foot: () => `${abtn(ic('download-simple') + 'Descargar PDF', 'toast', 'Descargado: Resultados-Rosa-Munoz-04-10-2026.pdf')}${abtn(ic('share-network') + 'Enviar a mi médico', 'toast', 'Listo. Le enviamos el PDF a la Dra. Marcela Ortiz.', 'sec')}` });
 
+def({ id: 'P45', name: 'Promoción', kind: 'page', back: true, title: '', next: ['P40', 'P10'],
+  body: () => { const k = S.promo, p = PROMO[k];
+    const det = k === 'kin' ? `<div class="mt16">${row('box:person-simple-walk', 'Kinesiología motora', 'Después de una cirugía, caídas o reposo largo', '', '')}${row('box:wind', 'Kinesiología respiratoria', 'Para niños y adultos mayores', '', '')}${row('box:map-pin', 'Primero en Ñuñoa y Providencia', 'Te avisamos por correo cuando abra', '', '')}</div>`
+      : k === 'first' ? `<button class="codebox mt16" data-act="code"><span><span class="xs t2">Tu código</span><b>CUIDA20</b></span><span class="lk">${ic('copy')}Copiar</span></button>
+        <div class="lbl2">Condiciones</div><div class="sm t2" style="line-height:21px">20% en tu primera atención en Cuidapp, con tope de $10.000. Vale para cualquier servicio y profesional. No aplica a los exámenes del laboratorio. Válido hasta el 30 nov 2026.</div>`
+      : `<div class="mt16">${row('box:test-tube', 'Elige exámenes por $30.000 o más', 'Precios fijos del laboratorio aliado', '', '')}${row('box:house-line', 'La toma a domicilio queda en $0', 'Se descuenta sola en el resumen', '', '')}${row('box:file-pdf', 'Resultados en PDF', 'En 24 a 48 horas, en el detalle de tu cita', '', '')}</div>
+        <div class="xs t3 mt12">Ejemplo: hemograma + perfil lipídico + perfil bioquímico = $28.300, agrega glicemia y ya califica.</div>`;
+    return `<div class="promo big ${p.cls}"><div class="pr-tx"><span class="pr-eb">${p.eb}</span><b class="pr-t">${p.t}</b><span class="pr-d">${p.d}</span></div><span class="pr-ic">${i3(p.ic)}</span></div>${det}<div class="xs t3 mt24">Promoción de ejemplo del prototipo.</div>`; },
+  foot: () => S.promo === 'kin' ? abtn(S.kinAv ? ic('check') + 'Te avisaremos' : ic('bell') + 'Avísame cuando abra', 'kinAv', '', S.kinAv ? 'sec' : '')
+    : S.promo === 'first' ? btn('Buscar profesional', 'P10', '', 'data-act="svc" data-arg=""') : abtn('Elegir exámenes', 'grp', 'mue', '', 'P40') });
+
 def({ id: 'P34', name: 'Favoritos', kind: 'page', tab: 'favoritos',
   body: () => { const l = PROS.filter(p => S.fav[p.id]); return `<h1 class="h-xl mt8">Favoritos</h1><div class="t2 sm mt4">Tus profesionales de confianza, para volver a agendar en dos toques.</div>
   ${l.length ? `<div class="rlist mt16">${l.map(p => `<div class="favc" data-act="pick" data-arg="${p.id}|" data-go="P12" role="button">${pav(p, 'l', true)}<div class="tx"><div class="b-m">${p.n}</div><div class="sm t2">${p.t} · ${rate(p)}</div><div class="sm t2">Desde <b class="num">${clp(priceOf(p, ''))}</b> · ${nextOf(p) ? 'Próxima: ' + dayLbl(nextOf(p)[0]) + ' ' + nextOf(p)[1] : 'Sin horas'}</div></div>${heart(p.id)}<button class="pill on fbk" data-act="pick" data-arg="${p.id}|" data-go="P13">Agendar</button></div>`).join('')}</div>`
@@ -470,6 +498,7 @@ def({ id: 'W01', name: 'Servicios (web)', kind: 'dfree', dtab: 'servicios', shee
   body: () => `<section class="whero"><div class="wh-in"><h1 class="h-xxl">Enfermeras y TENS a domicilio, con precio y reseñas a la vista</h1><p class="t2 lg mt16">Busca el servicio, compara profesionales verificadas en ${P().c} y agenda la hora que te acomode.</p>
   <div class="wsearch mt32"><button class="ws-f" data-act="set" data-arg="sheet=wsvc"><span class="xs t2">Servicio</span><b>${svcN(S.item)}</b></button><span class="ws-d"></span><button class="ws-f" data-act="set" data-arg="addrNext=W01" data-go="P08"><span class="xs t2">Dirección</span><b>${P().n}, ${P().c}</b></button><button class="btn ws-b" data-go="W02">${ic('magnifying-glass')}Buscar</button></div>
   <div class="chips mt16">${['iny', 'mue', 'cur', 'sig'].map(k => `<button class="chip" data-act="svc" data-arg="${k}" data-go="${k === 'mue' ? 'P40' : 'W02'}">${k === 'mue' ? 'Exámenes de sangre' : CAT[k].n}</button>`).join('')}</div></div></section>
+  <section class="wsec wpromo"><div class="wprow">${Object.keys(PROMO).map(promoCard).join('')}</div></section>
   <section class="wsec"><h2 class="h-l">Explora por servicio</h2><div class="wcats mt24">${GK.map(k => { const [n, mn] = grpStats(k); return `<button class="wcat" data-act="grp" data-arg="${k}" data-go="${k === 'mue' ? 'P40' : GRP[k].l.length > 1 ? 'P37' : 'W02'}"><span class="ci">${i3(k)}</span><b>${GRP[k].n}</b><span class="sm t2">${GRP[k].l.length > 1 ? GRP[k].l.map(x => CAT[x].s).join(' · ') : k === 'mue' ? 'Precio del laboratorio + toma' : nPro(n) + ' · desde ' + clp(mn)}</span></button>`; }).join('')}<button class="wcat soon" data-act="kin"><span class="ci">${i3('kin')}</span><b>Kinesiología</b><span class="sm t2">Muy pronto</span></button></div></section>
   <section class="wsec"><div class="shd"><h2 class="h-l">Destacadas cerca de ti</h2><button class="lk" data-act="svc" data-arg="" data-go="W02">Ver todas</button></div><div class="wfeat mt24">${featured().slice(0, 4).map(fcard).join('')}</div></section>
   <section class="wsec last"><h2 class="h-l">Cómo funciona</h2><div class="wsteps mt24">${[['magnifying-glass', 'Busca el servicio', 'Inyección, curación, exámenes o cuidados TENS.'], ['users-three', 'Compara', 'Precio, qué incluye, reseñas reales y próxima hora libre.'], ['calendar-check', 'Agenda y listo', 'Pagas en la app. Se cobra solo al terminar la atención.']].map((s, i) => `<div class="wst"><span class="n">${i + 1}</span>${ic(s[0])}<b>${s[1]}</b><span class="t2">${s[2]}</span></div>`).join('')}</div></section>` });
@@ -488,7 +517,7 @@ def({ id: 'W02', name: 'Resultados (web)', kind: 'dfree', dtab: 'servicios', she
    ${S.item && CAT[S.item].receta ? `<div class="rnote mt16">${ic('file-text')}<span>Para inyecciones necesitas receta médica. La subes al agendar.</span></div>` : ''}
    <div class="rlist mt16">${l.map(p => rcard(p, true)).join('')}</div><div class="xs t3 mt16">Profesionales y precios de ejemplo.</div></main>
   <aside class="wmap"><div class="mapbox"><div class="mapwrap" data-map="1"></div></div></aside></div>`; },
-  map: () => ({ home: P().ll, dots: prosFor().map(p => [ll(p), '#1497DE']), zoom: 13.5 }) });
+  map: () => ({ home: P().ll, dots: prosFor().map(p => [ll(p), '#7A7CF0']), zoom: 13.5 }) });
 
 def({ id: 'W03', name: 'Perfil y agenda (web)', kind: 'dfree', dtab: 'servicios', next: ['P14', 'P22', 'P32'],
   body: () => { const p = PRO(), it = S.item && priceOf(p, S.item) ? S.item : svcsOf(p)[0], l = slotsOf(p, S.day); return `<div class="wprof"><div class="wp-main"><button class="lk mb16" data-go="back">${ic('caret-left')} Volver a resultados</button>${profileBody(p, 'd')}</div>

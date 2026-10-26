@@ -13,7 +13,7 @@ const S0 = () => ({
   item: 'iny', addr: 'mama', who: 'mama', when: 'prog', pro: 'cr', day: 1, slot: '08:00', sort: 'rel', ptab: 'serv', det: 'next',
   f: { enf: true, tens: true }, fmax: 0, fday: 'all', frat: 0, fgen: '', fcom: '',
   fav: { cr: true, pg: true }, q: '', typed: false, sheet: '', ctab: 'next', revF: 'all', revSort: 'rec', resp: { cr4: 'Gracias, Francisco. Ese día me pilló un taco en Grecia, por eso te avisé. ¡Nos vemos en el próximo control!' }, replyTo: 'cr1', rtxt: false, rcrit: {}, pday: 1, svcFrom: '',
-  hasMed: true, receta: false, orden: '', mmode: 'cat', exq: '', exams: { hemo: true, lip: true, gli: true }, tensNeeds: { hig: true, mov: true, sig: true, com: false },
+  hasMed: true, receta: false, orden: '', mmode: 'cat', exq: '', kinAv: false, promo: 'kin', exams: { hemo: true, lip: true, gli: true }, tensNeeds: { hig: true, mov: true, sig: true, com: false },
   pay: 'visa', prev: 'fonasa', consent: false, rating: 0, tags: {}, tip: 0, chat: [], phase: 'llego', cancelFrom: 'P27', booked: false, hecho: false, cr: 0,
   docs: { carnet: false, selfie: false, titulo: false, antec: false, banco: false }, prof: 'enf',
   online: false, code: '', chk: { id: false, rec: false, ale: false }, earn: 186405, done: 9, pRating: 0, pTags: {}, paid: false,
@@ -116,7 +116,7 @@ const dayShort = i => DAYS[i][2] || `${DAYS[i][0]} ${DAYS[i][1]}`;
 
 /* profesionales de ejemplo (datos ficticios) */
 const PROS = [
-  { id: 'cr', n: 'Camila Rojas', i: 'CR', t: 'Enfermera', k: 'enf', g: 'f', reg: '482.317', r: '4,9', rn: 4.9, a: 132, rv: 92, km: 1.8, yrs: 6, bg: '#E3F1FB', fg: '#0A2E5C', top: true,
+  { id: 'cr', n: 'Camila Rojas', i: 'CR', t: 'Enfermera', k: 'enf', g: 'f', reg: '482.317', r: '4,9', rn: 4.9, a: 132, rv: 92, km: 1.8, yrs: 6, bg: '#F1F1FE', fg: '#4447C2', top: true,
     com: ['Ñuñoa', 'Providencia', 'La Reina', 'Santiago'], tel: '+56 9 7712 3008', resp: '20 min',
     bio: 'Soy enfermera de la U. de Chile y trabajé 5 años en medicina interna del Hospital del Salvador. Atiendo a domicilio hace 3 años, sobre todo a adultos mayores. Me gusta explicar todo con calma y dejar las indicaciones por escrito para la familia.',
     spec: ['Adulto mayor', 'Inyecciones con receta', 'Curaciones', 'Paciente diabético'],
@@ -124,7 +124,7 @@ const PROS = [
     dist: [91, 7, 2, 0, 0], crit: [['Puntualidad', '4,9'], ['Trato', '5,0'], ['Técnica', '4,9'], ['Explica todo', '4,9']],
     p: { iny: 18000, cur: 24000, mue: 15000, sig: 12000 }, night: { iny: 22000 }, xinc: 'Control de presión antes y después',
     sl: [[], ['08:00', '09:00', '11:30', '19:00', '21:00'], ['08:00', '10:00', '18:30', '21:00'], ['09:00', '12:00', '19:30'], ['08:00', '08:30', '17:00'], ['10:00', '11:00']] },
-  { id: 'fa', n: 'Fernanda Araya', i: 'FA', t: 'Enfermera', k: 'enf', g: 'f', reg: '512.884', r: '5,0', rn: 5.0, a: 61, rv: 44, km: 3.2, yrs: 3, bg: '#ECECFD', fg: '#3F41A8',
+  { id: 'fa', n: 'Fernanda Araya', i: 'FA', t: 'Enfermera', k: 'enf', g: 'f', reg: '512.884', r: '5,0', rn: 5.0, a: 61, rv: 44, km: 3.2, yrs: 3, bg: '#F3F3F5', fg: '#111111',
     com: ['Ñuñoa', 'Macul', 'La Florida', 'Peñalolén'], tel: '+56 9 6620 1475', resp: '15 min',
     bio: 'Enfermera de la U. de Santiago. Vengo de atención primaria en el Cesfam de Macul y me especialicé en curaciones de pie diabético. Te enseño a cuidar la herida entre una visita y otra.',
     spec: ['Pie diabético', 'Heridas complejas', 'Sondas'],
@@ -132,7 +132,7 @@ const PROS = [
     dist: [98, 2, 0, 0, 0], crit: [['Puntualidad', '5,0'], ['Trato', '5,0'], ['Técnica', '5,0'], ['Explica todo', '4,9']],
     p: { iny: 22000, cur: 28000, cura: 38000, mue: 17000, son: 32000 }, night: {}, xinc: 'Fotos de control de la herida',
     sl: [['19:30', '20:30'], ['07:30', '13:00', '20:00'], ['07:30', '14:00'], ['16:00', '20:00'], ['07:30'], []] },
-  { id: 'mc', n: 'Matías Contreras', i: 'MC', t: 'Enfermero', k: 'enf', g: 'm', reg: '505.317', r: '4,7', rn: 4.7, a: 48, rv: 31, km: 0.9, yrs: 2, bg: '#E6EDF6', fg: '#0A2E5C',
+  { id: 'mc', n: 'Matías Contreras', i: 'MC', t: 'Enfermero', k: 'enf', g: 'm', reg: '505.317', r: '4,7', rn: 4.7, a: 48, rv: 31, km: 0.9, yrs: 2, bg: '#EEEEFD', fg: '#3D3FB0',
     com: ['Ñuñoa', 'Santiago'], tel: '+56 9 5531 8820', resp: '1 h',
     bio: 'Enfermero de la U. Andrés Bello. Trabajo en la urgencia de la Clínica Indisa y atiendo a domicilio en mis días libres. Rápido, ordenado y con buen precio.',
     spec: ['Inyecciones', 'Toma de muestras', 'Control de presión'],
@@ -140,7 +140,7 @@ const PROS = [
     dist: [76, 18, 4, 2, 0], crit: [['Puntualidad', '4,8'], ['Trato', '4,7'], ['Técnica', '4,8'], ['Explica todo', '4,5']],
     p: { iny: 15000, cur: 20000, mue: 13000, sig: 10000 }, night: {}, xinc: '',
     sl: [[], [], ['09:00', '10:00', '11:00'], ['09:00', '15:00'], ['18:00', '19:00'], ['09:00', '10:00', '11:00', '12:00']] },
-  { id: 'pg', n: 'Paula Godoy', i: 'PG', t: 'TENS', k: 'tens', g: 'f', reg: '311.208', r: '4,8', rn: 4.8, a: 87, rv: 63, km: 2.4, yrs: 8, bg: '#E8F4FC', fg: '#0E5E93',
+  { id: 'pg', n: 'Paula Godoy', i: 'PG', t: 'TENS', k: 'tens', g: 'f', reg: '311.208', r: '4,8', rn: 4.8, a: 87, rv: 63, km: 2.4, yrs: 8, bg: '#F3F3F5', fg: '#2A2A2E',
     com: ['Providencia', 'Ñuñoa', 'Santiago'], tel: '+56 9 8840 1206', resp: '25 min',
     bio: 'Técnica en enfermería (TENS) con 8 años en el Hospital Salvador. Acompaño a adultos mayores en su casa: higiene, movilización, remedios y compañía. También pongo inyecciones con receta.',
     spec: ['Cuidado de adulto mayor', 'Movilización', 'Inyecciones con receta'],
@@ -148,7 +148,7 @@ const PROS = [
     dist: [84, 12, 3, 1, 0], crit: [['Puntualidad', '4,9'], ['Trato', '5,0'], ['Técnica', '4,7'], ['Explica todo', '4,8']],
     p: { iny: 14000, mue: 12000, sig: 10000, tens4: 28000 }, night: { iny: 17000 }, xinc: 'Ayuda a ordenar los remedios de la semana',
     sl: [['20:00'], ['10:30', '12:00', '16:00'], ['10:30', '17:00'], ['08:00', '10:30'], ['10:30', '12:00'], ['09:00']] },
-  { id: 'vm', n: 'Valentina Morales', i: 'VM', t: 'Enfermera', k: 'enf', g: 'f', reg: '509.663', r: '4,9', rn: 4.9, a: 203, rv: 148, km: 4.1, yrs: 11, bg: '#EFF2F6', fg: '#2B3D55', top: true,
+  { id: 'vm', n: 'Valentina Morales', i: 'VM', t: 'Enfermera', k: 'enf', g: 'f', reg: '509.663', r: '4,9', rn: 4.9, a: 203, rv: 148, km: 4.1, yrs: 11, bg: '#F1F1FE', fg: '#5557D9', top: true,
     com: ['Las Condes', 'La Reina', 'Vitacura', 'Ñuñoa'], tel: '+56 9 9012 4477', resp: '30 min',
     bio: 'Enfermera de la PUC con 11 años en clínica. Me especialicé en heridas y en pacientes postrados. Después de cada atención te mando un informe por correo.',
     spec: ['Heridas y úlceras', 'Paciente postrado', 'Sondas', 'Post operatorio'],
@@ -156,7 +156,7 @@ const PROS = [
     dist: [90, 8, 1, 1, 0], crit: [['Puntualidad', '5,0'], ['Trato', '4,9'], ['Técnica', '5,0'], ['Explica todo', '4,9']],
     p: { iny: 25000, cur: 30000, cura: 42000, mue: 18000, son: 35000 }, night: { iny: 30000 }, xinc: 'Informe de la atención por correo',
     sl: [[], [], [], ['08:30', '10:00', '15:00'], ['08:30', '12:00'], ['10:00']] },
-  { id: 'fl', n: 'Francisca León', i: 'FL', t: 'Enfermera', k: 'enf', g: 'f', reg: '498.120', r: '4,8', rn: 4.8, a: 156, rv: 104, km: 3.6, yrs: 9, bg: '#EDEDFD', fg: '#4A4CC0',
+  { id: 'fl', n: 'Francisca León', i: 'FL', t: 'Enfermera', k: 'enf', g: 'f', reg: '498.120', r: '4,8', rn: 4.8, a: 156, rv: 104, km: 3.6, yrs: 9, bg: '#F3F3F5', fg: '#3A3A40',
     com: ['Las Condes', 'Providencia', 'Ñuñoa', 'Vitacura'], tel: '+56 9 7340 2291', resp: '40 min',
     bio: 'Enfermera de la U. de los Andes. Nueve años en pabellón y recuperación de la Clínica Alemana. Hoy atiendo post operatorios y toma de muestras a domicilio.',
     spec: ['Post operatorio', 'Toma de muestras', 'Inyecciones'],
@@ -164,7 +164,7 @@ const PROS = [
     dist: [85, 11, 3, 1, 0], crit: [['Puntualidad', '4,8'], ['Trato', '4,9'], ['Técnica', '4,9'], ['Explica todo', '4,7']],
     p: { iny: 20000, cur: 27000, cura: 40000, mue: 16000 }, night: { iny: 24000 }, xinc: 'Control de presión antes y después',
     sl: [[], ['18:00', '19:00'], ['08:00', '18:00'], ['08:00'], ['07:30', '09:00'], ['10:00', '11:00']] },
-  { id: 'dn', n: 'Diego Navarro', i: 'DN', t: 'Enfermero', k: 'enf', g: 'm', reg: '517.402', r: '4,7', rn: 4.7, a: 64, rv: 47, km: 2.9, yrs: 4, bg: '#E3F1FB', fg: '#143F78',
+  { id: 'dn', n: 'Diego Navarro', i: 'DN', t: 'Enfermero', k: 'enf', g: 'm', reg: '517.402', r: '4,7', rn: 4.7, a: 64, rv: 47, km: 2.9, yrs: 4, bg: '#EEEEFD', fg: '#4447C2',
     com: ['Macul', 'La Florida', 'Ñuñoa', 'Peñalolén'], tel: '+56 9 6118 4420', resp: '35 min',
     bio: 'Enfermero de la U. Mayor. Trabajo en el Hospital Sótero del Río y atiendo a domicilio en la tarde. Llego con todo lo necesario y dejo todo limpio.',
     spec: ['Inyecciones', 'Signos vitales', 'Toma de muestras'],
@@ -253,7 +253,7 @@ function price() {
   const pr = PRO(), L = [];
   const p = priceOf(pr, S.item, S.when === 'prog' ? S.slot : '');
   const isN = S.when === 'prog' && S.slot >= '21:00' && nightOf(pr);
-  if (S.item === 'mue') { L.push([`Toma a domicilio · ${first(pr)}`, p]); if (!byOrder()) L.push([`Exámenes (laboratorio) · ${examList().length}`, examSum()]); return { L, total: L.reduce((a, b) => a + b[1], 0), pro: p, lab: byOrder() ? 0 : examSum(), pend: byOrder() }; }
+  if (S.item === 'mue') { L.push([`Toma a domicilio · ${first(pr)}`, p]); if (!byOrder()) L.push([`Exámenes (laboratorio) · ${examList().length}`, examSum()]); if (!byOrder() && examSum() >= 30000) L.push(['Toma gratis · exámenes sobre $30.000', -p]); return { L, total: L.reduce((a, b) => a + b[1], 0), pro: p, lab: byOrder() ? 0 : examSum(), pend: byOrder() }; }
   L.push([`${CAT[S.item].n}${isN ? ' · horario nocturno' : ''}`, p]);
   return { L, total: L.reduce((a, b) => a + b[1], 0), pro: p };
 }
@@ -291,8 +291,8 @@ function receta(big) {
 function orden() {
   return `<div class="doc" style="max-width:220px"><div class="hd"><div><b>Dra. Marcela Ortiz R.</b><br>Medicina Familiar</div><div>18/10/2026</div></div><div>Paciente: <b>Rosa Muñoz Pérez</b></div><div class="hw mt8">Hemograma<br>Perfil lipídico</div></div>`;
 }
-const idcard = () => `<div class="idcard"><div class="ph">${ic('user', 1).replace('<i ', '<i style="font-size:56px;color:#93A6B6" ')}</div><div style="flex:1"><b>CÉDULA DE IDENTIDAD</b><br>República de Chile<div class="blurline" style="width:80%"></div><div class="blurline" style="width:60%"></div><div class="blurline" style="width:70%"></div><div class="blurline" style="width:40%"></div></div></div>`;
-const logoImg = (n = 'horizontal-color', h = 28, st = '') => `<img src="${LOGO(n)}" alt="Cuidapp" style="height:${h}px;${st}">`;
+const idcard = () => `<div class="idcard"><div class="ph">${ic('user', 1).replace('<i ', '<i style="font-size:56px;color:#A5A5AE" ')}</div><div style="flex:1"><b>CÉDULA DE IDENTIDAD</b><br>República de Chile<div class="blurline" style="width:80%"></div><div class="blurline" style="width:60%"></div><div class="blurline" style="width:70%"></div><div class="blurline" style="width:40%"></div></div></div>`;
+const logoImg = (n = 'horizontal-nm', h = 28, st = '') => `<img src="${LOGO(n)}" alt="Cuidapp" style="height:${h}px;${st}">`;
 const tabsP = [['servicios', 'magnifying-glass', 'Servicios', 'P06'], ['citas', 'calendar-blank', 'Mis citas', 'P26'], ['favoritos', 'heart', 'Favoritos', 'P34'], ['cuenta', 'user-circle', 'Cuenta', 'P28']];
 const tabsR = [['inicio', 'house', 'Inicio', 'R16'], ['agenda', 'calendar-blank', 'Agenda', 'R24'], ['ganancias', 'wallet', 'Ganancias', 'R23'], ['perfil', 'user', 'Perfil', 'R25']];
 const tabbar = (role, on) => `<div class="tabbar">${(role === 'pro' ? tabsR : tabsP).map(t => `<button class="${t[0] === on ? 'on' : ''}" data-go="${t[3]}">${ic(t[1], t[0] === on)}${t[2]}</button>`).join('')}</div>`;
@@ -343,7 +343,7 @@ function headerD(s) {
   const on = s.tab || s.dtab;
   const nav = s.noNav ? '' : `<nav>${items.map(t => `<button class="${t[3] === on ? 'on' : ''}" data-go="${t[2]}">${ic(t[0], t[3] === on)}${t[1]}</button>`).join('')}</nav>`;
   const me = s.noNav ? '' : (r === 'pro' ? `<div class="me">${av('CR', 's')}Camila</div>` : `<button class="me" data-go="P28">${av('DF', 's')}Daniela</button>`);
-  return `<div class="dh">${logoImg('horizontal-color', 30)}${r === 'pro' ? '<span class="tag">Profesionales</span>' : ''}${nav}<span class="sp"></span>${me}</div>`;
+  return `<div class="dh">${logoImg('horizontal-nm', 30)}${r === 'pro' ? '<span class="tag">Profesionales</span>' : ''}${nav}<span class="sp"></span>${me}</div>`;
 }
 function frameD(s) {
   const sh = s.sheet && S.sheet ? s.sheet() : '';
@@ -366,7 +366,7 @@ function frameD0(s) {
 function sideA(on) {
   const n = 6 - S.aprob.length - S.rech.length;
   const it = [['A02', 'identification-card', 'Verificación', 'ver', n], ['A04', 'calendar-check', 'Reservas de hoy', 'hoy'], ['A06', 'users-three', 'Profesionales', 'pro'], ['A05', 'list-checks', 'Catálogo y comisión', 'tar']];
-  return `<div class="side">${logoImg('horizontal-color', 28)}${it.map(t => `<button class="${t[3] === on ? 'on' : ''}" data-go="${t[0]}">${ic(t[1], t[3] === on)}${t[2]}${t[4] ? `<span class="cnt num">${t[4]}</span>` : ''}</button>`).join('')}<div class="who">Operaciones<br>operaciones@cuidapp.cl</div><button data-go="A01">${ic('sign-out')}Salir</button></div>`;
+  return `<div class="side">${logoImg('horizontal-nm', 28)}${it.map(t => `<button class="${t[3] === on ? 'on' : ''}" data-go="${t[0]}">${ic(t[1], t[3] === on)}${t[2]}${t[4] ? `<span class="cnt num">${t[4]}</span>` : ''}</button>`).join('')}<div class="who">Operaciones<br>operaciones@cuidapp.cl</div><button data-go="A01">${ic('sign-out')}Salir</button></div>`;
 }
 
 function render() {
@@ -398,13 +398,13 @@ function fit() {
 window.addEventListener('resize', () => cur && fit());
 
 /* ---------- mapas ---------- */
-const pinHome = () => L.divIcon({ className: '', iconSize: [26, 26], iconAnchor: [13, 13], html: '<div style="width:26px;height:26px;border-radius:6px;background:#0A2E5C;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.3)"><div style="width:8px;height:8px;background:#fff;border-radius:2px"></div></div>' });
-const pinPro = (lbl) => L.divIcon({ className: '', iconSize: [22, 22], iconAnchor: [11, 11], html: `<div style="position:relative"><div style="width:22px;height:22px;border-radius:11px;background:#1497DE;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35)"></div>${lbl ? `<div style="position:absolute;left:30px;top:-3px;background:#0A2E5C;color:#fff;font:600 13px/28px var(--font);padding:0 10px;border-radius:14px;white-space:nowrap">${lbl}</div>` : ''}</div>` });
-const pinDot = (c = '#1497DE') => L.divIcon({ className: '', iconSize: [14, 14], iconAnchor: [7, 7], html: `<div style="width:14px;height:14px;border-radius:7px;background:${c};border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>` });
+const pinHome = () => L.divIcon({ className: '', iconSize: [26, 26], iconAnchor: [13, 13], html: '<div style="width:26px;height:26px;border-radius:6px;background:#111111;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.3)"><div style="width:8px;height:8px;background:#fff;border-radius:2px"></div></div>' });
+const pinPro = (lbl) => L.divIcon({ className: '', iconSize: [22, 22], iconAnchor: [11, 11], html: `<div style="position:relative"><div style="width:22px;height:22px;border-radius:11px;background:#7A7CF0;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35)"></div>${lbl ? `<div style="position:absolute;left:30px;top:-3px;background:#111111;color:#fff;font:600 13px/28px var(--font);padding:0 10px;border-radius:14px;white-space:nowrap">${lbl}</div>` : ''}</div>` });
+const pinDot = (c = '#7A7CF0') => L.divIcon({ className: '', iconSize: [14, 14], iconAnchor: [7, 7], html: `<div style="width:14px;height:14px;border-radius:7px;background:${c};border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>` });
 const pinPulse = () => L.divIcon({ className: '', iconSize: [160, 160], iconAnchor: [80, 80], html: '<div class="pulse"><span></span><span></span><span></span></div>' });
-const pinLabel = (t) => L.divIcon({ className: '', iconSize: [0, 0], iconAnchor: [0, 0], html: `<div style="transform:translate(-50%,-44px);background:#0A2E5C;color:#fff;font:600 13px/30px var(--font);padding:0 12px;border-radius:15px;white-space:nowrap;display:inline-block">${t}</div>` });
-const pinMe = () => L.divIcon({ className: '', iconSize: [22, 22], iconAnchor: [11, 11], html: '<div style="width:22px;height:22px;border-radius:11px;background:#0A2E5C;border:4px solid #fff;box-shadow:0 0 0 6px rgba(10,46,92,.16),0 2px 6px rgba(0,0,0,.3)"></div>' });
-const pinNav = () => L.divIcon({ className: '', iconSize: [40, 40], iconAnchor: [20, 20], html: '<div style="width:40px;height:40px;border-radius:20px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center"><i class="ph-fill ph-navigation-arrow" style="font-size:22px;color:#1497DE;transform:rotate(45deg)"></i></div>' });
+const pinLabel = (t) => L.divIcon({ className: '', iconSize: [0, 0], iconAnchor: [0, 0], html: `<div style="transform:translate(-50%,-44px);background:#111111;color:#fff;font:600 13px/30px var(--font);padding:0 12px;border-radius:15px;white-space:nowrap;display:inline-block">${t}</div>` });
+const pinMe = () => L.divIcon({ className: '', iconSize: [22, 22], iconAnchor: [11, 11], html: '<div style="width:22px;height:22px;border-radius:11px;background:#111111;border:4px solid #fff;box-shadow:0 0 0 6px rgba(17,17,17,.16),0 2px 6px rgba(0,0,0,.3)"></div>' });
+const pinNav = () => L.divIcon({ className: '', iconSize: [40, 40], iconAnchor: [20, 20], html: '<div style="width:40px;height:40px;border-radius:20px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center"><i class="ph-fill ph-navigation-arrow" style="font-size:22px;color:#7A7CF0;transform:rotate(45deg)"></i></div>' });
 
 function mkMap(el, o) {
   const m = L.map(el, { zoomControl: false, attributionControl: true, zoomSnap: 0.25, fadeAnimation: false });
@@ -413,7 +413,7 @@ function mkMap(el, o) {
   const pts = [];
   const add = (ll, icon, z) => { const mk = L.marker(ll, { icon, interactive: false, zIndexOffset: z || 0 }).addTo(m); pts.push(ll); return mk; };
   if (o.pulse) add(o.pulse, pinPulse(), -10);
-  if (o.route) { L.polyline(o.route, { color: '#1497DE', weight: 5, opacity: 1, lineCap: 'round', lineJoin: 'round' }).addTo(m); o.route.forEach(p => pts.push(p)); }
+  if (o.route) { L.polyline(o.route, { color: '#7A7CF0', weight: 5, opacity: 1, lineCap: 'round', lineJoin: 'round' }).addTo(m); o.route.forEach(p => pts.push(p)); }
   if (o.home) add(o.home, pinHome(), 100);
   if (o.homeLabel) L.marker(o.home, { icon: pinLabel(o.homeLabel), interactive: false, zIndexOffset: 200 }).addTo(m);
   if (o.me) add(o.me, pinMe(), 50);
@@ -461,7 +461,7 @@ function updateBar() {
   const adv = $('#adv'); adv.style.display = s.auto ? '' : 'none';
 }
 function bar() {
-  $('#tb').innerHTML = `${logoImg('horizontal-color', 26, '').replace('<img', '<img class="lg"')}
+  $('#tb').innerHTML = `${logoImg('horizontal-nm', 26, '').replace('<img', '<img class="lg"')}
   <div class="seg">${['pac', 'pro', 'adm'].map(r => `<button data-role="${r}">${ROLE_N[r]}</button>`).join('')}</div>
   <div class="seg vseg"><button data-view="m">${'iPhone'}</button><button data-view="d">Escritorio</button></div>
   <span class="sel" id="sel"></span><span class="sp"></span>
@@ -511,7 +511,7 @@ function openFlow() {
   LANES.forEach(([r, name, cols]) => {
     const rows = Math.max(...cols.map(c => c.length));
     const h = rows * (NH + RG) + 60;
-    svgL += `<rect x="16" y="${y}" width="${X0 + cols.length * (NW + CG)}" height="${h}" rx="16" fill="${r === 'pac' ? '#F7F7F7' : r === 'pro' ? '#F1F8FD' : '#F7F7F7'}"/><text x="40" y="${y + 32}" font-size="18" font-weight="700" fill="#1D1D1B">${name}</text>`;
+    svgL += `<rect x="16" y="${y}" width="${X0 + cols.length * (NW + CG)}" height="${h}" rx="16" fill="${r === 'pac' ? '#F7F7F7' : r === 'pro' ? '#F7F7FB' : '#F7F7F7'}"/><text x="40" y="${y + 32}" font-size="18" font-weight="700" fill="#1D1D1B">${name}</text>`;
     cols.forEach((c, ci) => c.forEach((id, ri) => { pos[id] = { x: X0 + ci * (NW + CG), y: y + 50 + ri * (NH + RG) }; }));
     y += h + 24;
   });
@@ -528,11 +528,11 @@ function openFlow() {
   }));
   Object.entries(pos).forEach(([id, p]) => {
     const s = SC[id]; const nm = s.name.length > 24 ? s.name.slice(0, 23) + '…' : s.name;
-    svgN += `<g class="node" data-open="${id}"><rect x="${p.x}" y="${p.y}" width="${NW}" height="${NH}" rx="10" fill="#fff" stroke="${id[0] === 'W' ? '#1AA7EC' : '#D9D9D9'}"/><text x="${p.x + 14}" y="${p.y + 22}" font-size="12" font-weight="600" fill="#8A8A8A">${id}${id[0] === 'W' ? ' · escritorio' : ''}</text><text x="${p.x + 14}" y="${p.y + 41}" font-size="14" font-weight="600" fill="#1D1D1B">${nm}</text></g>`;
+    svgN += `<g class="node" data-open="${id}"><rect x="${p.x}" y="${p.y}" width="${NW}" height="${NH}" rx="10" fill="#fff" stroke="${id[0] === 'W' ? '#7A7CF0' : '#D9D9D9'}"/><text x="${p.x + 14}" y="${p.y + 22}" font-size="12" font-weight="600" fill="#8A8A8A">${id}${id[0] === 'W' ? ' · escritorio' : ''}</text><text x="${p.x + 14}" y="${p.y + 41}" font-size="14" font-weight="600" fill="#1D1D1B">${nm}</text></g>`;
   });
   const f = document.createElement('div'); f.className = 'flow'; f.id = 'flow';
   f.innerHTML = `<div style="padding:24px 40px 0;display:flex;align-items:baseline;gap:16px"><div class="h-l">Mapa del flujo</div><div class="t2">${Object.keys(pos).length} pantallas. Toca una para abrir el prototipo en ese punto. Pasa el mouse para ver sus conexiones.</div><span style="flex:1"></span><button class="btn sec" style="width:auto;padding:0 18px" id="flowclose">${ic('x')}Cerrar</button></div>
-  <svg width="${W}" height="${y + 20}"><defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#BDBDBD"/></marker><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#1AA7EC"/></marker></defs>${svgL}${edges}${svgN}</svg>`;
+  <svg width="${W}" height="${y + 20}"><defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#BDBDBD"/></marker><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#7A7CF0"/></marker></defs>${svgL}${edges}${svgN}</svg>`;
   $('#stage').after(f); f.style.top = '56px'; if (NATIVE) f.style.top = '0';
   f.addEventListener('click', e => {
     if (e.target.closest('#flowclose')) return closeFlow();
@@ -543,7 +543,7 @@ function openFlow() {
   });
   f.addEventListener('mouseover', e => {
     const n = e.target.closest('[data-open]'); const id = n && n.dataset.open;
-    f.querySelectorAll('path[data-e]').forEach(p => { const [a, b] = p.dataset.e.split(' '); const on = id && (a === id || b === id); p.setAttribute('stroke', on ? '#1AA7EC' : '#C9C9C9'); p.setAttribute('stroke-width', on ? 2.5 : 1.5); p.setAttribute('marker-end', on ? 'url(#ar2)' : 'url(#ar)'); });
+    f.querySelectorAll('path[data-e]').forEach(p => { const [a, b] = p.dataset.e.split(' '); const on = id && (a === id || b === id); p.setAttribute('stroke', on ? '#7A7CF0' : '#C9C9C9'); p.setAttribute('stroke-width', on ? 2.5 : 1.5); p.setAttribute('marker-end', on ? 'url(#ar2)' : 'url(#ar)'); });
   });
 }
 function closeFlow() { const f = $('#flow'); if (f) f.remove(); }
