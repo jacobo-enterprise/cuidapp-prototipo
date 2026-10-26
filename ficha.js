@@ -109,7 +109,7 @@ def({ id: 'P51', name: 'Ficha de salud', kind: 'page', back: true, title: '', ne
   <div class="lbl2">Medicamentos que toma</div>${medList(f.meds)}
   <div class="lbl2">Dispositivos y ayudas</div><div class="chips">${f.dev.length ? f.dev.map(x => `<span class="chip">${x}</span>`).join('') : '<span class="sm t2">Ninguno</span>'}</div>
   <div class="lbl2">Escalas</div><div class="scls">${scale('Barthel', f.barthel, 100, barTxt(f.barthel), m ? 'hoy, Camila' : '21 oct')}${scale('Braden', f.braden, 23, bradTxt(f.braden), m ? 'hoy, Camila' : '21 oct')}</div>
-  <div class="lbl2">Exámenes</div>${m ? `${row('box:chart-line-up', 'Resultados y biomarcadores', '24 oct · 4 valores para revisar', 'P70', st('warn', '4 para revisar', 'arrows-down-up'))}${row('box:bell-ringing', 'Controles', 'Próximo: hemoglobina glicosilada · 24 ene', 'P77')}` : row('box:chart-line-up', 'Resultados y biomarcadores', 'Aún no hay exámenes', 'P74', '<span class="lk">Ver chequeos</span>')}
+  <div class="lbl2">Exámenes</div>${m ? `${row('box:chart-line-up', 'Resultados y biomarcadores', '24 oct · 4 valores para revisar', 'P70', st('warn', '4 para revisar', 'arrows-down-up'))}${row('box:bell-ringing', 'Controles', 'Próximo: hemoglobina glicosilada · 24 ene', 'P77')}` : row('box:chart-line-up', 'Resultados y biomarcadores', 'Aún no hay exámenes', 'P74', '<span class="lk">Ver packs</span>')}
   <div class="lbl2">Historial</div>
   ${row('box:list', 'Línea de tiempo', m ? '9 registros desde el 4 oct' : 'Visitas, remedios y documentos', 'P52')}
   ${m ? row('box:bandaids', 'Evolución de la herida', 'Úlcera venosa · −51% de área en 11 días', 'P53') : ''}

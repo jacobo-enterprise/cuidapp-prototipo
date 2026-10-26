@@ -70,12 +70,13 @@ Object.assign(ACT, {
   shr: k => { S.shr[k] = !S.shr[k]; },
   shrGo: () => { S.resShared = Object.values(S.shr).some(Boolean); toast(S.resShared ? 'Compartido. Queda registrado en «Quién vio la ficha».' : 'No compartiste con nadie.'); },
   shrLink: () => { S.shrLink = !S.shrLink; toast(S.shrLink ? 'Enlace creado: dura 7 días y puedes revocarlo cuando quieras.' : 'Enlace revocado.'); },
-  rep: k => { S.item = 'mue'; S.mmode = 'cat'; S.exams = { [BIOM[k].ex]: true }; S.exq = ''; },
+  rep: k => { S.pack = ''; S.item = 'mue'; S.mmode = 'cat'; S.exams = { [BIOM[k].ex]: true }; S.exq = ''; },
   pk: id => { S.pk = id; },
   pkOpen: id => { S.pkOpen = S.pkOpen === id ? '' : id; },
-  pkGo: id => { const p = PACKS.find(x => x[0] === id); S.item = 'mue'; S.mmode = 'cat'; S.exams = {}; p[3].forEach(k => S.exams[k] = true); S.exq = ''; toast(`${p[1]}: ${p[3].length} exámenes agregados.`); },
+  pkGo: id => { const p = pkOf(id); S.item = 'mue'; S.mmode = 'cat'; S.exams = {}; p[4].forEach(k => S.exams[k] = true); S.pack = p[0]; S.exq = ''; toast(`${p[1]} agregado: ${p[4].length} exámenes por ${clp(pkPr(p))}.`); },
+  pkOff: () => { const p = pkAct(); if (p) p[4].forEach(k => S.exams[k] = false); S.pack = ''; toast('Pack quitado.'); },
   ctl: i => { S.ctl[i] = !S.ctl[i]; },
-  ctlGo: k => { S.item = 'mue'; S.mmode = 'cat'; S.exams = { [k]: true }; S.exq = ''; },
+  ctlGo: k => { S.pack = ''; S.item = 'mue'; S.mmode = 'cat'; S.exams = { [k]: true }; S.exq = ''; },
   /* Isapre */
   lkW: w => { S.lk.w = w; const p = S.pv[w]; if (p.t === 'isapre') S.lk.is = p.is; },
   lkIs: i => { S.lk.is = i; },
@@ -145,35 +146,45 @@ def({ id: 'P73', name: 'Compartir resultados', kind: 'page', back: true, title: 
 
 /* ---------- P74 / P75 · Chequeos ---------- */
 const PACKS = [
-  ['gen', 'Chequeo general', 'Adultos, una vez al año', ['hemo', 'bioq', 'lip', 'ori', 'cre']],
-  ['dia', 'Control diabetes', 'Personas con diabetes', ['hba', 'bioq', 'lip', 'cre', 'x616']],
-  ['cor', 'Corazón y riñón', 'Presión alta o colesterol', ['lip', 'hba', 'cre', 'x38', 'ori']],
-  ['am', 'Adulto mayor', 'Control anual desde los 65', ['hemo', 'bioq', 'lip', 'tsh', 'vitd', 'x191', 'cre', 'x38', 'ori']],
-  ['ene', 'Energía y vitaminas', 'Cansancio frecuente', ['hemo', 'x4', 'vitd', 'x191', 'tsh']],
-  ['pos', 'Paciente postrado', 'Control de quien pasa en cama', ['hemo', 'bioq', 'x38', 'cre', 'pcr', 'ori']],
-]; /* contenido clínico de cada pack: validar con médico y laboratorio antes de producción (interno, no se muestra) */
-const EXBM = { hemo: ['Hemoglobina', 'Leucocitos', 'Plaquetas', 'Hematocrito'], bioq: ['Glicemia', 'Creatinina', 'Colesterol', 'GOT', 'Ácido úrico', 'Calcio'], lip: ['Colesterol total', 'LDL', 'HDL', 'Triglicéridos'], ori: ['Orina completa'], cre: ['Creatinina'], hba: ['Hemoglobina glicosilada'], x616: ['Microalbuminuria'], x38: ['Sodio', 'Potasio', 'Cloro'], tsh: ['TSH'], vitd: ['Vitamina D'], x191: ['Vitamina B12'], x4: ['Ferritina'], pcr: ['Proteína C reactiva'] };
-const pkSum = p => p[3].reduce((a, k) => a + EXAMS[k][1], 0);
-const pkBm = p => [...new Set(p[3].flatMap(k => EXBM[k] || [EXAMS[k][0]]))];
-const pkAy = p => p[3].some(k => EXAMS[k][3]);
-const pkPl = p => p[3].map(k => EXAMS[k][8] || '').sort((a, b) => parseInt(b) - parseInt(a))[0];
+  ["pre", "Chequeo preventivo", "Adultos, una vez al año", "Revisa sangre, azúcar, colesterol, riñón e hígado en un solo pinchazo.", ["hemo", "bioq", "lip", "ori"], 27990],
+  ["cv", "Preventivo cardiovascular", "Presión alta o colesterol", "Colesterol, grasas y sales de la sangre para tu control con el médico.", ["bioq", "lip", "x38"], 22990],
+  ["met", "Control metabólico", "Diabetes o azúcar alta", "Azúcar de los últimos 3 meses, colesterol, riñón e hígado.", ["hba", "gli", "lip", "cre", "x58"], 32990],
+  ["tir", "Tiroides y hormonas", "Cansancio, peso o ciclo irregular", "Tiroides y las principales hormonas, para conversar con tu médico.", ["tsh", "x81", "x82", "x69", "x70", "x73", "x62"], 49990],
+  ["nut", "Nutricional y vitaminas", "Cansancio frecuente o dieta especial", "Vitaminas, hierro y minerales que más se piden en controles.", ["x191", "vitd", "x267", "x5", "x4", "x31", "x42"], 61990],
+  ["muj", "Salud mujer", "Control anual de la mujer", "Hormonas, tiroides, hierro, vitaminas y calcio.", ["x69", "x70", "tsh", "t4", "x82", "x191", "x5", "x4", "x267", "x31", "ori"], 74990],
+  ["hom", "Salud hombre", "Hombres desde los 40", "Sangre, azúcar, colesterol, tiroides y antígeno prostático.", ["hemo", "bioq", "lip", "x105", "tsh", "ori"], 46990],
+  ["int", "Salud integral", "El chequeo más completo", "Todo lo del preventivo más azúcar de 3 meses, tiroides, B12 y ferritina.", ["hemo", "bioq", "lip", "hba", "tsh", "t4", "x82", "x191", "x4", "ori"], 72990],
+]; /* precio pack calculado desde datos/examenes-con-packs.xlsx (hoja Packs): ~8% menos que por separado, respetando el margen mínimo de 10% sobre el costo del laboratorio. Contenido clínico: validar con médico y laboratorio antes de producción (interno) */
+const EXBM = { hemo: ['Hemoglobina', 'Leucocitos', 'Plaquetas', 'Hematocrito'], bioq: ['Glicemia', 'Nitrógeno ureico', 'Ácido úrico', 'Colesterol total', 'Proteínas', 'Albúmina', 'Bilirrubina', 'Fosfatasas alcalinas', 'GOT', 'LDH', 'Calcio', 'Fósforo'], lip: ['Colesterol total', 'LDL', 'HDL', 'VLDL', 'Triglicéridos'], ori: ['Orina completa'], cre: ['Creatinina'], gli: ['Glicemia'], hba: ['Hemoglobina glicosilada'], x616: ['Microalbuminuria'], x38: ['Sodio', 'Potasio', 'Cloro'], tsh: ['TSH'], t4: ['T4 libre'], x81: ['T4'], x82: ['T3'], x69: ['FSH'], x70: ['LH'], x73: ['Progesterona'], x62: ['Cortisol'], vitd: ['Vitamina D'], x191: ['Vitamina B12'], x267: ['Ácido fólico'], x4: ['Ferritina'], x5: ['Hierro'], x31: ['Calcio'], x42: ['Fósforo'], x58: ['Bilirrubina', 'GGT', 'Fosfatasas alcalinas', 'Tiempo de protrombina', 'Transaminasas'], x105: ['Antígeno prostático (PSA)'], pcr: ['Proteína C reactiva'] };
+const pkSum = p => p[4].reduce((a, k) => a + EXAMS[k][1], 0);
+const pkBm = p => [...new Set(p[4].flatMap(k => EXBM[k] || [EXAMS[k][0]]))];
+const pkAy = p => p[4].some(k => EXAMS[k][3]);
+const pkPl = p => p[4].map(k => EXAMS[k][8] || '').sort((a, b) => parseInt(b) - parseInt(a))[0];
 const TOMA = () => CAT.mue.base;
-const pkTot = p => pkSum(p) + (pkSum(p) >= 30000 ? 0 : TOMA());
-def({ id: 'P74', name: 'Chequeos', kind: 'page', back: true, title: 'Chequeos', next: ['P75'],
-  body: () => `<div class="sm t2">Packs armados con exámenes del catálogo. Precios de los exámenes más la toma a domicilio, que es gratis si los exámenes suman $30.000 o más.</div>
-  <div class="pkl mt16">${PACKS.map(p => `<div class="pkc"><button class="pkm" data-act="pk" data-arg="${p[0]}" data-go="P75"><span class="tx"><b>${p[1]}</b><span class="sm t2">${p[2]}</span></span><span class="pkp"><b class="num">${clp(pkTot(p))}</b><span class="xs t2">${pkSum(p) >= 30000 ? 'toma gratis' : 'con toma'}</span></span></button>
-  <div class="pkmeta xs t2"><span>${ic('test-tube')}${p[3].length} exámenes</span><span>${ic(pkAy(p) ? 'fork-knife' : 'coffee')}${pkAy(p) ? 'Con ayuno' : 'Sin ayuno'}</span><span>${ic('clock')}${pkPl(p)}</span></div>
-  <button class="chip sm mt8 ${S.pkOpen === p[0] ? 'on' : ''}" data-act="pkOpen" data-arg="${p[0]}">Mide ${pkBm(p).length} biomarcadores ${ic(S.pkOpen === p[0] ? 'caret-up' : 'caret-down')}</button>${S.pkOpen === p[0] ? `<div class="xs t2 mt8">${pkBm(p).join(' · ')}</div>` : ''}</div>`).join('')}</div>
-  <div class="xs t3 mt12">Chequeos de ejemplo. Consulta a tu médico cuál te corresponde.</div>` });
-def({ id: 'P75', name: 'Detalle del chequeo', kind: 'page', back: true, title: '', next: ['P40'],
-  body: () => { const p = PACKS.find(x => x[0] === S.pk) || PACKS[0], sm = pkSum(p), tubes = [...new Set(p[3].map(k => EXAMS[k][2]))];
-    return `<h1 class="h-l">${p[1]}</h1><div class="sm t2 mt4">${p[2]} · ${p[3].length} exámenes · resultados en ${pkPl(p)}</div>
-    <div class="lbl2">Qué incluye</div><div class="exl">${p[3].map(k => `<div class="exr"><span class="tx"><span class="a">${EXAMS[k][0]}</span><span class="b">${exSub(k)}</span></span><span class="exp"><span class="pp num">${clp(EXAMS[k][1])}</span>${ptag(k)}</span></div>`).join('')}</div>
-    ${kv('Exámenes', clp(sm))}${kv('Toma a domicilio', sm >= 30000 ? '<s class="t3">' + clp(TOMA()) + '</s> $0' : clp(TOMA()))}${kv('Total', clp(pkTot(p)), 'tot')}
-    <div class="lbl2">Preparación</div>${row('box:' + (pkAy(p) ? 'fork-knife' : 'coffee'), pkAy(p) ? 'Ayuno de 8 horas' : 'No necesitas ayuno', pkAy(p) ? 'Puedes tomar agua. Agenda temprano en la mañana.' : 'Puedes comer normal', '', '')}${row('box:test-tube', 'Muestras', tubes.join(' · '), '', '')}
+const pkPr = p => p[5];
+const pkSave = p => pkSum(p) - pkPr(p);
+const pkTot = p => pkPr(p) + (pkPr(p) >= 30000 ? 0 : TOMA());
+const pkOf = id => PACKS.find(x => x[0] === id) || PACKS[0];
+const pkCard = (p, sm) => `<button class="pkc2 ${sm ? 'sm' : ''}" data-act="pk" data-arg="${p[0]}" data-go="P75"><span class="tx"><b>${p[1]}</b><span class="sm t2">${p[2]}</span><span class="pkmeta xs t2"><span>${ic('test-tube')}${p[4].length} exámenes</span><span>${ic(pkAy(p) ? 'fork-knife' : 'coffee')}${pkAy(p) ? 'Con ayuno' : 'Sin ayuno'}</span>${sm ? '' : `<span>${ic('clock')}${pkPl(p)}</span>`}</span></span><span class="pkp"><b class="num">${clp(pkPr(p))}</b><s class="xs t3 num">${clp(pkSum(p))}</s><span class="pksv">Ahorras ${clp(pkSave(p))}</span></span></button>`;
+const pkSec = () => `<div class="shd mt24"><h3>Packs de exámenes</h3><button class="lk sm" data-go="P74">Ver los ${PACKS.length}</button></div><div class="xs t2">Exámenes que se piden juntos, a menor precio que por separado.</div><div class="pkl2 mt8">${PACKS.slice(0, 3).map(p => pkCard(p, 1)).join('')}</div>`;
+const pkAct = () => { const p = S.pack && PACKS.find(x => x[0] === S.pack); return p && p[4].every(k => S.exams[k]) ? p : null; };
+const pkD = () => { const p = pkAct(); return p && !byOrder() ? pkSave(p) : 0; };
+def({ id: 'P74', name: 'Packs de exámenes', kind: 'page', back: true, title: 'Packs de exámenes', next: ['P75'],
+  body: () => `<div class="sm t2">Exámenes que se piden juntos, a menor precio que por separado. La toma a domicilio es gratis si los exámenes suman $30.000 o más.</div>
+  <div class="pkl2 mt16">${PACKS.map(p => pkCard(p)).join('')}</div>
+  <div class="xs t3 mt12">Consulta a tu médico qué exámenes necesitas. Packs de ejemplo.</div>`,
+  foot: () => btn('Prefiero elegir exámenes sueltos', 'P40', 'sec') });
+def({ id: 'P75', name: 'Detalle del pack', kind: 'page', back: true, title: '', next: ['P40', 'P16'],
+  body: () => { const p = pkOf(S.pk), sm = pkSum(p), pr = pkPr(p), tubes = [...new Set(p[4].map(k => EXAMS[k][7] === 'Orina' ? 'Frasco de orina' : EXAMS[k][2]))];
+    return `<div class="xs t3">Pack · ${p[4].length} exámenes</div><h1 class="h-l mt4">${p[1]}</h1><div class="sm t2 mt4">${p[2]} · resultados en ${pkPl(p)}</div>
+    <div class="lbl2">Para qué sirve</div><div class="sm">${p[3]}</div>
+    <div class="lbl2">Qué incluye</div><div class="exl">${p[4].map(k => `<div class="exr"><span class="check on">${ic('check', 0).replace('ph ', 'ph-bold ')}</span><span class="tx"><span class="a">${EXAMS[k][0]}</span><span class="b">${(EXBM[k] && EXBM[k].length > 1 ? EXBM[k].join(', ') + ' · ' : '') + exSub(k)}</span></span></div>`).join('')}</div>
+    <div class="lbl2">Precio</div>${kv('Por separado', clp(sm))}${kv('Descuento pack', '−' + clp(sm - pr), 'dsc')}${kv('Precio del pack', clp(pr))}${kv('Toma a domicilio', pr >= 30000 ? '<s class="t3">' + clp(TOMA()) + '</s> $0' : clp(TOMA()))}${kv('Total', clp(pkTot(p)), 'tot')}
+    <div class="xs t2 mt8">${pr >= 30000 ? 'Toma gratis porque el pack suma más de $30.000.' : 'La toma a domicilio se suma al precio del pack.'} El costo por servicio (${S.svcP}%) y el descuento CUIDA15 en la toma se ven al pagar.</div>
+    <div class="lbl2">Preparación</div>${row('box:' + (pkAy(p) ? 'fork-knife' : 'coffee'), pkAy(p) ? 'Ayuno de 8 a 12 horas' : 'No necesitas ayuno', pkAy(p) ? 'Puedes tomar agua. Agenda temprano en la mañana.' : 'Puedes comer normal', '', '')}${row('box:test-tube', 'Muestras', tubes.join(' · '), '', '')}${p[4].includes('x62') ? row('box:clock', 'Cortisol antes de las 9:30', 'Agenda la toma temprano', '', '') : ''}
     <div class="lbl2">Orden médica y reembolso</div>${row('box:file-text', 'No necesitas orden médica', 'Si la necesitas, la gestionamos por ti', '', '')}
-    <div class="mt8">${note('receipt', 'Con orden médica suele ser más fácil reembolsar en la Isapre. Revisa las condiciones de tu plan.')}</div>`; },
-  foot: () => abtn('Agendar', 'pkGo', S.pk || 'gen', '', 'P40') });
+    <div class="mt8">${note('receipt', 'Con orden médica suele ser más fácil reembolsar en la Isapre o Fonasa. Revisa las condiciones de tu plan.')}</div>`; },
+  foot: () => `<div class="fbar"><div class="fb-l"><b class="num">${clp(pkPr(pkOf(S.pk)))}</b><span>${pkOf(S.pk)[4].length} exámenes · ${pkPr(pkOf(S.pk)) >= 30000 ? 'toma gratis' : 'toma aparte'}</span></div>${abtn('Agregar pack', 'pkGo', S.pk || PACKS[0][0], 'fbtn', 'P40')}</div>` });
 
 /* ---------- P76 · Seguimiento de exámenes ---------- */
 def({ id: 'P76', name: 'Seguimiento de exámenes', kind: 'page', back: true, title: 'Estado de los exámenes', next: ['P72'],
@@ -267,3 +278,29 @@ def({ id: 'P82', name: 'Isapre vinculada', kind: 'page', back: true, title: 'Isa
     <div class="lbl2">Qué puede hacer Cuidapp</div>${row('box:upload-simple', 'Subir boleta, orden médica y carnet', 'Solo de atenciones agendadas en Cuidapp', '', '')}${row('box:eye', 'Ver el estado de tus solicitudes', 'Para avisarte cuando cambian', '', '')}${row('box:prohibit', 'No cambia tu plan ni tus datos', 'Tampoco hace otros trámites', '', '')}
     <div class="lbl2">Actividad</div>${row('box:clock-counter-clockwise', 'Último envío', 'Hoy 09:20 · Vitamina D', 'P80')}`; },
   foot: () => `<div class="row8">${btn('Ver reembolsos', 'P80', 'sec')}${abtn('Desvincular', 'isaUn', S.lk.w || 'yo', 'sec danger', 'P28')}</div>` });
+
+/* ---------- P93 · Mi salud (pestaña) ---------- */
+const MSX = {
+  mama: { pk: ['met', 'cv'], prox: [['calendar-check', 'Mié 28 oct · 08:00', 'Curación y 3ª dosis de Neurobionta · Camila', 'P26', 'Confirmada'], ['bell-ringing', 'Hemoglobina glicosilada', 'Control · 24 ene 2027', 'P77', ''], ['pill', 'Remedios de hoy', 'Losartán 08:00 · Metformina 13:00 y 20:00', 'P51', '']] },
+  papa: { pk: ['hom', 'cv'], prox: [['syringe', 'Enoxaparina 40 mg · 20:00', 'Día 6 de 21 · abdomen, alternando lados', 'P51', ''], ['calendar-blank', 'Sin visitas agendadas', 'Agenda una curación o control en casa', 'P06', '']] },
+  yo: { pk: ['pre', 'muj'], prox: [['calendar-blank', 'Chequeo preventivo anual', 'Sugerido una vez al año', 'P75', ''], ['bell-ringing', 'Sin recordatorios', 'Agrégalos cuando tengas exámenes', '', '']] },
+};
+const msTrend = k => { const b = BIOM[k], v = bval(k), p = prevL(b);
+  return `<button class="mstr" data-act="bm" data-arg="${k}" data-go="P71"><span class="tx"><b>${b.n}</b><span class="sm t2"><b class="num">${nf(v, b.d)}</b> ${b.u}${p ? ` · ${v < p[1] ? '↓' : v > p[1] ? '↑' : '='} desde ${nf(p[1], b.d)} (${p[0]})` : ''}</span><span class="msst ${bst(k) === 'ok' ? 'ok' : 'warn'}">${{ ok: 'En rango', hi: 'Sobre el rango', lo: 'Bajo el rango', crit: 'Requiere atención hoy' }[bst(k)]}</span></span>${spark(k)}${ic('caret-right')}</button>`; };
+Object.assign(ACT, { msFm: k => { S.fm = k; } });
+def({ id: 'P93', name: 'Mi salud', kind: 'page', tab: 'salud', next: ['P70', 'P71', 'P74', 'P75', 'P77', 'P51', 'P52', 'P55', 'P59', 'P80', 'P81', 'P26'],
+  body: () => { const k = FAM[S.fm] ? S.fm : 'mama', f = FAM[k], x = MSX[k], m = k === 'mama', out = outK(), rbs = RBS().filter(r => r.w === k);
+    const res = m ? `<div class="msc"><div class="msc-h"><div><b>Exámenes del 24 oct</b><span class="xs t2">${BKEYS.length} biomarcadores · Paula Godoy</span></div><button class="lk sm" data-go="P70">Ver todos</button></div>
+      <div class="bcnt mt12"><div class="ok">${ic('check-circle', 1)}<b class="num">${BKEYS.length - out.length}</b><span>en rango</span></div><div class="warn">${ic('arrows-down-up', 1)}<b class="num">${out.length}</b><span>para revisar</span></div></div>
+      <div class="mstl mt12">${out.slice(0, 3).map(msTrend).join('')}</div></div>`
+      : `<div class="msc ms-e"><span class="ri box">${ic('chart-line-up')}</span><div><b>Aún no hay exámenes de ${f.c}</b><div class="sm t2 mt4">Cuando estén los resultados vas a ver aquí cómo cambian en el tiempo.</div><button class="lk sm mt8" data-go="P74">Ver packs de exámenes</button></div></div>`;
+    return `<h1 class="h-xl mt8">Mi salud</h1><div class="t2 sm mt4">Resultados, controles y documentos de tu familia.</div>
+    <div class="pers mt16" role="tablist">${['mama', 'papa', 'yo'].map(w => `<button class="${w === k ? 'on' : ''}" data-act="msFm" data-arg="${w}" role="tab" aria-selected="${w === k}">${av(FAM[w].i, 's')}<span>${w === 'yo' ? 'Tú' : FAM[w].c}</span></button>`).join('')}</div>
+    <div class="mt16">${pinAl(f)}</div>
+    <div class="lbl2">Últimos resultados</div>${res}
+    <div class="lbl2">Próximos y recordatorios</div>${x.prox.map(p => row('box:' + p[0], p[1], p[2], p[3], p[4] ? st('ok', p[4]) : '', '', p[3] === 'P51' ? 'fm' : p[3] === 'P75' ? 'pk' : '', p[3] === 'P51' ? k : p[3] === 'P75' ? 'pre' : '')).join('')}
+    <div class="shd mt24"><h3>Chequeos sugeridos</h3><button class="lk sm" data-go="P74">Ver packs</button></div><div class="pkl2">${x.pk.map(id => pkCard(pkOf(id), 1)).join('')}</div>
+    <div class="lbl2">Ficha y documentos</div>${row('box:notebook', 'Ficha de salud', f.dx[0], 'P51', '', '', 'fm', k)}${row('box:list', 'Línea de tiempo', m ? '9 registros · última nota hoy' : k === 'papa' ? '3 registros · última nota 21 oct' : 'Sin registros todavía', 'P52', '', '', 'fm', k)}${m ? row('box:file-pdf', 'Informe del laboratorio', 'Resultados 24 oct · PDF', '', ic('download-simple'), '', 'toast', 'Descargado: Resultados-Rosa-24-10-2026.pdf') : ''}${row('box:file-pdf', 'Ficha en PDF', 'Para llevarla al médico', 'P59', '', '', 'fm', k)}
+    <div class="lbl2">Reembolsos</div>${rbs.length ? rbs.map(r => row('box:receipt', r.svc, `${r.f} · ${clp(r.m)}`, 'P81', rbChip(r.st), '', 'rb', r.id)).join('') : row('box:receipt', 'Sin reembolsos en curso', S.pv[k] && S.pv[k].t === 'isapre' ? 'Los enviamos por ti cuando vinculas tu Isapre' : pvTxt(k), 'P80', '<span class="lk">Ver todos</span>')}
+    <div class="lbl2">Privacidad</div>${row('box:eye', 'Quién vio la ficha', m ? 'Último acceso hoy 08:41 · Camila' : 'Registro de accesos', 'P55', '', '', 'fm', k)}
+    <div class="mt16">${note('info', 'Esto no es un diagnóstico. Conversa tus resultados con tu médico tratante.')}</div>`; } });

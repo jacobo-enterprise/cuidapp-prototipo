@@ -60,13 +60,13 @@ const pvTxt = (w = S.who) => { const p = S.pv[w] || {}; return p.t === 'fonasa' 
 const patN = w => FAM[w].n;
 
 Object.assign(ACT, {
-  exPair: () => { S.item = 'mue'; S.mmode = 'cat'; S.exams = { hemo: true, lip: true }; S.exq = ''; },
+  exPair: () => { S.pack = ''; S.item = 'mue'; S.mmode = 'cat'; S.exams = { hemo: true, lip: true }; S.exq = ''; },
   exMore: () => { S.exLim = (S.exLim || 20) + 20; },
   exAdd: k => { S.item = 'mue'; S.mmode = 'cat'; S.exams[k] = true; S.exq = ''; toast(`${EXAMS[k][0]} agregado a tus exámenes.`); },
   path: p => { S.mmode = p; },
   ordUp: () => { S.orden = 'si'; S.ord = 'rev'; S.mmode = 'orden'; },
   ordReady: () => { S.ord = 'listo'; S.ordSel = ORD5.slice(); },
-  ordOk: () => { S.exams = {}; (S.ordSel || ORD5).forEach(k => S.exams[k] = true); S.ord = 'ok'; S.ordFrom = true; S.mmode = 'cat'; S.item = 'mue'; },
+  ordOk: () => { S.pack = ''; S.exams = {}; (S.ordSel || ORD5).forEach(k => S.exams[k] = true); S.ord = 'ok'; S.ordFrom = true; S.mmode = 'cat'; S.item = 'mue'; },
   ordEdit: () => { ACT.ordOk(); toast('Puedes agregar o quitar exámenes. El laboratorio revisa los cambios.'); },
   help: k => { S.help = k; },
   helpAdd: () => { HELP[S.help][2].forEach(k => S.exams[k] = true); S.mmode = 'cat'; S.exq = ''; toast(`Agregamos ${HELP[S.help][2].length} exámenes sugeridos.`); },
@@ -98,7 +98,8 @@ def({ id: 'P40', name: 'Exámenes de laboratorio', kind: 'page', back: true, tit
       return `${head}<div class="mt16">${note('sparkle', 'Sube una foto de tu orden y nuestro equipo marca los exámenes por ti. Tú confirmas los precios antes de pagar.', 'ok')}</div>${stt ? `<div class="mt16">${stt}</div>` : `<div class="lbl2">Cómo funciona</div>${[['camera', 'Sacas una foto a la orden', 'Papel o PDF, la de cualquier médico'], ['magnifying-glass', 'La revisamos en menos de 30 min', 'En horario hábil, con el catálogo del laboratorio'], ['check-circle', 'Confirmas los exámenes y el precio', 'Puedes editar antes de pagar']].map(t => row('box:' + t[0], t[1], t[2], '', '')).join('')}`}`;
     }
     return `${head}<div class="mt16">${note('check-circle', 'No necesitas orden: nosotros la gestionamos por ti.', 'ok')}</div>
-    <div class="mt12">${row('box:package', 'Chequeos armados', `${PACKS.length} packs · desde ${clp(Math.min(...PACKS.map(pkTot)))} con toma`, 'P74')}</div>
+    ${pkAct() ? `<div class="pkon mt16"><span class="ri box">${ic('package')}</span><span class="tx"><b>Pack ${pkAct()[1]}</b><span class="xs t2">${pkAct()[4].length} exámenes · ahorras ${clp(pkD())}</span></span><button class="lk sm" data-act="pkOff">Quitar</button></div>` : S.pack ? `<div class="mt16">${note('info', 'Quitaste un examen del pack, así que ahora se cobran por separado.')}</div>` : ''}
+    ${pkSec()}
     ${labsNear()}
     <div class="lbl2">Buscar exámenes</div><div>${qin('exq', 'exres', 'Busca: hemograma, vitamina D, 0301045…', 'exLim')}</div><div id="exres">${QRES.exres()}</div>
     <div class="lbl2">Orden médica</div>${checkRow('Necesito orden médica', S.needOrd, 'tog', 'needOrd', 'La gestionamos con un médico · precio por confirmar')}

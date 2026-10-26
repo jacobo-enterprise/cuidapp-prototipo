@@ -229,8 +229,18 @@ def({ id: 'R24', name: 'Agenda', kind: 'page', tab: 'agenda', next: ['R17', 'R18
 
 def({ id: 'R25', name: 'Perfil profesional', kind: 'page', tab: 'perfil',
   body: () => `<div style="display:flex;align-items:center;gap:16px;margin-top:8px">${av('CR', 'l', true)}<div><div class="h-l">Camila Rojas</div><div class="sm t2">Enfermera · SIS 482.317 · ★ 4,9</div></div></div>
-  <div class="mt16">${row('storefront', 'Ver mi perfil público', 'Como lo ven las pacientes', 'R29', ic('caret-right'), '', 'pick', 'cr|')}${row('star', 'Mis reseñas', `★ 4,9 · ${REVIEWS.cr.filter(r => !S.resp[r.id]).length} sin responder`, 'R27')}${row('user-circle', 'Foto y presentación', '', 'R26')}${row('currency-circle-dollar', 'Servicios y precios', `${mySvcs().filter(k => S.my[k].on).length} servicios`, 'R11')}${row('map-pin-area', 'Comunas', comTxt().join(', '), 'R13')}${row('calendar-blank', 'Horario semanal', 'Lun a sáb', 'R14')}
+  <div class="mt16">${row('storefront', 'Ver mi perfil público', 'Como lo ven las pacientes', 'R29', ic('caret-right'), '', 'pick', 'cr|')}${row('star', 'Mis reseñas', `★ 4,9 · ${REVIEWS.cr.filter(r => !S.resp[r.id]).length} sin responder`, 'R27')}${row('user-circle', 'Foto y presentación', '', 'R26')}${row('megaphone', 'Destacar mi perfil', S.dest.cr ? 'Activo · apareces primero' : `Aparece primero · ${clp(S.pz.pdest)} al mes`, 'R44', S.dest.cr ? st('ok', 'Destacado') : ic('caret-right'))}${row('currency-circle-dollar', 'Servicios y precios', `${mySvcs().filter(k => S.my[k].on).length} servicios`, 'R11')}${row('map-pin-area', 'Comunas', comTxt().join(', '), 'R13')}${row('calendar-blank', 'Horario semanal', 'Lun a sáb', 'R14')}
   ${row('identification-card', 'Documentos', 'Todos vigentes', 'R03', st('ok', 'Verificada', 'seal-check'))}${row('bank', 'Cuenta para pagos', 'BancoEstado CuentaRUT', 'R07')}${row('first-aid-kit', 'Pedir una atención para mí', 'Ir a la app de pacientes', 'P06')}${row('sign-out', 'Cerrar sesión', '', 'R01', '')}</div>` });
+
+/* ===== Destacado (pagado por la profesional; precio PROPUESTO en S.pz.pdest) ===== */
+def({ id: 'R44', name: 'Destacar mi perfil', kind: 'page', back: true, title: 'Destacar mi perfil', next: ['R25'],
+  body: () => { const p = PRO('cr');
+    return `<div class="sm t2">Apareces primero en los resultados de tus comunas, con la etiqueta «Destacado». Tu precio y tus reseñas no cambian.</div>
+    <div class="lbl2">Así te ven las pacientes</div><div class="dprev">${pav(p, '', true)}<div class="tx"><b>${p.n} <span class="dtag">Destacado</span></b><span class="xs t2">${p.t} · ${p.yrs} años de experiencia</span><span class="xs">${rate(p)}</span></div></div>
+    <div class="lbl2">Qué incluye</div>${row('box:sort-ascending', 'Primero en la búsqueda', 'En Ñuñoa, Providencia, La Reina y Santiago', '', '')}${row('box:seal-check', 'Etiqueta «Destacado»', 'En tu tarjeta y en tu perfil público', '', '')}${row('box:calendar-x', 'Sin permanencia', 'Lo desactivas cuando quieras', '', '')}
+    <div class="msc mt16 dpz"><div class="tx"><b>Destacado</b><span class="xs t2">Mensual · se cobra con Mercado Pago</span></div><div class="pkp"><b class="num">${clp(S.pz.pdest)}</b><span class="xs t2">al mes</span><span class="ptag p mt4">Precio propuesto</span></div></div>
+    <div class="mt12">${note('info', 'Destacar no reemplaza la verificación: solo aparecen profesionales con documentos al día.')}</div>`; },
+  foot: () => S.dest.cr ? abtn('Desactivar Destacado', 'pDest', '', 'sec', 'R25') : abtn(`Activar por ${clp(S.pz.pdest)} al mes`, 'pDest', '', '', 'R25') });
 
 /* ===== reseñas de la profesional ===== */
 def({ id: 'R27', name: 'Mis reseñas', kind: 'page', back: true, title: 'Mis reseñas',

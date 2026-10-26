@@ -44,16 +44,18 @@ const mapThumb = l => `<div class="mapt"><span class="mpin">${ic('map-pin', 1)}<
 
 /* ---------- Asesores de Isapre (ficticios) ---------- */
 const ASES = [
-  { id: 'mi', n: 'Macarena Ibáñez', i: 'MIb', is: ['Colmena', 'Banmédica', 'Consalud'], r: '4,9', nr: 128, yrs: 9, reg: 'AS-10482', resp: '15 min', bio: 'Te ayudo a comparar planes según tu edad, renta y cargas. Explico la letra chica antes de que firmes.' },
-  { id: 'rv', g: 'm', n: 'Rodrigo Valdés', i: 'RVa', is: ['Cruz Blanca', 'Nueva Masvida', 'Vida Tres'], r: '4,8', nr: 96, yrs: 7, reg: 'AS-11730', resp: '30 min', bio: 'Especialista en planes familiares y cambios de Isapre con preexistencias declaradas.' },
-  { id: 'ch', n: 'Constanza Herrera', i: 'CHe', is: ['Banmédica', 'Vida Tres', 'Esencial'], r: '4,9', nr: 71, yrs: 5, reg: 'AS-12215', resp: '20 min', bio: 'Planes para independientes y primeras cotizaciones. Atiendo por videollamada o WhatsApp.' },
-  { id: 'fa', g: 'm', n: 'Felipe Araya', i: 'FAr', is: ['Consalud', 'Colmena', 'Esencial'], r: '4,7', nr: 54, yrs: 4, reg: 'AS-12904', resp: '1 h', bio: 'Comparo planes con buena cobertura en clínicas del sector oriente.' },
-  { id: 'jc', n: 'Javiera Castro', i: 'JCa', is: ['Cruz Blanca', 'Colmena', 'Banmédica', 'Consalud'], r: '5,0', nr: 203, yrs: 14, reg: 'AS-08311', resp: '25 min', bio: 'Más de 14 años asesorando a adultos mayores y familias con cargas.' },
+  { id: 'mi', n: 'Macarena Ibáñez', i: 'MIb', is: ['Colmena'], r: '4,9', nr: 128, yrs: 9, reg: 'AS-10482', resp: '15 min', bio: 'Te ayudo a comparar planes según tu edad, renta y cargas. Explico la letra chica antes de que firmes.' },
+  { id: 'rv', g: 'm', n: 'Rodrigo Valdés', i: 'RVa', is: ['Cruz Blanca'], plus: true, r: '4,8', nr: 96, yrs: 7, reg: 'AS-11730', resp: '30 min', bio: 'Especialista en planes familiares y cambios de Isapre con preexistencias declaradas.' },
+  { id: 'ch', n: 'Constanza Herrera', i: 'CHe', is: ['Banmédica'], r: '4,9', nr: 71, yrs: 5, reg: 'AS-12215', resp: '20 min', bio: 'Planes para independientes y primeras cotizaciones. Atiendo por videollamada o WhatsApp.' },
+  { id: 'fa', g: 'm', n: 'Felipe Araya', i: 'FAr', is: ['Consalud'], r: '4,7', nr: 54, yrs: 4, reg: 'AS-12904', resp: '1 h', bio: 'Comparo planes con buena cobertura en clínicas del sector oriente.' },
+  { id: 'jc', n: 'Javiera Castro', i: 'JCa', is: ['Banmédica'], plus: true, r: '5,0', nr: 203, yrs: 14, reg: 'AS-08311', resp: '25 min', bio: 'Más de 14 años asesorando a adultos mayores y familias con cargas.' },
 ];
 const aseT = a => a.g === 'm' ? 'Asesor de Isapre' : 'Asesora de Isapre';
 const aseOf = id => ASES.find(a => a.id === id) || ASES[0];
+const aseIsa = a => a.is[0];
+const asePlus = a => a.id === 'mi' ? S.qa.plus : !!a.plus;
 const RENTAS = ['Hasta $800.000', '$800.000 – $1.500.000', '$1.500.000 – $2.500.000', '$2.500.000 – $4.000.000', 'Más de $4.000.000'];
-const aseIs = a => `<div class="chips mt8">${a.is.map(x => `<span class="chip sm st0">${x}</span>`).join('')}</div>`;
+const aseIs = a => `<div class="chips mt8"><span class="chip sm st0">${ic('shield-check')}Asesora solo ${aseIsa(a)}</span></div>`.replace('Asesora', a.g === 'm' ? 'Asesor' : 'Asesora');
 
 Object.assign(ACT, {
   profGo: k => { S.f = { enf: k === 'enf', tens: k === 'tens' }; S.scope = ''; toast(`Mostrando solo ${PROFS.find(x => x.k === k).n}. Elige el servicio.`); },
@@ -68,10 +70,15 @@ Object.assign(ACT, {
   lbPay: () => { S.lbDone = true; },
   cqA: v => { S.cq.age = v; }, cqR: i => { S.cq.r = +i; }, cqD: v => { S.cq.dep = +v; }, cqI: v => { S.cq.is = v; },
   ase: id => { S.ase = id; },
-  aseReq: id => { S.ase = id; S.aseSent[id] = true; },
-  qIs: v => { S.qa.is.includes(v) ? S.qa.is = S.qa.is.filter(x => x !== v) : S.qa.is.push(v); },
+  aseReq: id => { if (!S.aseOk[id]) return toast('Marca la casilla para aceptar el contacto.'); S.ase = id; S.aseSent[id] = true; },
+  aseOk: id => { S.aseOk[id] = !S.aseOk[id]; },
+  qPlus: () => { S.qa.plus = !S.qa.plus; },
+  unl: i => { S.unl[+i] = true; toast(`Contacto desbloqueado. Pagaste ${clp(S.pz.unl)} con Mercado Pago (ejemplo).`); },
+  pz: a => { const [k, d] = a.split(':'); S.pz[k] = Math.max(0, S.pz[k] + (+d)); },
+  pDest: () => { S.dest.cr = !S.dest.cr; toast(S.dest.cr ? `Listo: apareces primero con la etiqueta «Destacado». ${clp(S.pz.pdest)} al mes con Mercado Pago.` : 'Destacado desactivado. Sigues apareciendo en los resultados normales.'); },
+  qIs: v => { S.qa.is = [v]; ASES[0].is = [v]; },
   qPlan: v => { S.qa.plan = v; },
-  qPay: () => { S.qa.paid = true; toast('Pago con Mercado Pago aprobado (ejemplo). Ya apareces en «Cotiza tu Isapre».'); },
+  qPay: () => { S.qa.paid = true; toast(S.qa.plan === 'free' && !S.qa.plus ? 'Listo: ya apareces gratis en «Cotiza tu Isapre».' : 'Pago con Mercado Pago aprobado (ejemplo).'); },
   lead: i => { S.lead = +i; },
   leadSt: () => { S.leadSt[S.lead] = 'cot'; toast('Cotización enviada. La paciente la recibe con una notificación push.'); },
   mueUp: () => { S.mue.up = !S.mue.up; },
@@ -157,55 +164,85 @@ def({ id: 'P89', name: 'Cotiza tu Isapre', kind: 'page', back: true, title: 'Cot
     <div class="mt16">${note('lock-simple', 'Solo compartimos estos datos con el asesor que elijas. No pedimos tu clave ni tu RUT en este paso.')}</div>`; },
   foot: () => btn('Ver asesores', 'P90', '', S.cq.age && S.cq.r != null && S.cq.is ? '' : 'disabled') });
 
-const aseCard = a => `<div class="asec"><button class="aseh" data-act="ase" data-arg="${a.id}" data-go="P91">${av(a.i, 'l')}<span class="tx"><b>${a.n}</b><span class="xs t2">${aseT(a)} · ${a.yrs} años · responde en ${a.resp}</span><span class="sm">${ic('star', 1)} ${a.r} <span class="t3">(${a.nr})</span></span></span></button>${aseIs(a)}
-  <div class="mt12">${S.aseSent[a.id] ? `<button class="btn sec" disabled>${ic('check')}Solicitud enviada</button>` : abtn('Pedir cotización', 'aseReq', a.id, 'sec', 'P92')}</div></div>`;
+const aseCard = a => `<div class="asec"><button class="aseh" data-act="ase" data-arg="${a.id}" data-go="P91">${av(a.i, 'l')}<span class="tx"><b>${a.n}${asePlus(a) ? ' <span class="dtag">Destacado</span>' : ''}</b><span class="xs t2">${aseT(a)} ${aseIsa(a)} · ${a.yrs} años · responde en ${a.resp}</span><span class="sm">${ic('star', 1)} ${a.r} <span class="t3">(${a.nr})</span></span></span></button>${aseIs(a)}
+  <div class="mt12">${S.aseSent[a.id] ? `<button class="btn sec" disabled>${ic('check')}Solicitud enviada</button>` : btn('Pedir contacto', 'P91', 'sec', `data-act="ase" data-arg="${a.id}"`)}</div></div>`;
 def({ id: 'P90', name: 'Asesores de Isapre', kind: 'page', back: true, title: 'Asesores de Isapre', next: ['P91', 'P92'],
-  body: () => { const q = S.cq, l = [...ASES].sort((a, b) => (b.is.includes(q.is) ? 1 : 0) - (a.is.includes(q.is) ? 1 : 0));
+  body: () => { const q = S.cq, l = [...ASES].sort((a, b) => (asePlus(b) - asePlus(a)) || ((aseIsa(b) === q.is) - (aseIsa(a) === q.is)));
     return `<div class="sm t2">${q.age || '—'} años · ${RENTAS[q.r] || '—'} · ${q.dep ? (q.dep === 4 ? '4 o más cargas' : q.dep + (q.dep === 1 ? ' carga' : ' cargas')) : 'sin cargas'} · ${q.is || '—'}</div>
+    <div class="mt12">${note('info', 'Cada asesor trabaja con una sola Isapre. Para comparar, pide contacto a asesores de distintas Isapres.')}</div>
     <div class="asel mt16">${l.map(aseCard).join('')}</div>
-    <div class="xs t3 mt12">Asesores registrados que pagan por aparecer en Cuidapp. Personas y datos de ejemplo.</div>`; } });
+    <div class="xs t3 mt12">«Destacado» es un espacio pagado por el asesor. Personas y datos de ejemplo.</div>`; } });
 
 def({ id: 'P91', name: 'Perfil del asesor', kind: 'page', back: true, title: '', next: ['P92'],
   body: () => { const a = aseOf(S.ase);
-    return `<div class="aseph">${av(a.i, 'xl', true)}<h1 class="h-l mt12">${a.n}</h1><div class="sm t2 mt4">${aseT(a)} · registro ${a.reg} (ejemplo)</div></div>
+    return `<div class="aseph">${av(a.i, 'xl', true)}<h1 class="h-l mt12">${a.n}</h1><div class="sm t2 mt4">${aseT(a)} ${aseIsa(a)} · registro ${a.reg} (ejemplo)${asePlus(a) ? ' <span class="dtag">Destacado</span>' : ''}</div></div>
     <div class="kst mt16"><div><b class="num">${a.r}</b><span>${a.nr} reseñas</span></div><div><b class="num">${a.yrs}</b><span>años</span></div><div><b class="num">${a.resp}</b><span>responde</span></div></div>
     <div class="lbl2">Sobre su trabajo</div><div class="sm">${a.bio}</div>
-    <div class="lbl2">Isapres con las que trabaja</div>${aseIs(a)}
-    <div class="lbl2">Cómo funciona</div>${row('box:paper-plane-tilt', 'Envías tu solicitud', 'Edad, renta, cargas y previsión actual', '', '')}${row('box:chat-circle-text', 'Te contacta por la app', 'Con 2 o 3 planes comparados', '', '')}${row('box:hand', 'Tú decides', 'Sin costo ni compromiso para ti', '', '')}`; },
-  foot: () => { const a = aseOf(S.ase); return S.aseSent[a.id] ? btn(ic('check') + 'Solicitud enviada', '', 'sec', 'disabled') : abtn('Pedir cotización', 'aseReq', a.id, '', 'P92'); } });
+    <div class="lbl2">Isapre</div>${aseIs(a)}
+    <div class="lbl2">Cómo funciona</div>${row('box:paper-plane-tilt', 'Envías tu solicitud', 'Edad, renta, cargas y previsión actual', '', '')}${row('box:chat-circle-text', 'Te contacta por la app', 'Con 2 o 3 planes comparados', '', '')}${row('box:hand', 'Tú decides', 'Sin costo ni compromiso para ti', '', '')}
+    ${S.aseSent[a.id] ? '' : `<div class="lbl2">Consentimiento</div><div class="cons">${checkRow(`Acepto que un asesor de ${aseIsa(a)} me contacte`, S.aseOk[a.id], 'aseOk', a.id, 'Compartimos con este asesor tu edad, renta, cargas, previsión actual, nombre y teléfono. Puedes retirar el consentimiento cuando quieras.')}</div>`}`; },
+  foot: () => { const a = aseOf(S.ase); return S.aseSent[a.id] ? btn(ic('check') + 'Solicitud enviada', '', 'sec', 'disabled') : abtn('Pedir contacto', 'aseReq', a.id, '', S.aseOk[a.id] ? 'P92' : '', !S.aseOk[a.id]); } });
 
 def({ id: 'P92', name: 'Solicitud de cotización enviada', kind: 'page', title: '', next: ['P90'],
   body: () => { const a = aseOf(S.ase);
     return `<div class="okh">${ic('check-circle', 1)}</div><h1 class="h-l mt16">Solicitud enviada</h1><div class="t2 mt8">${a.n} recibió tus datos y te escribe por la app, normalmente en ${a.resp}.</div>
-    <div class="mt16 asec">${row('av:' + a.i, a.n, aseT(a) + ' · ' + a.is.join(', '), 'P91')}</div>
+    <div class="mt16 asec">${row('av:' + a.i, a.n, aseT(a) + ' ' + aseIsa(a), 'P91')}</div>
     <div class="mt12">${note('bell', 'Te avisamos con una notificación push cuando te responda.')}</div>`; },
   foot: () => `${btn('Pedir a otro asesor', 'P90', 'sec')}${btn('Volver al inicio', 'P06')}` });
 
-/* ===== Asesor de Isapre (rol) ===== */
-const PLANS = [['bas', 'Básico', 19990, '10 solicitudes al mes', 'Perfil con foto e Isapres'], ['pro', 'Profesional', 39990, '30 solicitudes al mes', 'Prioridad en tu comuna · estadísticas'], ['top', 'Destacado', 69990, 'Solicitudes ilimitadas', 'Sello «Destacado» y primeras posiciones']];
-const LEADS = [['Daniela F.', '30–39', '$1.500.000 – $2.500.000', 1, 'Fonasa', 'Hace 12 min'], ['Luis M.', '60 o más', '$800.000 – $1.500.000', 0, 'Colmena', 'Hace 1 h'], ['Carolina P.', '40–49', '$2.500.000 – $4.000.000', 3, 'Banmédica', 'Ayer'], ['Tomás R.', '18–29', 'Hasta $800.000', 0, 'Fonasa', 'Ayer']];
+/* ===== Asesor de Isapre (rol) =====
+   Modelo: Gratis (aparece, ve solicitudes con el contacto oculto; desbloquea cada contacto por S.pz.unl),
+   Membresía (S.pz.mem al mes, contactos ilimitados) y Plus (add-on, S.pz.plus al mes: primero en la búsqueda con «Destacado», PRECIO PROPUESTO). */
+const AP = () => [['free', 'Gratis', 0, 'Apareces en «Cotiza tu Isapre»', `Ves cada solicitud, pero el contacto está oculto. Desbloqueas cada uno por ${clp(S.pz.unl)}.`], ['mem', 'Membresía', S.pz.mem, 'Contactos ilimitados', 'Ves nombre y teléfono de todas las solicitudes, sin pagar por cada una.']];
+const LEADS = [['Daniela Fuentes', '30–39', '$1.500.000 – $2.500.000', 1, 'Fonasa', 'Hace 12 min', '+56 9 8123 4471', 'Ñuñoa'], ['Luis Morales', '60 o más', '$800.000 – $1.500.000', 0, 'Colmena', 'Hace 1 h', '+56 9 6650 2210', 'Providencia'], ['Carolina Pizarro', '40–49', '$2.500.000 – $4.000.000', 3, 'Banmédica', 'Ayer', '+56 9 7344 0982', 'Las Condes'], ['Tomás Riveros', '18–29', 'Hasta $800.000', 0, 'Fonasa', 'Ayer', '+56 9 5521 7730', 'Santiago']];
+const qMem = () => S.qa.plan === 'mem' && S.qa.paid;
+const lOpen = i => qMem() || !!S.unl[i];
+const blur = t => `<span class="blr" aria-label="Oculto">${t}</span>`;
+const qPlanTxt = () => `${qMem() ? 'Membresía' : 'Gratis'}${S.qa.plus ? ' + Plus' : ''}`;
 def({ id: 'Q01', name: 'Registro de asesor', kind: 'page', title: 'Únete como Asesor de Isapre', next: ['Q02'],
-  body: () => `<div class="sm t2">Recibe solicitudes de personas que quieren cotizar su Isapre. Pagas un plan mensual por aparecer.</div>
+  body: () => `<div class="sm t2">Aparece gratis en «Cotiza tu Isapre» y recibe solicitudes de personas que quieren cotizar.</div>
   <div class="lbl2">Tus datos</div>${field('user', 'Macarena Ibáñez')}${field('identification-card', '15.482.903-1')}${field('certificate', 'AS-10482', 'N.º de registro de agente de ventas')}
-  <div class="lbl2">Isapres con las que trabajas</div><div class="chips">${ISAPRES.map(i => chip(i, S.qa.is.includes(i), 'qIs', i)).join('')}</div>
+  <div class="lbl2">¿Con qué Isapre trabajas?</div><div class="xs t2" style="margin:-4px 0 8px">Solo una. Las personas te ven como asesora de esa Isapre.</div><div class="chips">${ISAPRES.map(i => chip(i, S.qa.is[0] === i, 'qIs', i)).join('')}</div>
   <div class="lbl2">Foto de perfil</div>${row('av:MIb', 'Foto subida', 'Se ve en tu tarjeta', '', st('ok', 'Lista'))}
   <div class="mt16">${note('shield-check', 'Revisamos tu registro antes de publicarte.')}</div>`,
   foot: () => btn('Elegir plan', 'Q02', '', S.qa.is.length ? '' : 'disabled') });
-def({ id: 'Q02', name: 'Plan de asesor', kind: 'page', back: true, title: 'Elige tu plan', next: ['Q03'],
-  body: () => `<div class="sm t2">Mensual, sin permanencia. Precios de ejemplo, por definir.</div>
-  <div class="pll mt16">${PLANS.map(p => `<button class="plc ${S.qa.plan === p[0] ? 'on' : ''}" data-act="qPlan" data-arg="${p[0]}"><span class="tx"><b>${p[1]}</b><span class="sm">${p[3]}</span><span class="xs t2">${p[4]}</span></span><span class="pkp"><b class="num">${clp(p[2])}</b><span class="xs t2">al mes · ejemplo</span></span></button>`).join('')}</div>
-  <div class="lbl2">Pago</div>${row('box:wallet', 'Mercado Pago', 'Suscripción mensual · cancelas cuando quieras', '', '')}`,
-  foot: () => { const p = PLANS.find(x => x[0] === S.qa.plan); return abtn(`Pagar ${clp(p[2])} con Mercado Pago`, 'qPay', '', '', 'Q03'); } });
-def({ id: 'Q03', name: 'Solicitudes (leads)', kind: 'page', title: 'Solicitudes', next: ['Q04', 'Q02'],
-  body: () => `<div class="row8" style="justify-content:space-between;align-items:center"><span class="sm t2">Plan ${PLANS.find(x => x[0] === S.qa.plan)[1]} · ${LEADS.length} de 30 este mes</span><button class="lk sm" data-go="Q02">Cambiar plan</button></div>
-  <div class="mt12">${LEADS.map((l, i) => `<button class="rbc" data-act="lead" data-arg="${i}" data-go="Q04"><span class="tx"><b>${l[0]} · ${l[1]} años</b><span class="xs t2">${l[2]} · ${l[3] ? l[3] + (l[3] === 1 ? ' carga' : ' cargas') : 'sin cargas'} · ${l[4]}</span></span><span class="rbr"><span class="xs t3">${l[5]}</span>${S.leadSt[i] === 'cot' ? st('ok', 'Cotizado', 'check') : i < 2 ? st('inf', 'Nueva', 'sparkle') : st('neu', 'Vista', 'eye')}</span></button>`).join('')}</div>`,
+def({ id: 'Q02', name: 'Planes del asesor', kind: 'page', back: true, title: 'Elige tu plan', next: ['Q03'],
+  body: () => `<div class="sm t2">Mensual, sin permanencia. Cancelas cuando quieras.</div>
+  <div class="pll mt16">${AP().map(p => `<button class="plc ${S.qa.plan === p[0] ? 'on' : ''}" data-act="qPlan" data-arg="${p[0]}"><span class="tx"><b>${p[1]}</b><span class="sm">${p[3]}</span><span class="xs t2">${p[4]}</span></span><span class="pkp"><b class="num">${p[2] ? clp(p[2]) : '$0'}</b><span class="xs t2">${p[2] ? 'al mes' : 'siempre'}</span></span></button>`).join('')}</div>
+  <div class="lbl2">Agrega</div><div class="plc plus ${S.qa.plus ? 'on' : ''}"><span class="tx"><b>Plus <span class="dtag">Destacado</span></b><span class="sm">Apareces primero en la búsqueda</span><span class="xs t2">Con la etiqueta «Destacado» entre los asesores de ${S.qa.is[0]}.</span></span><span class="pkp"><b class="num">+${clp(S.pz.plus)}</b><span class="xs t2">al mes</span><span class="ptag p mt4">Precio propuesto</span></span>${swc(S.qa.plus, 'qPlus', '', 'Agregar Plus')}</div>
+  ${S.qa.plan === 'mem' || S.qa.plus ? `<div class="lbl2">Pago</div>${row('box:wallet', 'Mercado Pago', 'Suscripción mensual · cancelas cuando quieras', '', '')}` : ''}`,
+  foot: () => { const t = (S.qa.plan === 'mem' ? S.pz.mem : 0) + (S.qa.plus ? S.pz.plus : 0); return abtn(t ? `Pagar ${clp(t)} al mes con Mercado Pago` : 'Empezar gratis', 'qPay', '', '', 'Q03'); } });
+def({ id: 'Q03', name: 'Solicitudes (leads)', kind: 'page', title: 'Solicitudes', next: ['Q04', 'Q02', 'Q05'],
+  body: () => { const nl = LEADS.filter((l, i) => !lOpen(i)).length;
+    return `<div class="row8" style="justify-content:space-between;align-items:center"><span class="sm t2">Plan ${qPlanTxt()} · ${LEADS.length} solicitudes este mes</span><button class="lk sm" data-go="Q02">Cambiar plan</button></div>
+    ${nl ? `<div class="mt12">${note('lock-simple', `${nl} contactos ocultos. Desbloquea cada uno por ${clp(S.pz.unl)} o pásate a Membresía (${clp(S.pz.mem)} al mes) para verlos todos.`)}</div>` : ''}
+    <div class="mt12">${LEADS.map((l, i) => { const o = lOpen(i); return `<button class="rbc" data-act="lead" data-arg="${i}" data-go="Q04"><span class="tx"><b>${o ? l[0] : blur('Nombre oculto')} · ${l[1]} años</b><span class="xs t2">${l[2]} · ${l[3] ? l[3] + (l[3] === 1 ? ' carga' : ' cargas') : 'sin cargas'} · ${l[4]}</span>${o ? `<span class="xs t2">${ic('phone')} ${l[6]}</span>` : `<span class="xs lkd">${ic('lock-simple')} Contacto oculto · desbloquear ${clp(S.pz.unl)}</span>`}</span><span class="rbr"><span class="xs t3">${l[5]}</span>${S.leadSt[i] === 'cot' ? st('ok', 'Cotizado', 'check') : !o ? st('neu', 'Oculto', 'lock-simple') : i < 2 ? st('inf', 'Nueva', 'sparkle') : st('neu', 'Vista', 'eye')}</span></button>`; }).join('')}</div>`; },
   foot: () => btn(ic('user') + 'Mi perfil público', 'Q01', 'sec') });
-def({ id: 'Q04', name: 'Detalle de solicitud', kind: 'page', back: true, title: 'Solicitud', next: ['Q03'],
+def({ id: 'Q04', name: 'Detalle de solicitud', kind: 'page', back: true, title: 'Solicitud', next: ['Q03', 'Q05'],
+  body: () => { const i = S.lead || 0, l = LEADS[i], o = lOpen(i);
+    return `<h1 class="h-l">${o ? l[0] : blur('Persona interesada')}</h1><div class="sm t2 mt4">Recibida ${l[5].toLowerCase()} · desde «Cotiza tu Isapre»</div>
+    <div class="mt16">${kv('Edad', l[1])}${kv('Renta imponible', l[2])}${kv('Cargas', l[3] ? String(l[3]) : 'Sin cargas')}${kv('Previsión actual', l[4])}${kv('Comuna', l[7])}</div>
+    <div class="lbl2">Contacto</div>${o ? `${kv('Nombre', l[0])}${kv('Teléfono', l[6])}` : `${kv('Nombre', blur('Nombre oculto'))}${kv('Teléfono', blur('+56 9 0000 0000'))}<div class="mt12">${note('lock-simple', `El contacto está oculto en el plan Gratis. Desbloquéalo por ${clp(S.pz.unl)} o con Membresía.`)}</div>`}
+    <div class="mt16">${note('check-circle', `Aceptó que un asesor de ${S.qa.is[0]} la contacte · ${l[5].toLowerCase()}. Contáctala solo para cotizar.`, 'ok')}</div>`; },
+  foot: () => { const i = S.lead || 0; if (!lOpen(i)) return `${btn(`${ic('lock-simple-open')}Desbloquear por ${clp(S.pz.unl)}`, 'Q05')}${btn('Ver Membresía', 'Q02', 'sec')}`; return S.leadSt[i] === 'cot' ? btn(ic('check') + 'Cotización enviada', '', 'sec', 'disabled') : abtn('Enviar cotización', 'leadSt', '', '', ''); } });
+def({ id: 'Q05', name: 'Desbloquear contacto', kind: 'page', back: true, title: 'Desbloquear contacto', next: ['Q04'],
   body: () => { const l = LEADS[S.lead || 0];
-    return `<h1 class="h-l">${l[0]}</h1><div class="sm t2 mt4">Recibida ${l[5].toLowerCase()} · desde «Cotiza tu Isapre»</div>
-    <div class="mt16">${kv('Edad', l[1])}${kv('Renta imponible', l[2])}${kv('Cargas', l[3] ? String(l[3]) : 'Sin cargas')}${kv('Previsión actual', l[4])}</div>
-    <div class="mt16">${note('lock-simple', 'Contacta solo por la app. Su teléfono se muestra si acepta tu cotización.')}</div>`; },
-  foot: () => S.leadSt[S.lead || 0] === 'cot' ? btn(ic('check') + 'Cotización enviada', '', 'sec', 'disabled') : abtn('Enviar cotización', 'leadSt', '', '', '') });
+    return `<div class="sm t2">Pagas una vez y ves el nombre y teléfono de esta persona.</div>
+    <div class="msc mt16">${kv('Solicitud', `${l[1]} años · ${l[4]} · ${l[7]}`)}${kv('Desbloqueo de contacto', clp(S.pz.unl))}${kv('Total', clp(S.pz.unl), 'tot')}</div>
+    <div class="lbl2">Pago</div>${row('box:wallet', 'Mercado Pago', 'Visa •••• 2290', '', '<span class="lk">Cambiar</span>')}
+    <div class="mt16">${row('box:infinity', `Membresía · ${clp(S.pz.mem)} al mes`, 'Contactos ilimitados. Conviene desde el 3.er contacto del mes.', 'Q02', '<span class="lk">Ver</span>', '', 'qPlan', 'mem')}</div>`; },
+  foot: () => abtn(`Pagar ${clp(S.pz.unl)} con Mercado Pago`, 'unl', S.lead || 0, '', 'Q04') });
+
+/* ===== Admin · planes y destacados ===== */
+const PZN = [['unl', 'Desbloqueo de contacto (asesor)', 'Por cada contacto, en plan Gratis', 1000, false], ['mem', 'Membresía de asesor', 'Al mes · contactos ilimitados', 1000, false], ['plus', 'Plus de asesor · Destacado', 'Al mes · primero en «Cotiza tu Isapre»', 1000, true], ['pdest', 'Destacado de profesional', 'Al mes · enfermeras y TENS primero en los resultados', 500, true]];
+const REVQ = { unl: 38, mem: 12, plus: 5, pdest: 24 };
+def({ id: 'A14', name: 'Planes y destacados', kind: 'adm', side: 'pln',
+  body: () => { const tot = Object.keys(REVQ).reduce((a, k) => a + REVQ[k] * S.pz[k], 0);
+    return `<div class="h-l">Planes y destacados</div><div class="t2 mt4">Precios que pagan asesores de Isapre y profesionales por aparecer o destacar. Los cambios rigen para cobros nuevos.</div>
+  <div class="pzg mt24">${PZN.map(p => `<div class="box" style="border:1px solid var(--border);border-radius:12px;padding:16px"><div class="b-m">${p[1]} ${p[4] ? '<span class="ptag p">Precio propuesto</span>' : ''}</div><div class="t2 sm mt4">${p[2]}</div><div class="stp mt12"><button class="ib" data-act="pz" data-arg="${p[0]}:-${p[3]}" aria-label="Bajar">${ic('minus')}</button><b class="num">${clp(S.pz[p[0]])}</b><button class="ib" data-act="pz" data-arg="${p[0]}:${p[3]}" aria-label="Subir">${ic('plus')}</button></div></div>`).join('')}</div>
+  <div class="h-m mt32">Ingresos del mes · oct 2026 (ejemplo)</div>
+  <table class="t mt16"><tr><th>Línea</th><th>Cantidad</th><th>Precio</th><th>Ingreso</th></tr>${PZN.map(p => `<tr><td><b style="font-weight:600">${p[1]}</b></td><td class="num">${REVQ[p[0]]}</td><td class="num">${clp(S.pz[p[0]])}</td><td class="num"><b style="font-weight:600">${clp(REVQ[p[0]] * S.pz[p[0]])}</b></td></tr>`).join('')}<tr><td><b style="font-weight:700">Total</b></td><td></td><td></td><td class="num"><b style="font-weight:700">${clp(tot)}</b></td></tr></table>
+  <div class="t2 sm mt12">Asesores: el listado es gratis; cobramos por desbloquear contactos, la Membresía y el Plus. Cantidades de ejemplo.</div>`; } });
 
 /* ===== Profesional · entregar muestra ===== */
 def({ id: 'R42', name: 'Entregar muestra en laboratorio', kind: 'page', back: true, title: 'Entregar muestra', next: ['R22'],

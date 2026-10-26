@@ -72,7 +72,7 @@ const scoreBlock = p => `<div class="score"><div class="big num">${p.r}</div><di
 // tarjeta destacada (carrusel)
 const fcard = p => `<div class="fcard" data-act="pick" data-arg="${p.id}|" data-go="P12" role="button">
   <div class="fc-top">${pav(p, 'l', true)}${heart(p.id, 'fl')}</div>
-  <div class="fc-b"><div class="fc-n">${p.n}</div><div class="fc-m">${p.t} · ${kmT(p)}</div><div class="fc-r"><span class="fc-m">${rate(p)}</span>${p.top ? '<span class="fc-tag">Destacada</span>' : ''}</div>
+  <div class="fc-b"><div class="fc-n">${p.n}</div><div class="fc-m">${p.t} · ${kmT(p)}</div><div class="fc-r"><span class="fc-m">${rate(p)}</span>${isDest(p) ? '<span class="fc-tag">Destacado</span>' : ''}</div>
   <div class="fc-f"><span class="sm">Desde <b class="num">${clp(priceOf(p, ''))}</b></span>${nextOf(p) ? `<span class="nx">${dayLbl(nextOf(p)[0])} ${nextOf(p)[1]}</span>` : ''}</div></div></div>`;
 // tarjeta de lista simple
 const lcard = (p, k = '') => `<div class="lcard ${k}" data-act="pick" data-arg="${p.id}|" data-go="P12" role="button">${pav(p, '', true)}
@@ -83,7 +83,7 @@ const rcard = (pr, wide) => {
   const it = S.item, p = priceOf(pr, it), inc = it ? incOf(pr, it) : [], nx = nextSlots(pr, 12);
   const d0 = nx.length ? nx[0][0] : -1, sl = nx.filter(x => x[0] === d0).slice(0, wide ? 4 : 3);
   return `<div class="rcard ${wide ? 'w' : ''}" data-act="pick" data-arg="${pr.id}|" data-go="P12" role="button">
-  <div class="rc-top">${pav(pr, wide ? 'l' : '', true)}<div class="rc-id"><div class="rc-n">${pr.n}</div><div class="rc-m">${pr.t} · ${pr.yrs} años de experiencia</div><div class="rc-m">${rate(pr)}</div><div class="rc-m">${ic('map-pin')}${pr.com[0]} · a ${kmT(pr)}</div></div>${heart(pr.id)}</div>
+  <div class="rc-top">${pav(pr, wide ? 'l' : '', true)}<div class="rc-id"><div class="rc-n">${pr.n}${isDest(pr) ? ' <span class="dtag">Destacado</span>' : ''}</div><div class="rc-m">${pr.t} · ${pr.yrs} años de experiencia</div><div class="rc-m">${rate(pr)}</div><div class="rc-m">${ic('map-pin')}${pr.com[0]} · a ${kmT(pr)}</div></div>${heart(pr.id)}</div>
   <div class="rc-price"><div class="rc-l"><div class="rc-svc">${it === 'mue' ? 'Toma a domicilio' : it ? CAT[it].n : 'Precio desde'}</div><div class="rc-inc">${(inc.length ? inc.slice(0, 2) : [INC.ins]).map(t => `<span>${ic('check')}${shortInc(t)}</span>`).join('')}</div></div>
   <div class="rc-p"><b class="num">${clp(p)}</b><span>${it === 'mue' ? '+ exámenes' : isT(it) ? `turno de ${minH(it)} h` : it ? durOf(pr, it) + ' min' : 'por visita'}</span></div></div>
   ${isT(it) ? `<div class="rc-sl"><span class="rc-d">Turnos</span><span class="spill dim">Día</span><span class="spill dim">Noche</span><span class="spill dim">24 h</span><button class="more" data-act="pick" data-arg="${pr.id}|" data-go="P13">Armar turno</button></div>` : `<div class="rc-sl"><span class="rc-d">${d0 >= 0 ? dayLbl(d0) : 'Sin horas'}</span>${sl.map(x => `<button class="spill" data-act="pick" data-arg="${pr.id}|${x[0]}|${x[1]}" data-go="P13">${x[1]}</button>`).join('')}<button class="more" data-act="pick" data-arg="${pr.id}|" data-go="P13">Ver más</button></div>`}
@@ -344,7 +344,7 @@ const shiftForm = (p = PRO(), k = S.item, d = false) => { const c = CAT[k], hs =
   <div class="lbl2">Precio</div>${sc.L.map(l => kv(l[0], clp(l[1]))).join('')}${kv('Total', clp(sc.total), 'tot')}
   <div class="mt12 col8">${note('info', `Precio de ${first(p)} por turno. Sus recargos: domingo +${rcPct(p, 'dom')}%, festivos +${rcPct(p, 'fes')}%${c.jor ? '' : `, noche +${rcPct(p, 'noc')}%`}. Se cobra cada turno al terminarlo.`)}${note('notebook', 'En cada turno la cuidadora o TENS anota en la bitácora y deja la entrega de turno para la siguiente.')}</div>`; };
 const steps = n => `<div class="steps">${['Hora', 'Detalles', 'Pago'].map((t, i) => `<span class="${i < n ? 'done' : i === n ? 'on' : ''}">${t}</span>`).join('')}</div>`;
-const nEx = () => { const l = examList().map(e => e[0]); return l.length > 2 ? `${l.slice(0, 2).join(', ')} y ${l.length - 2} más` : l.join(' y '); };
+const nEx = () => { const pk = typeof pkAct === 'function' && pkAct(); if (pk) { const x = examList().length - pk[4].length; return `Pack ${pk[1]}${x > 0 ? ` y ${x} más` : ''}`; } const l = examList().map(e => e[0]); return l.length > 2 ? `${l.slice(0, 2).join(', ')} y ${l.length - 2} más` : l.join(' y '); };
 const SHARE = { todo: ['Todo el historial', 'Notas, curaciones, signos vitales y remedios'], res: ['Solo el resumen', 'Alergias, diagnósticos, remedios y la última nota'], nada: ['Nada', 'Solo verá lo que escribas al agendar'] };
 const shareBlock = () => `<div class="lbl2">¿Qué puede ver ${first()} de la ficha de ${whoTxt().split(' (')[0].split(' ')[0]}?</div>${Object.keys(SHARE).map(k => radioRow(SHARE[k][0] + (k === 'res' ? ' · recomendado' : ''), SHARE[k][1], S.share === k, 'set', 'share=' + k)).join('')}
   <button class="row" data-act="tog" data-arg="sharePh"><span class="tx"><div class="a">Compartir fotos de heridas</div><div class="b">Aparte. Solo si ${first()} las necesita para la curación</div></span><span class="tog ${S.sharePh ? 'on' : ''}"></span></button>

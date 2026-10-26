@@ -13,7 +13,7 @@ const S0 = () => ({
   item: 'iny', addr: 'mama', who: 'mama', when: 'prog', pro: 'cr', day: 1, slot: '08:00', sort: 'rel', ptab: 'serv', det: 'next',
   f: { enf: true, tens: true, cuid: true }, fmax: 0, fday: 'all', frat: 0, fgen: '', fcom: '',
   fav: { cr: true, pg: true }, q: '', typed: false, sheet: '', ctab: 'next', revF: 'all', revSort: 'rec', resp: { cr4: 'Gracias, Francisco. Ese día me pilló un taco en Grecia, por eso te avisé. ¡Nos vemos en el próximo control!' }, replyTo: 'cr1', rtxt: false, rcrit: {}, pday: 1, svcFrom: '',
-  hasMed: true, receta: false, orden: '', mmode: 'cat', exq: '', kinAv: false, medAv: false, promo: 'kin', exams: {}, needOrd: false, ord: '', ordSel: null, ordFrom: false, help: '', exPage: 0, exLim: 20, scope: '', aexq: '', aexPage: 0, aord: 0, aordSel: {}, aordDone: [], pv: { mama: { t: 'fonasa', tr: 'B', is: '' }, papa: { t: 'isapre', tr: '', is: 'Colmena' }, yo: { t: 'isapre', tr: '', is: 'Banmédica' } }, isaOpen: false, blog: 'b12', blogF: '', bm: 'hba', bF: 'all', bSis: '', crit: false, incVis: false, shr: { cr: false, pg: true, lf: false }, shrLink: false, resShared: false, eduRes: false, pk: 'gen', pkOpen: '', ctl: { 0: true, 1: true, 2: false, 3: true }, lk: { w: 'yo', is: '', c1: false, c2: false, car: false, bank: false }, isa: {}, rbAuto: false, rbSel: 'r2', rbList: null, profAv: {}, labId: 'la', lbMode: 'dom', lbSuc: 0, lbEx: [], lbDay: '', lbHr: '', lbSort: '', lbDone: false, cq: { age: '', r: null, dep: 0, is: '' }, ase: 'mi', aseSent: {}, qa: { is: ['Colmena', 'Banmédica', 'Consalud'], plan: 'pro', paid: false }, lead: 0, leadSt: {}, mue: { up: false, rot: true, ord: true, fri: true, done: false }, aLab: 'la', mkG: 10, mkL: { bl: { g: 10, ex: { vitd: 12 } } }, aImp: false, aImpDone: {}, aPer: 'oct2', liqPaid: {}, cuida: true, proSt: '', svcP: 2, rbAsk: '', lkNext: '', rc: RC0(), rcMax: 100, rcEd: '', rbDocs: false, tensNeeds: { hig: true, mov: true, sig: true, com: false },
+  hasMed: true, receta: false, orden: '', mmode: 'cat', pack: '', exq: '', kinAv: false, medAv: false, promo: 'kin', exams: {}, needOrd: false, ord: '', ordSel: null, ordFrom: false, help: '', exPage: 0, exLim: 20, scope: '', aexq: '', aexPage: 0, aord: 0, aordSel: {}, aordDone: [], pv: { mama: { t: 'fonasa', tr: 'B', is: '' }, papa: { t: 'isapre', tr: '', is: 'Colmena' }, yo: { t: 'isapre', tr: '', is: 'Banmédica' } }, isaOpen: false, blog: 'b12', blogF: '', bm: 'hba', bF: 'all', bSis: '', crit: false, incVis: false, shr: { cr: false, pg: true, lf: false }, shrLink: false, resShared: false, eduRes: false, pk: 'gen', pkOpen: '', ctl: { 0: true, 1: true, 2: false, 3: true }, lk: { w: 'yo', is: '', c1: false, c2: false, car: false, bank: false }, isa: {}, rbAuto: false, rbSel: 'r2', rbList: null, profAv: {}, labId: 'la', lbMode: 'dom', lbSuc: 0, lbEx: [], lbDay: '', lbHr: '', lbSort: '', lbDone: false, cq: { age: '', r: null, dep: 0, is: '' }, ase: 'mi', aseSent: {}, qa: { is: ['Colmena'], plan: 'free', plus: false, paid: false }, unl: {}, aseOk: {}, dest: { vm: true }, pz: { unl: 15000, mem: 35000, plus: 19990, pdest: 9990 }, lead: 0, leadSt: {}, mue: { up: false, rot: true, ord: true, fri: true, done: false }, aLab: 'la', mkG: 10, mkL: { bl: { g: 10, ex: { vitd: 12 } } }, aImp: false, aImpDone: {}, aPer: 'oct2', liqPaid: {}, cuida: true, proSt: '', svcP: 2, rbAsk: '', lkNext: '', rc: RC0(), rcMax: 100, rcEd: '', rbDocs: false, tensNeeds: { hig: true, mov: true, sig: true, com: false },
   pay: 'visa', prev: 'fonasa', consent: false, rating: 0, tags: {}, tip: 0, chat: [], phase: 'llego', cancelFrom: 'P27', booked: false, hecho: false, cr: 0,
   docs: { carnet: false, selfie: false, titulo: false, antec: false, banco: false }, prof: 'enf',
   online: false, code: '', chk: { id: false, rec: false, ale: false }, earn: 186405, done: 9, pRating: 0, pTags: {}, paid: false,
@@ -214,7 +214,7 @@ const SUR = { get dom() { return rcPct(PRO(), 'dom') / 100; }, get fest() { retu
 const FEST = { '31-10': 'Día de las Iglesias Evangélicas', '1-11': 'Todos los Santos', '8-12': 'Inmaculada Concepción' };
 /* iconos 3D de servicios (img/iconos-3d); el resto de la interfaz usa Phosphor */
 const i3k = k => CAT[k] ? (CAT[k].i || IC3[CAT[k].g] || CAT[k].g) : (IC3[k] || k);
-const i3 = (k, c = '') => `<img class="i3d ${c}" src="img/iconos-3d/${i3k(k)}.webp?v=20261026m" alt="" draggable="false">`;
+const i3 = (k, c = '') => `<img class="i3d ${c}" src="img/iconos-3d/${i3k(k)}.webp?v=20261026n" alt="" draggable="false">`;
 const INC = { ins: 'Insumos: jeringa, aguja, tórulas y guantes', pre: 'Control de presión antes y después', res: 'Retiro de residuos clínicos', edu: 'Indicaciones escritas para la familia' };
 /* catálogo del laboratorio: precios fijos, no los pone la profesional */
 const LAB = 'Laboratorio';
@@ -225,7 +225,8 @@ const QRES = {};   // listas de resultados que se actualizan al escribir (lab.js
 const EXPOP = ['hemo', 'lip', 'gli', 'bioq', 'ori', 'uro', 'tsh', 't4', 'hba', 'cre', 'vitd', 'pcr'];
 const examKeys = () => Object.keys(EXAMS).filter(k => S.exams[k]);
 const examList = () => examKeys().map(k => EXAMS[k]);
-const examSum = () => examList().reduce((a, e) => a + e[1], 0);
+const examGross = () => examList().reduce((a, e) => a + e[1], 0);
+const examSum = () => examGross() - (typeof pkD === 'function' ? pkD() : 0); /* neto: con descuento de pack */
 const byOrder = () => S.mmode === 'orden' && S.ord !== 'ok';
 const fasting = () => !byOrder() && examKeys().some(k => EXAMS[k][3]) || byOrder();
 const tubes = () => [...new Set(examList().map(e => e[2]))];
@@ -389,6 +390,7 @@ function incOf(pr, item = S.item) {
 const slotsOf = (pr, d) => (pr.sl[d] || []);
 const nextOf = pr => { for (let d = 0; d < pr.sl.length; d++) if (pr.sl[d].length) return [d, pr.sl[d][0]]; return null; };
 const nextSlots = (pr, n = 3) => { const o = []; pr.sl.forEach((l, d) => l.forEach(t => o.push([d, t]))); return o.slice(0, n); };
+const isDest = p => !!(S.dest && S.dest[p.id]);
 function prosFor(item = S.item) {
   let l = PROS.filter(p => priceOf(p, item) && S.f[p.k]);
   if (S.fmax) l = l.filter(p => priceOf(p, item) <= S.fmax);
@@ -399,7 +401,7 @@ function prosFor(item = S.item) {
   if (S.fday === 'man') l = l.filter(p => p.sl[0].length || p.sl[1].length);
   const nx = p => { const x = nextOf(p); return x ? x[0] * 100 + parseInt(x[1]) : 9999; };
   const s = { rel: (a, b) => (b.rn * 40 + Math.min(b.a, 150) / 10 - b.km) - (a.rn * 40 + Math.min(a.a, 150) / 10 - a.km), pre: (a, b) => priceOf(a, item) - priceOf(b, item), rat: (a, b) => b.rn - a.rn || b.a - a.a, pro: (a, b) => nx(a) - nx(b) }[S.sort];
-  return l.sort(s);
+  return l.sort(s).sort((a, b) => isDest(b) - isDest(a)); /* «Destacado» pagado primero (orden estable) */
 }
 function price() {
   const pr = PRO(), L = [];
@@ -407,7 +409,7 @@ function price() {
   const p = priceOf(pr, S.item);
   const rc = rcLines(pr, p, S.when === 'prog' ? S.day : 0, S.when === 'prog' ? S.slot : '', S.when !== 'prog'), rs = rc.reduce((a, b) => a + b[1], 0);
   const fee = typeof isaOf === 'function' && isaOf(S.who) && S.rbAuto ? [['Gestión de reembolso', RB_FEE]] : [];
-  if (S.item === 'mue') { L.push([`Toma a domicilio · ${first(pr)}`, p], ...rc); if (!byOrder()) L.push([`Exámenes (laboratorio) · ${examList().length}`, examSum()]); if (!byOrder() && examSum() >= 30000) L.push(['Toma gratis · exámenes sobre $30.000', -p]); const svc = p + rs - (!byOrder() && examSum() >= 30000 ? p : 0); L.push(...cuidaLine(svc)); const W = withFee(L, fee); return { L: W.L, total: W.L.reduce((a, b) => a + b[1], 0), pro: p + rs, lab: byOrder() ? 0 : examSum(), pend: byOrder(), disc: cuidaOf(svc), sf: W.sf }; }
+  if (S.item === 'mue') { L.push([`Toma a domicilio · ${first(pr)}`, p], ...rc); if (!byOrder()) { L.push([`Exámenes (laboratorio) · ${examList().length}`, examGross()]); if (pkD()) L.push([`Descuento pack ${pkAct()[1]}`, -pkD(), 'dsc']); } if (!byOrder() && examSum() >= 30000) L.push(['Toma gratis · exámenes sobre $30.000', -p]); const svc = p + rs - (!byOrder() && examSum() >= 30000 ? p : 0); L.push(...cuidaLine(svc)); const W = withFee(L, fee); return { L: W.L, total: W.L.reduce((a, b) => a + b[1], 0), pro: p + rs, lab: byOrder() ? 0 : examSum(), pend: byOrder(), disc: cuidaOf(svc), sf: W.sf }; }
   L.push([CAT[S.item].n, p], ...rc, ...cuidaLine(p + rs)); const W = withFee(L, fee);
   return { L: W.L, total: W.L.reduce((a, b) => a + b[1], 0), pro: p + rs, rc: rs, disc: cuidaOf(p + rs), sf: W.sf };
 }
@@ -466,7 +468,7 @@ const row = (i, a, b = '', go = '', end = ic('caret-right'), cls = '', act = '',
 const ST_I = { ok: 'check-circle', warn: 'clock', inf: 'clock-countdown', bad: 'x-circle' };
 const st = (k, t, i) => { i = i === '' ? '' : (i || ST_I[k]); return `<span class="st ${k}">${i ? ic(i, 1) : ''}${t}</span>`; };
 const PHOTO = ['CR', 'FA', 'MC', 'PG', 'VM', 'FL', 'DN', 'JS', 'CD', 'IP', 'RS', 'XV', 'MP'];
-const V = '?v=20261026m';
+const V = '?v=20261026n';
 const slug = n => n.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\./g, '').trim().replace(/\s+/g, '-');
 const PACPH = { DF: 'daniela-fuentes', RM: 'rosa-m', LF: 'luis-fuentes', MIb: 'isabel-montt', RVa: 'rodrigo-vial', CHe: 'valeria-cortes', FAr: 'francisco-lagos', JCa: 'soledad-rios' };
 const phSrc = ini => PHOTO.includes(ini) ? `img/pro/${ini.toLowerCase()}.webp${V}` : PACPH[ini] ? `img/pac/${PACPH[ini]}.webp${V}` : '';
@@ -489,7 +491,7 @@ function orden() {
 }
 const idcard = () => `<div class="idcard"><div class="ph">${ic('user', 1).replace('<i ', '<i style="font-size:56px;color:#A5A5AE" ')}</div><div style="flex:1"><b>CÉDULA DE IDENTIDAD</b><br>República de Chile<div class="blurline" style="width:80%"></div><div class="blurline" style="width:60%"></div><div class="blurline" style="width:70%"></div><div class="blurline" style="width:40%"></div></div></div>`;
 const logoImg = (n = 'horizontal-nm', h = 28, st = '') => `<img src="${LOGO(n)}" alt="Cuidapp" style="height:${h}px;${st}">`;
-const tabsP = [['servicios', 'magnifying-glass', 'Servicios', 'P06'], ['citas', 'calendar-blank', 'Mis citas', 'P26'], ['favoritos', 'heart', 'Favoritos', 'P34'], ['cuenta', 'user-circle', 'Cuenta', 'P28']];
+const tabsP = [['servicios', 'magnifying-glass', 'Servicios', 'P06'], ['citas', 'calendar-blank', 'Mis citas', 'P26'], ['salud', 'heartbeat', 'Mi salud', 'P93'], ['favoritos', 'heart', 'Favoritos', 'P34'], ['cuenta', 'user-circle', 'Cuenta', 'P28']];
 const tabsR = [['inicio', 'house', 'Inicio', 'R16'], ['agenda', 'calendar-blank', 'Agenda', 'R24'], ['ganancias', 'wallet', 'Ganancias', 'R23'], ['perfil', 'user', 'Perfil', 'R25']];
 const tabbar = (role, on) => `<div class="tabbar">${(role === 'pro' ? tabsR : tabsP).map(t => `<button class="${t[0] === on ? 'on' : ''}" data-go="${t[3]}">${ic(t[1], t[0] === on)}${t[2]}</button>`).join('')}</div>`;
 const sbar = () => `<div class="sb ${'%M%'}"><span class="num">21:10</span><span class="ic">${ic('cell-signal-full', 1)}${ic('wifi-high', 1)}${ic('battery-full', 1)}</span></div>`;
@@ -561,7 +563,7 @@ function frameD0(s) {
 }
 function sideA(on) {
   const n = 6 - S.aprob.length - S.rech.length;
-  const it = [['A02', 'identification-card', 'Verificación', 'ver', n], ['A04', 'calendar-check', 'Reservas de hoy', 'hoy'], ['A06', 'users-three', 'Profesionales', 'pro'], ['A09', 'file-text', 'Órdenes por revisar', 'ord', 3 - S.aordDone.length], ['A05', 'list-checks', 'Catálogo y comisión', 'tar'], ['A08', 'test-tube', 'Catálogo de exámenes', 'lab'], ['A11', 'flask', 'Laboratorios', 'labs'], ['A13', 'receipt', 'Liquidaciones', 'liq']];
+  const it = [['A02', 'identification-card', 'Verificación', 'ver', n], ['A04', 'calendar-check', 'Reservas de hoy', 'hoy'], ['A06', 'users-three', 'Profesionales', 'pro'], ['A09', 'file-text', 'Órdenes por revisar', 'ord', 3 - S.aordDone.length], ['A05', 'list-checks', 'Catálogo y comisión', 'tar'], ['A08', 'test-tube', 'Catálogo de exámenes', 'lab'], ['A11', 'flask', 'Laboratorios', 'labs'], ['A13', 'receipt', 'Liquidaciones', 'liq'], ['A14', 'megaphone', 'Planes y destacados', 'pln']];
   return `<div class="side">${logoImg('horizontal-nm', 28)}${it.map(t => `<button class="${t[3] === on ? 'on' : ''}" data-go="${t[0]}">${ic(t[1], t[3] === on)}${t[2]}${t[4] ? `<span class="cnt num">${t[4]}</span>` : ''}</button>`).join('')}<div class="who">Operaciones<br>operaciones@cuidapp.cl</div><button data-go="A01">${ic('sign-out')}Salir</button></div>`;
 }
 
@@ -697,10 +699,10 @@ function linksOf(id) {
 }
 window.__links = linksOf;
 const LANES = [
-  ['pac', 'Paciente', [['P01', 'P02', 'P03', 'P04', 'P05'], ['P06', 'P07', 'P08', 'P09'], ['P10', 'P11', 'P36', 'P34'], ['P12', 'P32', 'P33', 'P22'], ['P13', 'P14', 'P15', 'P16'], ['P17', 'P18', 'P19', 'P20'], ['P26', 'P27', 'P30', 'P28', 'P29'], ['P23', 'P24', 'P25'], ['P50', 'P51', 'P52', 'P53'], ['P54', 'P55', 'P56', 'P57', 'P58', 'P59'], ['P40', 'P60', 'P61', 'P62', 'P63'], ['P16', 'P64', 'P65'], ['P66', 'P67'], ['P70', 'P71', 'P72', 'P73'], ['P74', 'P75', 'P76', 'P77'], ['P78', 'P79', 'P80', 'P81', 'P82'], ['P83', 'P84', 'P85', 'P86', 'P87', 'P88'], ['P89', 'P90', 'P91', 'P92'], ['W01', 'W02', 'W03', 'W04']]],
-  ['pro', 'Profesional', [['R01', 'R02', 'R03'], ['R04', 'R05', 'R06', 'R07'], ['R08', 'R09', 'R10', 'R26'], ['R11', 'R12', 'R13', 'R14', 'R15'], ['R16', 'R17', 'R18'], ['R20', 'R21', 'R22'], ['R23', 'R24', 'R25'], ['R27', 'R28', 'R29'], ['R37', 'R38', 'R31', 'R32'], ['R40', 'R41', 'R33', 'R34'], ['R35', 'R39', 'R36', 'R42', 'R43']]],
-  ['adm', 'Admin', [['A01', 'A02', 'A03'], ['A04', 'A05', 'A07'], ['A06', 'A08'], ['A09', 'A10'], ['A11', 'A12', 'A13']]],
-  ['ase', 'Asesor de Isapre', [['Q01', 'Q02', 'Q03', 'Q04']]],
+  ['pac', 'Paciente', [['P01', 'P02', 'P03', 'P04', 'P05'], ['P06', 'P07', 'P08', 'P09'], ['P10', 'P11', 'P36', 'P34'], ['P12', 'P32', 'P33', 'P22'], ['P13', 'P14', 'P15', 'P16'], ['P17', 'P18', 'P19', 'P20'], ['P26', 'P27', 'P30', 'P28', 'P29'], ['P23', 'P24', 'P25'], ['P50', 'P51', 'P52', 'P53'], ['P54', 'P55', 'P56', 'P57', 'P58', 'P59'], ['P40', 'P60', 'P61', 'P62', 'P63'], ['P16', 'P64', 'P65'], ['P66', 'P67'], ['P93', 'P70', 'P71', 'P72', 'P73'], ['P74', 'P75', 'P76', 'P77'], ['P78', 'P79', 'P80', 'P81', 'P82'], ['P83', 'P84', 'P85', 'P86', 'P87', 'P88'], ['P89', 'P90', 'P91', 'P92'], ['W01', 'W02', 'W03']]],
+  ['pro', 'Profesional', [['R01', 'R02', 'R03'], ['R04', 'R05', 'R06', 'R07'], ['R08', 'R09', 'R10', 'R26'], ['R11', 'R12', 'R13', 'R14', 'R15'], ['R16', 'R17', 'R18'], ['R20', 'R21', 'R22'], ['R23', 'R24', 'R25'], ['R27', 'R28', 'R29'], ['R37', 'R38', 'R31', 'R32'], ['R40', 'R41', 'R33', 'R34'], ['R35', 'R39', 'R36', 'R42', 'R43', 'R44']]],
+  ['adm', 'Admin', [['A01', 'A02', 'A03'], ['A04', 'A05', 'A07'], ['A06', 'A08'], ['A09', 'A10'], ['A11', 'A12', 'A13', 'A14']]],
+  ['ase', 'Asesor de Isapre', [['Q01', 'Q02', 'Q03', 'Q04', 'Q05']]],
 ];
 function openFlow() {
   const NW = 196, NH = 54, CG = 70, RG = 16, X0 = 40, pos = {};
