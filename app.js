@@ -1,0 +1,440 @@
+/* Cuidapp · prototipo navegable. Sin backend. */
+// Logo: para cambiarlo, edita SOLO esta línea (carpeta con los SVG de marca).
+const LOGO_DIR = 'logo/';
+const LOGO = n => `${LOGO_DIR}cuidapp-${n}.svg`;
+
+const $ = (s, r = document) => r.querySelector(s);
+const ic = (n, f) => `<i class="${f ? 'ph-fill' : 'ph'} ph-${n}"></i>`;
+const clp = n => '$' + Math.round(n).toLocaleString('es-CL');
+const esc = s => String(s);
+
+/* ---------- estado ---------- */
+const S0 = () => ({
+  item: 'iny', addr: 'mama', who: 'mama', when: 'prog', pro: 'cr', day: 1, slot: '08:00', sort: 'rec', ptab: 'serv', det: 'next',
+  f: { enf: true, tens: true }, fmax: 0, fday: 'sem', frat: false,
+  hasMed: true, receta: false, orden: '', exams: { hemo: true, lip: true, gli: false }, tensNeeds: { hig: true, mov: true, sig: true, com: false },
+  pay: 'visa', prev: 'fonasa', consent: false, rating: 0, tags: {}, tip: 0, chat: [], phase: 'llego', cancelFrom: 'P27', booked: false, hecho: false, cr: 0,
+  docs: { carnet: false, selfie: false, titulo: false, antec: false, banco: false }, prof: 'enf',
+  online: false, code: '', chk: { id: false, rec: false, ale: false }, earn: 186405, done: 9, pRating: 0, pTags: {}, paid: false,
+  my: {
+    iny: { on: true, p: 18000, night: 22000, nOn: true, dur: 30, inc: { ins: true, pre: true, res: true, edu: false } },
+    cur: { on: true, p: 24000, night: 0, nOn: false, dur: 45, inc: { ins: true, pre: false, res: true, edu: true } },
+    cura: { on: false, p: 25000, night: 0, nOn: false, dur: 60, inc: { ins: true, pre: false, res: true, edu: true } },
+    mue: { on: true, p: 15000, night: 0, nOn: false, dur: 20, inc: { ins: true, pre: false, res: true, edu: false } },
+    sig: { on: true, p: 12000, night: 0, nOn: false, dur: 30, inc: { ins: false, pre: true, res: false, edu: true } },
+    son: { on: false, p: 28000, night: 0, nOn: false, dur: 45, inc: { ins: true, pre: false, res: true, edu: true } },
+  },
+  edit: 'iny', setup: { pres: true, serv: false, com: false, hor: false },
+  com: { prov: true, nun: true, lr: true, lc: false, vit: false, pen: false, stgo: true, mac: false, flo: false, sjo: false },
+  week: { lun: true, mar: true, mie: true, jue: true, vie: true, sab: true, dom: false }, gap: 30, antic: 2,
+  blocked: { 30: true }, req: { r1: 'new', r2: 'new' }, aday: 1, spec: { am: true, pd: true, ped: false, pal: false },
+  sis: 0, aprob: [], rech: [], admTab: 'rev', cand: 0, aedit: 'iny', comm: 15,
+  mins: { iny: 12000, cur: 15000, cura: 25000, mue: 12000, sig: 10000, son: 25000, tens4: 24000 }, aRec: true,
+});
+let S = S0();
+let view = localStorage.getItem('cv') || 'm';
+let cur = null, stack = [], timers = [], maps = [], toastMsg = null, toastT = null;
+const NATIVE = Math.min(window.innerWidth, window.screen.width) < 600;
+if (NATIVE) view = 'm';
+
+const SC = {};           // pantallas
+const ACT = {};          // acciones
+const def = s => (SC[s.id] = s);
+const roleOf = id => id[0] === 'R' ? 'pro' : id[0] === 'A' ? 'adm' : 'pac';
+const START = { pac: 'P01', pro: 'R01', adm: 'A01' };
+const ROLE_N = { pac: 'Paciente', pro: 'Profesional', adm: 'Admin' };
+// equivalencias entre iPhone y escritorio
+const TO_D = { P06: 'W01', P10: 'W02', P12: 'W03', P13: 'W03', P21: 'W04' };
+const TO_M = { W01: 'P06', W02: 'P10', W03: 'P12', W04: 'P21' };
+const resolve = id => {
+  const r = roleOf(id);
+  if (r === 'adm') return id;
+  if (view === 'd' && TO_D[id]) return TO_D[id];
+  if (view === 'm' && TO_M[id]) return TO_M[id];
+  return id;
+};
+
+/* ---------- datos de mapa ---------- */
+const G = window.GEO;
+const PLACE = {
+  mama: { ll: G.mama, n: 'Av. Irarrázaval 3450', c: 'Ñuñoa', full: 'Av. Irarrázaval 3450, depto 1204, Ñuñoa', route: G.route, km: '2,9', min: 9 },
+  casa: { ll: G.casa, n: 'Los Leones 1180', c: 'Providencia', full: 'Los Leones 1180, depto 52, Providencia', route: G.routeCasa, km: '2,7', min: 8 },
+};
+const P = () => PLACE[S.addr];
+
+/* ---------- catálogo de Cuidapp (lo define Cuidapp; el precio lo pone cada profesional) ---------- */
+const CAT = {
+  iny: { n: 'Inyección intramuscular', s: 'Inyecciones', d: 'Neurobionta y otras, con receta', ic: 'syringe', who: ['enf', 'tens'], dur: 30, receta: true },
+  cur: { n: 'Curación simple', s: 'Curaciones', d: 'Heridas, puntos y quemaduras leves', ic: 'bandaids', who: ['enf'], dur: 45 },
+  cura: { n: 'Curación avanzada', s: 'Curación avanzada', d: 'Pie diabético, escaras y úlceras', ic: 'first-aid', who: ['enf'], dur: 60 },
+  mue: { n: 'Toma de muestras', s: 'Toma de muestras', d: 'Con nuestro laboratorio aliado', ic: 'test-tube', who: ['enf', 'tens'], dur: 20, lab: true },
+  sig: { n: 'Control de signos vitales', s: 'Signos vitales', d: 'Presión, glicemia y saturación', ic: 'heartbeat', who: ['enf', 'tens'], dur: 30 },
+  son: { n: 'Instalación o cambio de sonda', s: 'Sondas', d: 'Sonda Foley o nasogástrica', ic: 'first-aid-kit', who: ['enf'], dur: 45 },
+  tens4: { n: 'Cuidados TENS · 4 horas', s: 'Cuidados TENS', d: 'Higiene, movilización y compañía', ic: 'hand-heart', who: ['tens'], dur: 240 },
+};
+const INC = { ins: 'Insumos: jeringa, aguja, tórulas y guantes', pre: 'Control de presión antes y después', res: 'Retiro de residuos clínicos', edu: 'Indicaciones escritas para la familia' };
+const EXAMS = { hemo: ['Hemograma', 6500], lip: ['Perfil lipídico', 8900], gli: ['Glicemia', 3900] };
+const examList = () => Object.keys(EXAMS).filter(k => S.exams[k]).map(k => EXAMS[k]);
+const DAYS = [['Lun', 26, 'Hoy', 'hoy lun 26 oct'], ['Mar', 27, 'Mañana', 'mar 27 oct'], ['Mié', 28, '', 'mié 28 oct'], ['Jue', 29, '', 'jue 29 oct'], ['Vie', 30, '', 'vie 30 oct'], ['Sáb', 31, '', 'sáb 31 oct']];
+const dayShort = i => DAYS[i][2] || `${DAYS[i][0]} ${DAYS[i][1]}`;
+
+/* profesionales de ejemplo (datos ficticios) */
+const PROS = [
+  { id: 'cr', n: 'Camila Rojas', i: 'CR', t: 'Enfermera', k: 'enf', reg: '482.317', r: '4,9', rn: 4.9, a: 132, km: 1.8, yrs: 6, com: 'Ñuñoa, Providencia, La Reina y Santiago', tel: '+56 9 7712 3008', bio: 'Enfermera de la U. de Chile. Trabajé 5 años en el Hospital del Salvador, en medicina interna. Me gusta explicar todo con calma, sobre todo a los adultos mayores.',
+    p: { iny: 18000, cur: 24000, mue: 15000, sig: 12000 }, night: { iny: 22000 }, xinc: 'Control de presión antes y después',
+    sl: [[], ['08:00', '09:00', '11:30', '19:00', '21:00'], ['08:00', '10:00', '18:30', '21:00'], ['09:00', '12:00', '19:30'], ['08:00', '08:30', '17:00'], ['10:00', '11:00']] },
+  { id: 'fa', n: 'Fernanda Araya', i: 'FA', t: 'Enfermera', k: 'enf', reg: '512.884', r: '5,0', rn: 5.0, a: 61, km: 3.2, yrs: 3, com: 'Ñuñoa, Macul y La Florida', tel: '+56 9 6620 1475', bio: 'Enfermera de la U. de Santiago. Experiencia en atención primaria y curaciones de pie diabético.', asap: 35,
+    p: { iny: 22000, cur: 28000, cura: 38000, mue: 17000, son: 32000 }, night: {}, xinc: 'Educación sobre la herida y fotos de control',
+    sl: [['19:30', '20:30'], ['07:30', '13:00', '20:00'], ['07:30', '14:00'], ['16:00', '20:00'], ['07:30'], []] },
+  { id: 'mc', n: 'Matías Contreras', i: 'MC', t: 'Enfermero', k: 'enf', reg: '505.317', r: '4,7', rn: 4.7, a: 48, km: 0.9, yrs: 2, com: 'Ñuñoa y Santiago', tel: '+56 9 5531 8820', bio: 'Enfermero de la U. Andrés Bello. Trabajo en urgencias y atiendo a domicilio en mis días libres.',
+    p: { iny: 15000, cur: 20000, mue: 13000, sig: 10000 }, night: {}, xinc: '',
+    sl: [[], [], ['09:00', '10:00', '11:00'], ['09:00', '15:00'], ['18:00', '19:00'], ['09:00', '10:00', '11:00', '12:00']] },
+  { id: 'pg', n: 'Paula Godoy', i: 'PG', t: 'TENS', k: 'tens', reg: '311.208', r: '4,8', rn: 4.8, a: 87, km: 2.4, yrs: 8, com: 'Providencia, Ñuñoa y Santiago', tel: '+56 9 8840 1206', bio: 'TENS con 8 años en el Hospital Salvador. Cuidado de adultos mayores, inyecciones con receta y toma de muestras.', asap: 25,
+    p: { iny: 14000, mue: 12000, sig: 10000, tens4: 28000 }, night: { iny: 17000 }, xinc: 'Ayuda a ordenar los remedios de la semana',
+    sl: [['20:00'], ['10:30', '12:00', '16:00'], ['10:30', '17:00'], ['08:00', '10:30'], ['10:30', '12:00'], ['09:00']] },
+  { id: 'vm', n: 'Valentina Morales', i: 'VM', t: 'Enfermera', k: 'enf', reg: '509.663', r: '4,9', rn: 4.9, a: 203, km: 4.1, yrs: 11, com: 'Las Condes, La Reina, Vitacura y Ñuñoa', tel: '+56 9 9012 4477', bio: 'Enfermera de la PUC, 11 años en clínica. Especialista en heridas y cuidados de pacientes postrados.',
+    p: { iny: 25000, cur: 30000, cura: 42000, mue: 18000, son: 35000 }, night: { iny: 30000 }, xinc: 'Informe de la atención por correo',
+    sl: [[], [], [], ['08:30', '10:00', '15:00'], ['08:30', '12:00'], ['10:00']] },
+];
+const PRO = (id = S.pro) => PROS.find(p => p.id === id);
+const proName = () => PRO();
+// precio de una profesional para un servicio. Camila (la cuenta profesional del prototipo) usa lo que ella edita.
+function priceOf(pr, item = S.item, slot) {
+  let base = pr.p[item], nt = pr.night[item];
+  if (pr.id === 'cr') { const m = S.my[item]; base = m && m.on ? m.p : undefined; nt = m && m.nOn ? m.night : 0; }
+  if (!base) return 0;
+  return slot && slot >= '21:00' && nt ? nt : base;
+}
+const nightOf = (pr, item = S.item) => pr.id === 'cr' ? (S.my[item] && S.my[item].nOn ? S.my[item].night : 0) : (pr.night[item] || 0);
+const durOf = (pr, item = S.item) => pr.id === 'cr' && S.my[item] ? S.my[item].dur : CAT[item].dur;
+function incOf(pr, item = S.item) {
+  if (pr.id === 'cr' && S.my[item]) return Object.keys(INC).filter(k => S.my[item].inc[k]).map(k => INC[k]);
+  return [INC.ins, INC.res].concat(pr.xinc ? [pr.xinc] : []);
+}
+const slotsOf = (pr, d) => (pr.sl[d] || []);
+const nextOf = pr => { for (let d = 0; d < pr.sl.length; d++) if (pr.sl[d].length) return [d, pr.sl[d][0]]; return null; };
+const nextSlots = (pr, n = 3) => { const o = []; pr.sl.forEach((l, d) => l.forEach(t => o.push([d, t]))); return o.slice(0, n); };
+function prosFor(item = S.item) {
+  let l = PROS.filter(p => priceOf(p, item) && S.f[p.k]);
+  if (S.fmax) l = l.filter(p => priceOf(p, item) <= S.fmax);
+  if (S.frat) l = l.filter(p => p.rn >= 4.8);
+  if (S.fday === 'man') l = l.filter(p => p.sl[0].length || p.sl[1].length);
+  const nx = p => { const x = nextOf(p); return x ? x[0] * 100 + parseInt(x[1]) : 9999; };
+  const s = { rec: (a, b) => (b.rn * 40 + Math.min(b.a, 150) / 10 - b.km) - (a.rn * 40 + Math.min(a.a, 150) / 10 - a.km), pre: (a, b) => priceOf(a, item) - priceOf(b, item), rat: (a, b) => b.rn - a.rn || b.a - a.a, pro: (a, b) => nx(a) - nx(b) }[S.sort];
+  return l.sort(s);
+}
+function price() {
+  const pr = PRO(), L = [];
+  const p = priceOf(pr, S.item, S.when === 'prog' ? S.slot : '');
+  const isN = S.when === 'prog' && S.slot >= '21:00' && nightOf(pr);
+  L.push([`${CAT[S.item].n}${isN ? ' · horario nocturno' : ''}`, p]);
+  if (S.item === 'mue') examList().forEach(e => L.push([e[0] + ' (laboratorio aliado)', e[1]]));
+  return { L, total: L.reduce((a, b) => a + b[1], 0), pro: p };
+}
+const slotEnd = t => { const [h, m] = t.split(':').map(Number); const x = h * 60 + m + 30; return String(Math.floor(x / 60)).padStart(2, '0') + ':' + String(x % 60).padStart(2, '0'); };
+const whenTxt = () => S.when === 'ahora' ? `Hoy, llega en ~${PRO().asap || 30} min` : `${dayShort(S.day)}, ${S.slot} a ${slotEnd(S.slot)}`;
+const whenLong = () => S.when === 'ahora' ? `Hoy, llega en ~${PRO().asap || 30} min` : `${DAYS[S.day][3].replace(/^\w/, c => c.toUpperCase())}, llega entre ${S.slot} y ${slotEnd(S.slot)}`;
+const whoTxt = () => ({ mama: 'Rosa Muñoz (mamá)', yo: 'Daniela Fuentes (tú)', papa: 'Luis Fuentes (papá)' })[S.who];
+const first = (p = PRO()) => p.n.split(' ')[0];
+const net = p => Math.round(p * (100 - S.comm) / 100);
+
+/* ---------- componentes ---------- */
+const btn = (t, go, k = '', extra = '') => `<button class="btn ${k}" ${go ? `data-go="${go}"` : ''} ${extra}>${t}</button>`;
+const abtn = (t, act, arg = '', k = '', go = '', dis = false) => `<button class="btn ${k}" data-act="${act}" data-arg="${arg}" ${go ? `data-go="${go}"` : ''} ${dis ? 'disabled' : ''}>${t}</button>`;
+const row = (i, a, b = '', go = '', end = ic('caret-right'), cls = '', act = '', arg = '') => {
+  const tag = go || act ? 'button' : 'div';
+  return `<${tag} class="row ${cls}" ${go ? `data-go="${go}"` : ''} ${act ? `data-act="${act}" data-arg="${arg}"` : ''}>
+  ${i ? `<span class="ri ${i.startsWith('box:') ? 'box' : ''}">${ic(i.replace('box:', ''))}</span>` : ''}
+  <span class="tx"><div class="a">${a}</div>${b ? `<div class="b">${b}</div>` : ''}</span>${end ? `<span class="end">${end}</span>` : ''}</${tag}>`;
+};
+const st = (k, t, i) => `<span class="st ${k}">${i ? ic(i, 1) : ''}${t}</span>`;
+const av = (ini, cls = '', ver = false) => `<span class="av ${cls}">${ini}${ver ? `<span class="vb">${ic('check', 0).replace('ph ', 'ph-bold ')}</span>` : ''}</span>`;
+const kv = (k, v, cls = '') => `<div class="kv ${cls}"><span class="k">${k}</span><span class="num">${v}</span></div>`;
+const note = (i, t, k = '') => `<div class="note ${k}">${ic(i)}<div>${t}</div></div>`;
+const chip = (t, on, act, arg) => `<button class="chip ${on ? 'on' : ''}" data-act="${act}" data-arg="${arg}">${t}</button>`;
+const radioRow = (a, b, on, act, arg, i) => `<button class="row" data-act="${act}" data-arg="${arg}">${i ? `<span class="ri box">${ic(i)}</span>` : ''}<span class="tx"><div class="a">${a}</div>${b ? `<div class="b">${b}</div>` : ''}</span><span class="radio ${on ? 'on' : ''}"></span></button>`;
+const checkRow = (a, on, act, arg, b = '') => `<button class="row nodiv" data-act="${act}" data-arg="${arg}"><span class="check ${on ? 'on' : ''}">${on ? ic('check', 0).replace('ph ', 'ph-bold ') : ''}</span><span class="tx"><div class="a">${a}</div>${b ? `<div class="b">${b}</div>` : ''}</span></button>`;
+const field = (i, v, ph = '', cls = '') => `<div class="field ${cls}">${i ? ic(i) : ''}${v ? `<span>${v}</span>` : `<span class="ph-t">${ph}</span>`}</div>`;
+const lbl = t => `<div class="lbl">${t}</div>`;
+function receta(big) {
+  return `<div class="doc" style="${big ? '' : 'max-width:220px'}"><div class="hd"><div><b>Dr. Andrés Valenzuela S.</b><br>Medicina Interna · RUT 9.884.120-3</div><div style="text-align:right">Clínica Ñuñoa<br>20/10/2026</div></div>
+  <div>Paciente: <b>Rosa Muñoz Pérez</b> · 78 años</div><div class="hw mt8">Rp. Neurobionta 5.000<br>1 amp. IM cada 48 h · 3 dosis</div>
+  <div style="display:flex;justify-content:flex-end;margin-top:6px"><div style="text-align:center;font-size:10px"><div class="hw" style="font-size:18px">A. Valenzuela</div>Firma y timbre</div></div></div>`;
+}
+function orden() {
+  return `<div class="doc" style="max-width:220px"><div class="hd"><div><b>Dra. Marcela Ortiz R.</b><br>Medicina Familiar</div><div>18/10/2026</div></div><div>Paciente: <b>Rosa Muñoz Pérez</b></div><div class="hw mt8">Hemograma<br>Perfil lipídico</div></div>`;
+}
+const idcard = () => `<div class="idcard"><div class="ph">${ic('user', 1).replace('<i ', '<i style="font-size:56px;color:#93A6B6" ')}</div><div style="flex:1"><b>CÉDULA DE IDENTIDAD</b><br>República de Chile<div class="blurline" style="width:80%"></div><div class="blurline" style="width:60%"></div><div class="blurline" style="width:70%"></div><div class="blurline" style="width:40%"></div></div></div>`;
+const logoImg = (n = 'horizontal-color', h = 28, st = '') => `<img src="${LOGO(n)}" alt="Cuidapp" style="height:${h}px;${st}">`;
+const tabsP = [['inicio', 'house', 'Inicio', 'P06'], ['servicios', 'squares-four', 'Servicios', 'P07'], ['actividad', 'receipt', 'Actividad', 'P26'], ['cuenta', 'user', 'Cuenta', 'P28']];
+const tabsR = [['inicio', 'house', 'Inicio', 'R16'], ['agenda', 'calendar-blank', 'Agenda', 'R24'], ['ganancias', 'wallet', 'Ganancias', 'R23'], ['perfil', 'user', 'Perfil', 'R25']];
+const tabbar = (role, on) => `<div class="tabbar">${(role === 'pro' ? tabsR : tabsP).map(t => `<button class="${t[0] === on ? 'on' : ''}" data-go="${t[3]}">${ic(t[1], t[0] === on)}${t[2]}</button>`).join('')}</div>`;
+const sbar = () => `<div class="sb ${'%M%'}"><span class="num">21:10</span><span class="ic">${ic('cell-signal-full', 1)}${ic('wifi-high', 1)}${ic('battery-full', 1)}</span></div>`;
+
+/* ---------- render ---------- */
+function T(fn, ms) { timers.push(setTimeout(fn, ms)); }
+function I(fn, ms) { timers.push(setInterval(fn, ms)); }
+function clearT() { timers.forEach(t => { clearTimeout(t); clearInterval(t); }); timers = []; maps.forEach(m => m.remove()); maps = []; }
+function toast(m) { toastMsg = m; }
+
+function go(id, push = true) {
+  if (id === 'back') { const p = stack.pop(); if (!p) return; cur = null; return go(p, false); }
+  id = resolve(id);
+  if (!SC[id]) { console.error('pantalla inexistente', id); return; }
+  if (roleOf(id) === 'adm' && view === 'm') { view = 'd'; window.__forced = true; }
+  else if (roleOf(id) !== 'adm' && window.__forced) { view = localStorage.getItem('cv') || 'm'; window.__forced = false; id = resolve(id); }
+  if (push && cur && cur !== id) stack.push(cur);
+  cur = id;
+  history.replaceState(null, '', '#/' + id);
+  render();
+}
+
+function frameM(s) {
+  const k = s.kind;
+  const nav = s.title || s.back ? `<div class="nav">${s.back ? `<button class="ib" data-go="back">${ic(s.back === 'x' ? 'x' : 'arrow-left')}</button>` : '<span style="width:44px"></span>'}<div class="t">${s.title || ''}</div></div>` : '';
+  const foot = s.foot ? `<div class="foot ${s.tab ? 'withtab' : ''}">${s.foot()}</div>` : '';
+  const tb = s.tab ? tabbar(roleOf(s.id), s.tab) : '';
+  if (k === 'map') {
+    return `<div class="scr"><div style="flex:1;position:relative;min-height:0"><div class="mapwrap" data-map="1"></div>${sbar().replace('%M%', 'on-map')}
+      ${s.back ? `<button class="ib float" style="top:60px;left:16px" data-go="back">${ic(s.back === 'x' ? 'x' : 'arrow-left')}</button>` : ''}
+      ${s.float ? s.float() : ''}
+      <div class="sheet"><div class="grab"></div>${s.top ? s.top() : ''}<div class="body">${s.body()}</div>${foot}</div></div>${tb}</div>`;
+  }
+  return `<div class="scr">${sbar().replace('%M%', '')}${nav}<div class="body">${s.body()}</div>${foot}${tb}</div>`;
+}
+function headerD(s) {
+  const r = roleOf(s.id);
+  const items = r === 'pro' ? [['house', 'Inicio', 'R16', 'inicio'], ['calendar-blank', 'Agenda', 'R24', 'agenda'], ['wallet', 'Ganancias', 'R23', 'ganancias'], ['user', 'Perfil', 'R25', 'perfil']]
+    : [['calendar-plus', 'Agendar', 'W01', 'inicio'], ['squares-four', 'Servicios', 'P07', 'servicios'], ['receipt', 'Actividad', 'P26', 'actividad'], ['user', 'Cuenta', 'P28', 'cuenta']];
+  const on = s.tab || s.dtab;
+  const nav = s.noNav ? '' : `<nav>${items.map(t => `<button class="${t[3] === on ? 'on' : ''}" data-go="${t[2]}">${ic(t[0], t[3] === on)}${t[1]}</button>`).join('')}</nav>`;
+  const me = s.noNav ? '' : (r === 'pro' ? `<div class="me">${av('CR', 's')}Camila</div>` : `<div class="me">${av('DF', 's')}Daniela</div>`);
+  return `<div class="dh">${logoImg('horizontal-color', 30)}${r === 'pro' ? '<span class="tag">Profesionales</span>' : ''}${nav}<span class="sp"></span>${me}</div>`;
+}
+function frameD(s) {
+  if (s.kind === 'adm') return `<div class="desk"><div class="adm">${s.side === 'none' ? '' : sideA(s.side)}<div class="acont">${s.body()}</div></div></div>`;
+  const back = s.back ? `<button class="ib" data-go="back">${ic(s.back === 'x' ? 'x' : 'arrow-left')}</button>` : '';
+  const title = s.dtitle || s.title;
+  const head = title ? `<div class="dtitle">${back}<div class="h-m">${title}</div></div>` : (back ? `<div class="dtitle">${back}</div>` : '');
+  const foot = s.foot ? `<div class="foot">${s.foot()}</div>` : '';
+  if (s.kind === 'map') {
+    return `<div class="desk">${headerD(s)}<div class="dmain"><div class="dpanel"><div class="card"><div class="body">${head}${s.top ? s.top() : ''}${s.body()}</div>${foot}</div></div><div class="dmap"><div class="mapwrap" data-map="1"></div>${s.dfloat ? s.dfloat() : s.float ? s.float() : ''}</div></div></div>`;
+  }
+  if (s.wide) return `<div class="desk">${headerD(s)}<div class="dpage wide"><div class="col">${head}<div class="body">${s.body()}</div>${foot}</div>${s.aside ? `<div class="aside ${s.asideCls || ''}">${s.aside()}</div>` : ''}</div></div>`;
+  return `<div class="desk">${headerD(s)}<div class="dpage"><div class="col">${head}<div class="body">${s.body()}</div>${foot}</div>${s.aside ? `<div class="aside">${s.aside()}</div>` : ''}</div></div>`;
+}
+function sideA(on) {
+  const n = 6 - S.aprob.length - S.rech.length;
+  const it = [['A02', 'identification-card', 'Verificación', 'ver', n], ['A04', 'calendar-check', 'Reservas de hoy', 'hoy'], ['A06', 'users-three', 'Profesionales', 'pro'], ['A05', 'list-checks', 'Catálogo y comisión', 'tar']];
+  return `<div class="side">${logoImg('horizontal-color', 28)}${it.map(t => `<button class="${t[3] === on ? 'on' : ''}" data-go="${t[0]}">${ic(t[1], t[3] === on)}${t[2]}${t[4] ? `<span class="cnt num">${t[4]}</span>` : ''}</button>`).join('')}<div class="who">Operaciones<br>operaciones@cuidapp.cl</div><button data-go="A01">${ic('sign-out')}Salir</button></div>`;
+}
+
+function render() {
+  clearT();
+  const s = SC[cur];
+  const stage = $('#stage');
+  const html = view === 'm' ? `<div class="phone"><div class="island"></div>${frameM(s)}<div class="hi"></div></div>` : frameD(s);
+  stage.innerHTML = `<div class="scaler">${html}</div>`;
+  const scr = stage.querySelector('.phone,.desk');
+  if (toastMsg) {
+    const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = ic('check-circle', 1) + `<span>${toastMsg}</span>`;
+    scr.appendChild(t); toastMsg = null; clearTimeout(toastT); toastT = setTimeout(() => t.remove(), 2600);
+  }
+  fit();
+  updateBar();
+  if (s.map) { const el = stage.querySelector('[data-map]'); if (el) mkMap(el, s.map()); }
+  if (s.enter) s.enter();
+  window.__rendered = (window.__rendered || 0) + 1;
+}
+function fit() {
+  const st = $('#stage'), sc = st.querySelector('.scaler'), el = sc.firstElementChild;
+  if (NATIVE && view === 'm') { sc.style.transform = ''; sc.style.height = '100%'; return; }
+  if (NATIVE) { const kw = st.clientWidth / el.offsetWidth; sc.style.transformOrigin = 'top left'; sc.style.height = ''; sc.style.transform = `scale(${kw})`; return; }
+  const w = el.offsetWidth + (view === 'm' ? 24 : 0), h = el.offsetHeight + (view === 'm' ? 24 : 0);
+  const k = Math.min(1, (st.clientWidth - 32) / w, (st.clientHeight - 32) / h);
+  sc.style.transform = `scale(${k})`;
+}
+window.addEventListener('resize', () => cur && fit());
+
+/* ---------- mapas ---------- */
+const pinHome = () => L.divIcon({ className: '', iconSize: [26, 26], iconAnchor: [13, 13], html: '<div style="width:26px;height:26px;border-radius:6px;background:#1D1D1B;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.3)"><div style="width:8px;height:8px;background:#fff;border-radius:2px"></div></div>' });
+const pinPro = (lbl) => L.divIcon({ className: '', iconSize: [22, 22], iconAnchor: [11, 11], html: `<div style="position:relative"><div style="width:22px;height:22px;border-radius:11px;background:#1AA7EC;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35)"></div>${lbl ? `<div style="position:absolute;left:30px;top:-3px;background:#1D1D1B;color:#fff;font:600 13px/28px var(--font);padding:0 10px;border-radius:14px;white-space:nowrap">${lbl}</div>` : ''}</div>` });
+const pinDot = (c = '#1AA7EC') => L.divIcon({ className: '', iconSize: [14, 14], iconAnchor: [7, 7], html: `<div style="width:14px;height:14px;border-radius:7px;background:${c};border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>` });
+const pinPulse = () => L.divIcon({ className: '', iconSize: [160, 160], iconAnchor: [80, 80], html: '<div class="pulse"><span></span><span></span><span></span></div>' });
+const pinLabel = (t) => L.divIcon({ className: '', iconSize: [0, 0], iconAnchor: [0, 0], html: `<div style="transform:translate(-50%,-44px);background:#1D1D1B;color:#fff;font:600 13px/30px var(--font);padding:0 12px;border-radius:15px;white-space:nowrap;display:inline-block">${t}</div>` });
+const pinMe = () => L.divIcon({ className: '', iconSize: [22, 22], iconAnchor: [11, 11], html: '<div style="width:22px;height:22px;border-radius:11px;background:#1D1D1B;border:4px solid #fff;box-shadow:0 0 0 6px rgba(29,29,27,.15),0 2px 6px rgba(0,0,0,.3)"></div>' });
+const pinNav = () => L.divIcon({ className: '', iconSize: [40, 40], iconAnchor: [20, 20], html: '<div style="width:40px;height:40px;border-radius:20px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center"><i class="ph-fill ph-navigation-arrow" style="font-size:22px;color:#1AA7EC;transform:rotate(45deg)"></i></div>' });
+
+function mkMap(el, o) {
+  const m = L.map(el, { zoomControl: false, attributionControl: true, zoomSnap: 0.25, fadeAnimation: false });
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, maxNativeZoom: 16, attribution: 'Esri, HERE, Garmin, © OpenStreetMap' }).addTo(m);
+  maps.push(m);
+  const pts = [];
+  const add = (ll, icon, z) => { const mk = L.marker(ll, { icon, interactive: false, zIndexOffset: z || 0 }).addTo(m); pts.push(ll); return mk; };
+  if (o.pulse) add(o.pulse, pinPulse(), -10);
+  if (o.route) { L.polyline(o.route, { color: '#1AA7EC', weight: 5, opacity: 1, lineCap: 'round', lineJoin: 'round' }).addTo(m); o.route.forEach(p => pts.push(p)); }
+  if (o.home) add(o.home, pinHome(), 100);
+  if (o.homeLabel) L.marker(o.home, { icon: pinLabel(o.homeLabel), interactive: false, zIndexOffset: 200 }).addTo(m);
+  if (o.me) add(o.me, pinMe(), 50);
+  (o.dots || []).forEach(d => add(d[0], pinDot(d[1]), 20));
+  let mover = null;
+  if (o.pro) mover = add(o.pro, o.nav ? pinNav() : pinPro(o.proLabel), 300);
+  // encuadre: deja libre lo que tapa la hoja
+  const sheet = el.closest('.scr') ? el.closest('.scr').querySelector('.sheet') : null;
+  const pb = sheet ? sheet.offsetHeight + 10 : 30;
+  const pt = el.closest('.scr') ? 90 : 40;
+  if (o.center) m.setView(o.center, o.zoom || 15);
+  else if (pts.length > 1) m.fitBounds(L.latLngBounds(pts), { paddingTopLeft: [40, pt], paddingBottomRight: [40, pb], maxZoom: o.maxZoom || 16 });
+  else if (pts.length) { m.setView(pts[0], o.zoom || 15); if (sheet) m.panBy([0, pb / 2 - 20], { animate: false }); }
+  if (o.anim && mover) {
+    const r = o.anim.route, dur = o.anim.dur, t0 = performance.now();
+    let i = 0;
+    const step = () => {
+      const k = Math.min(1, (performance.now() - t0) / dur);
+      const idx = Math.floor(k * (r.length - 1)); mover.setLatLng(r[idx]);
+      if (o.anim.tick) o.anim.tick(k);
+      if (k < 1) timers.push(setTimeout(step, 60)); else if (o.anim.end) o.anim.end();
+    };
+    step();
+  }
+  window.__map = m;
+}
+
+/* ---------- eventos ---------- */
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act],[data-go]');
+  if (!el || el.disabled || !e.target.closest('#stage,.tb,.flow')) return;
+  if (el.closest('.tb') || el.closest('.flow')) return; // la barra maneja lo suyo
+  const a = el.dataset.act, g = el.dataset.go;
+  if (a) { if (!ACT[a]) { console.error('acción inexistente', a); return; } ACT[a](el.dataset.arg); }
+  if (g) go(g); else if (a) render();
+});
+
+/* ---------- barra del prototipo ---------- */
+function updateBar() {
+  const r = roleOf(cur);
+  document.querySelectorAll('[data-role]').forEach(b => b.classList.toggle('on', b.dataset.role === r));
+  document.querySelectorAll('[data-view]').forEach(b => b.classList.toggle('on', b.dataset.view === view));
+  const s = SC[cur];
+  $('#sel').textContent = `${cur} · ${s.name}`;
+  const adv = $('#adv'); adv.style.display = s.auto ? '' : 'none';
+}
+function bar() {
+  $('#tb').innerHTML = `${logoImg('horizontal-color', 26, '').replace('<img', '<img class="lg"')}
+  <div class="seg">${['pac', 'pro', 'adm'].map(r => `<button data-role="${r}">${ROLE_N[r]}</button>`).join('')}</div>
+  <div class="seg vseg"><button data-view="m">${'iPhone'}</button><button data-view="d">Escritorio</button></div>
+  <span class="sel" id="sel"></span><span class="sp"></span>
+  <button class="lnk" id="adv" style="background:var(--accent);color:#1D1D1B">${ic('fast-forward', 1)}<span class="tl">Avanzar</span></button>
+  <button class="lnk" id="flowbtn">${ic('flow-arrow')}<span class="tl">Mapa del flujo</span></button>
+  ${NATIVE ? `<button class="lnk" id="hidebar" style="background:var(--s2);color:var(--text)">${ic('arrows-out-simple')}</button>` : ''}`;
+  $('#tb').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.role) { closeFlow(); stack = []; S = S0(); go(START[b.dataset.role], false); }
+    else if (b.dataset.view) { closeFlow(); window.__forced = false; view = b.dataset.view; localStorage.setItem('cv', view); if (roleOf(cur) === 'adm' && view === 'm') view = 'd'; go(resolve(cur), false); }
+    else if (b.id === 'adv') { const s = SC[cur]; if (s.auto) { if (s.autoAct) s.autoAct(); go(typeof s.auto === 'function' ? s.auto() : s.auto); } }
+    else if (b.id === 'flowbtn') openFlow();
+    else if (b.id === 'hidebar') { document.body.classList.add('tbhide'); showMini(); }
+  });
+}
+function showMini() {
+  const m = document.createElement('button'); m.id = 'mini'; m.innerHTML = ic('dots-three', 1);
+  m.style.cssText = 'position:fixed;right:10px;top:calc(env(safe-area-inset-top) + 8px);width:36px;height:36px;border-radius:18px;background:rgba(29,29,27,.75);color:#fff;z-index:2000;display:flex;align-items:center;justify-content:center';
+  m.onclick = () => { document.body.classList.remove('tbhide'); m.remove(); };
+  document.body.appendChild(m);
+}
+
+/* ---------- enlaces y mapa del flujo ---------- */
+function linksOf(id) {
+  const s = SC[id], out = new Set();
+  const grab = f => { try { const h = f(); (h.match(/data-go="([A-Z]\d\d)"/g) || []).forEach(x => out.add(x.slice(9, 12))); } catch (e) { } };
+  const saved = JSON.stringify(S);
+  ['body', 'foot', 'aside', 'top', 'float', 'dfloat'].forEach(k => s[k] && grab(s[k]));
+  (s.next || []).forEach(x => out.add(x));
+  if (s.auto && typeof s.auto === 'string') out.add(s.auto);
+  if (s.tab) (roleOf(id) === 'pro' ? tabsR : tabsP).forEach(t => out.add(t[3]));
+  if (s.kind === 'adm' && s.side !== 'none') ['A02', 'A04', 'A06', 'A05', 'A01'].forEach(x => out.add(x));
+  S = JSON.parse(saved);
+  out.delete(id);
+  return [...out].filter(x => SC[x]);
+}
+window.__links = linksOf;
+const LANES = [
+  ['pac', 'Paciente', [['P01', 'P02', 'P03', 'P04', 'P05'], ['P06', 'P07', 'P08', 'P09', 'P31'], ['P10', 'P11', 'P12', 'P13'], ['P14', 'P15', 'P16', 'P17', 'P18'], ['P19', 'P20', 'P22', 'P30'], ['P21', 'P23', 'P24', 'P25'], ['P26', 'P27', 'P28', 'P29'], ['W01', 'W02', 'W03', 'W04']]],
+  ['pro', 'Profesional', [['R01', 'R02', 'R03'], ['R04', 'R05', 'R06', 'R07'], ['R08', 'R09', 'R10', 'R26'], ['R11', 'R12', 'R13', 'R14', 'R15'], ['R16', 'R17', 'R18'], ['R19', 'R20', 'R21', 'R22'], ['R23', 'R24', 'R25']]],
+  ['adm', 'Admin', [['A01', 'A02', 'A03'], ['A04', 'A05', 'A07'], ['A06']]],
+];
+function openFlow() {
+  const NW = 196, NH = 54, CG = 70, RG = 16, X0 = 40, pos = {};
+  let y = 30, svgN = '', svgL = '';
+  LANES.forEach(([r, name, cols]) => {
+    const rows = Math.max(...cols.map(c => c.length));
+    const h = rows * (NH + RG) + 60;
+    svgL += `<rect x="16" y="${y}" width="${X0 + cols.length * (NW + CG)}" height="${h}" rx="16" fill="${r === 'pac' ? '#F7F7F7' : r === 'pro' ? '#F1F8FD' : '#F7F7F7'}"/><text x="40" y="${y + 32}" font-size="18" font-weight="700" fill="#1D1D1B">${name}</text>`;
+    cols.forEach((c, ci) => c.forEach((id, ri) => { pos[id] = { x: X0 + ci * (NW + CG), y: y + 50 + ri * (NH + RG) }; }));
+    y += h + 24;
+  });
+  const W = X0 + Math.max(...LANES.map(l => l[2].length)) * (NW + CG) + 40;
+  let edges = '';
+  Object.keys(pos).forEach(a => linksOf(a).forEach(b => {
+    if (!pos[b]) return;
+    const A = pos[a], B = pos[b];
+    let x1 = A.x + NW, y1 = A.y + NH / 2, x2 = B.x, y2 = B.y + NH / 2;
+    if (B.x < A.x + NW && B.x + NW > A.x) { x1 = A.x + NW / 2; x2 = B.x + NW / 2; y1 = B.y > A.y ? A.y + NH : A.y; y2 = B.y > A.y ? B.y : B.y + NH; edges += `<path data-e="${a} ${b}" d="M${x1},${y1} C${x1 + 40},${(y1 + y2) / 2} ${x2 + 40},${(y1 + y2) / 2} ${x2},${y2}" fill="none" stroke="#C9C9C9" stroke-width="1.5" marker-end="url(#ar)"/>`; return; }
+    if (B.x < A.x) { x1 = A.x; x2 = B.x + NW; }
+    const dx = Math.max(40, Math.abs(x2 - x1) / 2) * (x2 > x1 ? 1 : -1);
+    edges += `<path data-e="${a} ${b}" d="M${x1},${y1} C${x1 + dx},${y1} ${x2 - dx},${y2} ${x2},${y2}" fill="none" stroke="#C9C9C9" stroke-width="1.5" marker-end="url(#ar)"/>`;
+  }));
+  Object.entries(pos).forEach(([id, p]) => {
+    const s = SC[id]; const nm = s.name.length > 24 ? s.name.slice(0, 23) + '…' : s.name;
+    svgN += `<g class="node" data-open="${id}"><rect x="${p.x}" y="${p.y}" width="${NW}" height="${NH}" rx="10" fill="#fff" stroke="${id[0] === 'W' ? '#1AA7EC' : '#D9D9D9'}"/><text x="${p.x + 14}" y="${p.y + 22}" font-size="12" font-weight="600" fill="#8A8A8A">${id}${id[0] === 'W' ? ' · escritorio' : ''}</text><text x="${p.x + 14}" y="${p.y + 41}" font-size="14" font-weight="600" fill="#1D1D1B">${nm}</text></g>`;
+  });
+  const f = document.createElement('div'); f.className = 'flow'; f.id = 'flow';
+  f.innerHTML = `<div style="padding:24px 40px 0;display:flex;align-items:baseline;gap:16px"><div class="h-l">Mapa del flujo</div><div class="t2">${Object.keys(pos).length} pantallas. Toca una para abrir el prototipo en ese punto. Pasa el mouse para ver sus conexiones.</div><span style="flex:1"></span><button class="btn sec" style="width:auto;padding:0 18px" id="flowclose">${ic('x')}Cerrar</button></div>
+  <svg width="${W}" height="${y + 20}"><defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#BDBDBD"/></marker><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#1AA7EC"/></marker></defs>${svgL}${edges}${svgN}</svg>`;
+  $('#stage').after(f); f.style.top = '56px'; if (NATIVE) f.style.top = '0';
+  f.addEventListener('click', e => {
+    if (e.target.closest('#flowclose')) return closeFlow();
+    const n = e.target.closest('[data-open]'); if (!n) return;
+    const id = n.dataset.open; closeFlow();
+    if (id[0] === 'W' && view === 'm' && !NATIVE) { view = 'd'; localStorage.setItem('cv', 'd'); }
+    stack = []; go(id, false);
+  });
+  f.addEventListener('mouseover', e => {
+    const n = e.target.closest('[data-open]'); const id = n && n.dataset.open;
+    f.querySelectorAll('path[data-e]').forEach(p => { const [a, b] = p.dataset.e.split(' '); const on = id && (a === id || b === id); p.setAttribute('stroke', on ? '#1AA7EC' : '#C9C9C9'); p.setAttribute('stroke-width', on ? 2.5 : 1.5); p.setAttribute('marker-end', on ? 'url(#ar2)' : 'url(#ar)'); });
+  });
+}
+function closeFlow() { const f = $('#flow'); if (f) f.remove(); }
+
+/* ---------- auditoría (la usa Playwright) ---------- */
+window.__audit = function () {
+  const bad = [], ids = Object.keys(SC);
+  const vs = ['m', 'd'];
+  for (const v of vs) for (const id of ids) {
+    if (v === 'm' && (roleOf(id) === 'adm' || TO_M[id])) continue;
+    if (v === 'd' && TO_D[id]) continue;
+    view = v; S = S0(); stack = ['P06']; cur = id; render(); clearT();
+    document.querySelectorAll('#stage button, #stage a, #stage tr.cl').forEach(b => {
+      const g = b.dataset.go, a = b.dataset.act;
+      if (!g && !a && !b.disabled) bad.push(`${v} ${id}: botón muerto «${b.textContent.trim().slice(0, 40)}»`);
+      if (g && g !== 'back' && !SC[resolve(g)]) bad.push(`${v} ${id}: destino inexistente ${g}`);
+      if (a && !ACT[a]) bad.push(`${v} ${id}: acción inexistente ${a}`);
+    });
+  }
+  // alcanzables desde los inicios
+  const seen = new Set(), q = ['P01', 'R01', 'A01'];
+  while (q.length) { const x = q.shift(); if (seen.has(x)) continue; seen.add(x); linksOf(x).forEach(y => { q.push(y); if (TO_D[y]) q.push(TO_D[y]); if (TO_M[y]) q.push(TO_M[y]); }); }
+  ids.forEach(id => { if (!seen.has(id)) bad.push('pantalla suelta (no se llega): ' + id); });
+  return { pantallas: ids.length, problemas: bad };
+};
+
+/* ---------- inicio ---------- */
+window.addEventListener('DOMContentLoaded', () => {
+  if (NATIVE) document.body.classList.add('nat');
+  bar();
+  const h = location.hash.replace('#/', '');
+  const q = new URLSearchParams(location.search);
+  if (q.get('v') && !NATIVE) { view = q.get('v'); }
+  go(SC[h] ? h : 'P01', false);
+  window.addEventListener('hashchange', () => { const x = location.hash.replace('#/', ''); if (SC[x] && x !== cur) { closeFlow(); go(x); } });
+});
