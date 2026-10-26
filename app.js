@@ -10,8 +10,9 @@ const esc = s => String(s);
 
 /* ---------- estado ---------- */
 const S0 = () => ({
-  item: 'iny', addr: 'mama', who: 'mama', when: 'prog', pro: 'cr', day: 1, slot: '08:00', sort: 'rec', ptab: 'serv', det: 'next',
-  f: { enf: true, tens: true }, fmax: 0, fday: 'sem', frat: false,
+  item: 'iny', addr: 'mama', who: 'mama', when: 'prog', pro: 'cr', day: 1, slot: '08:00', sort: 'rel', ptab: 'serv', det: 'next',
+  f: { enf: true, tens: true }, fmax: 0, fday: 'all', frat: 0, fgen: '', fcom: '',
+  fav: { cr: true, pg: true }, q: '', typed: false, sheet: '', ctab: 'next', revF: 'all', revSort: 'rec', resp: { cr4: 'Gracias, Francisco. Ese día me pilló un taco en Grecia, por eso te avisé. ¡Nos vemos en el próximo control!' }, replyTo: 'cr1', rtxt: false, rcrit: {}, pday: 1, svcFrom: '',
   hasMed: true, receta: false, orden: '', exams: { hemo: true, lip: true, gli: false }, tensNeeds: { hig: true, mov: true, sig: true, com: false },
   pay: 'visa', prev: 'fonasa', consent: false, rating: 0, tags: {}, tip: 0, chat: [], phase: 'llego', cancelFrom: 'P27', booked: false, hecho: false, cr: 0,
   docs: { carnet: false, selfie: false, titulo: false, antec: false, banco: false }, prof: 'enf',
@@ -41,7 +42,7 @@ const SC = {};           // pantallas
 const ACT = {};          // acciones
 const def = s => (SC[s.id] = s);
 const roleOf = id => id[0] === 'R' ? 'pro' : id[0] === 'A' ? 'adm' : 'pac';
-const START = { pac: 'P01', pro: 'R01', adm: 'A01' };
+const START = { pac: 'P06', pro: 'R01', adm: 'A01' };
 const ROLE_N = { pac: 'Paciente', pro: 'Profesional', adm: 'Admin' };
 // equivalencias entre iPhone y escritorio
 const TO_D = { P06: 'W01', P10: 'W02', P12: 'W03', P13: 'W03', P21: 'W04' };
@@ -80,33 +81,118 @@ const dayShort = i => DAYS[i][2] || `${DAYS[i][0]} ${DAYS[i][1]}`;
 
 /* profesionales de ejemplo (datos ficticios) */
 const PROS = [
-  { id: 'cr', n: 'Camila Rojas', i: 'CR', t: 'Enfermera', k: 'enf', reg: '482.317', r: '4,9', rn: 4.9, a: 132, km: 1.8, yrs: 6, com: 'Ñuñoa, Providencia, La Reina y Santiago', tel: '+56 9 7712 3008', bio: 'Enfermera de la U. de Chile. Trabajé 5 años en el Hospital del Salvador, en medicina interna. Me gusta explicar todo con calma, sobre todo a los adultos mayores.',
+  { id: 'cr', n: 'Camila Rojas', i: 'CR', t: 'Enfermera', k: 'enf', g: 'f', reg: '482.317', r: '4,9', rn: 4.9, a: 132, rv: 92, km: 1.8, yrs: 6, bg: '#E3EEF6', fg: '#24496B', top: true,
+    com: ['Ñuñoa', 'Providencia', 'La Reina', 'Santiago'], tel: '+56 9 7712 3008', resp: '20 min',
+    bio: 'Soy enfermera de la U. de Chile y trabajé 5 años en medicina interna del Hospital del Salvador. Atiendo a domicilio hace 3 años, sobre todo a adultos mayores. Me gusta explicar todo con calma y dejar las indicaciones por escrito para la familia.',
+    spec: ['Adulto mayor', 'Inyecciones con receta', 'Curaciones', 'Paciente diabético'],
+    edu: [['Enfermería', 'Universidad de Chile', '2019'], ['Diplomado en Heridas y Ostomías', 'Pontificia Universidad Católica', '2022'], ['Curso IAAS y RCP básico', 'Hospital del Salvador', '2024']],
+    dist: [91, 7, 2, 0, 0], crit: [['Puntualidad', '4,9'], ['Trato', '5,0'], ['Técnica', '4,9'], ['Explica todo', '4,9']],
     p: { iny: 18000, cur: 24000, mue: 15000, sig: 12000 }, night: { iny: 22000 }, xinc: 'Control de presión antes y después',
     sl: [[], ['08:00', '09:00', '11:30', '19:00', '21:00'], ['08:00', '10:00', '18:30', '21:00'], ['09:00', '12:00', '19:30'], ['08:00', '08:30', '17:00'], ['10:00', '11:00']] },
-  { id: 'fa', n: 'Fernanda Araya', i: 'FA', t: 'Enfermera', k: 'enf', reg: '512.884', r: '5,0', rn: 5.0, a: 61, km: 3.2, yrs: 3, com: 'Ñuñoa, Macul y La Florida', tel: '+56 9 6620 1475', bio: 'Enfermera de la U. de Santiago. Experiencia en atención primaria y curaciones de pie diabético.', asap: 35,
-    p: { iny: 22000, cur: 28000, cura: 38000, mue: 17000, son: 32000 }, night: {}, xinc: 'Educación sobre la herida y fotos de control',
+  { id: 'fa', n: 'Fernanda Araya', i: 'FA', t: 'Enfermera', k: 'enf', g: 'f', reg: '512.884', r: '5,0', rn: 5.0, a: 61, rv: 44, km: 3.2, yrs: 3, bg: '#F1EADF', fg: '#6A4B26',
+    com: ['Ñuñoa', 'Macul', 'La Florida', 'Peñalolén'], tel: '+56 9 6620 1475', resp: '15 min',
+    bio: 'Enfermera de la U. de Santiago. Vengo de atención primaria en el Cesfam de Macul y me especialicé en curaciones de pie diabético. Te enseño a cuidar la herida entre una visita y otra.',
+    spec: ['Pie diabético', 'Heridas complejas', 'Sondas'],
+    edu: [['Enfermería', 'Universidad de Santiago', '2022'], ['Curso de Curación Avanzada de Heridas', 'Fundación Instituto Nacional de Heridas', '2023']],
+    dist: [98, 2, 0, 0, 0], crit: [['Puntualidad', '5,0'], ['Trato', '5,0'], ['Técnica', '5,0'], ['Explica todo', '4,9']],
+    p: { iny: 22000, cur: 28000, cura: 38000, mue: 17000, son: 32000 }, night: {}, xinc: 'Fotos de control de la herida',
     sl: [['19:30', '20:30'], ['07:30', '13:00', '20:00'], ['07:30', '14:00'], ['16:00', '20:00'], ['07:30'], []] },
-  { id: 'mc', n: 'Matías Contreras', i: 'MC', t: 'Enfermero', k: 'enf', reg: '505.317', r: '4,7', rn: 4.7, a: 48, km: 0.9, yrs: 2, com: 'Ñuñoa y Santiago', tel: '+56 9 5531 8820', bio: 'Enfermero de la U. Andrés Bello. Trabajo en urgencias y atiendo a domicilio en mis días libres.',
+  { id: 'mc', n: 'Matías Contreras', i: 'MC', t: 'Enfermero', k: 'enf', g: 'm', reg: '505.317', r: '4,7', rn: 4.7, a: 48, rv: 31, km: 0.9, yrs: 2, bg: '#E4EFE7', fg: '#2C5A3B',
+    com: ['Ñuñoa', 'Santiago'], tel: '+56 9 5531 8820', resp: '1 h',
+    bio: 'Enfermero de la U. Andrés Bello. Trabajo en la urgencia de la Clínica Indisa y atiendo a domicilio en mis días libres. Rápido, ordenado y con buen precio.',
+    spec: ['Inyecciones', 'Toma de muestras', 'Control de presión'],
+    edu: [['Enfermería', 'Universidad Andrés Bello', '2023'], ['Curso de Urgencias Prehospitalarias', 'Clínica Indisa', '2024']],
+    dist: [76, 18, 4, 2, 0], crit: [['Puntualidad', '4,8'], ['Trato', '4,7'], ['Técnica', '4,8'], ['Explica todo', '4,5']],
     p: { iny: 15000, cur: 20000, mue: 13000, sig: 10000 }, night: {}, xinc: '',
     sl: [[], [], ['09:00', '10:00', '11:00'], ['09:00', '15:00'], ['18:00', '19:00'], ['09:00', '10:00', '11:00', '12:00']] },
-  { id: 'pg', n: 'Paula Godoy', i: 'PG', t: 'TENS', k: 'tens', reg: '311.208', r: '4,8', rn: 4.8, a: 87, km: 2.4, yrs: 8, com: 'Providencia, Ñuñoa y Santiago', tel: '+56 9 8840 1206', bio: 'TENS con 8 años en el Hospital Salvador. Cuidado de adultos mayores, inyecciones con receta y toma de muestras.', asap: 25,
+  { id: 'pg', n: 'Paula Godoy', i: 'PG', t: 'TENS', k: 'tens', g: 'f', reg: '311.208', r: '4,8', rn: 4.8, a: 87, rv: 63, km: 2.4, yrs: 8, bg: '#F2E6EA', fg: '#6B3346',
+    com: ['Providencia', 'Ñuñoa', 'Santiago'], tel: '+56 9 8840 1206', resp: '25 min',
+    bio: 'Técnica en enfermería (TENS) con 8 años en el Hospital Salvador. Acompaño a adultos mayores en su casa: higiene, movilización, remedios y compañía. También pongo inyecciones con receta.',
+    spec: ['Cuidado de adulto mayor', 'Movilización', 'Inyecciones con receta'],
+    edu: [['Técnico de Nivel Superior en Enfermería', 'Inacap', '2017'], ['Curso de Cuidados Paliativos', 'Fundación Paliativos Chile', '2021']],
+    dist: [84, 12, 3, 1, 0], crit: [['Puntualidad', '4,9'], ['Trato', '5,0'], ['Técnica', '4,7'], ['Explica todo', '4,8']],
     p: { iny: 14000, mue: 12000, sig: 10000, tens4: 28000 }, night: { iny: 17000 }, xinc: 'Ayuda a ordenar los remedios de la semana',
     sl: [['20:00'], ['10:30', '12:00', '16:00'], ['10:30', '17:00'], ['08:00', '10:30'], ['10:30', '12:00'], ['09:00']] },
-  { id: 'vm', n: 'Valentina Morales', i: 'VM', t: 'Enfermera', k: 'enf', reg: '509.663', r: '4,9', rn: 4.9, a: 203, km: 4.1, yrs: 11, com: 'Las Condes, La Reina, Vitacura y Ñuñoa', tel: '+56 9 9012 4477', bio: 'Enfermera de la PUC, 11 años en clínica. Especialista en heridas y cuidados de pacientes postrados.',
+  { id: 'vm', n: 'Valentina Morales', i: 'VM', t: 'Enfermera', k: 'enf', g: 'f', reg: '509.663', r: '4,9', rn: 4.9, a: 203, rv: 148, km: 4.1, yrs: 11, bg: '#ECEAE3', fg: '#4D483B', top: true,
+    com: ['Las Condes', 'La Reina', 'Vitacura', 'Ñuñoa'], tel: '+56 9 9012 4477', resp: '30 min',
+    bio: 'Enfermera de la PUC con 11 años en clínica. Me especialicé en heridas y en pacientes postrados. Después de cada atención te mando un informe por correo.',
+    spec: ['Heridas y úlceras', 'Paciente postrado', 'Sondas', 'Post operatorio'],
+    edu: [['Enfermería', 'Pontificia Universidad Católica', '2015'], ['Magíster en Enfermería', 'Universidad de los Andes', '2020'], ['Certificación en Heridas', 'WCET', '2021']],
+    dist: [90, 8, 1, 1, 0], crit: [['Puntualidad', '5,0'], ['Trato', '4,9'], ['Técnica', '5,0'], ['Explica todo', '4,9']],
     p: { iny: 25000, cur: 30000, cura: 42000, mue: 18000, son: 35000 }, night: { iny: 30000 }, xinc: 'Informe de la atención por correo',
     sl: [[], [], [], ['08:30', '10:00', '15:00'], ['08:30', '12:00'], ['10:00']] },
+  { id: 'fl', n: 'Francisca León', i: 'FL', t: 'Enfermera', k: 'enf', g: 'f', reg: '498.120', r: '4,8', rn: 4.8, a: 156, rv: 104, km: 3.6, yrs: 9, bg: '#E2EFF1', fg: '#21535C',
+    com: ['Las Condes', 'Providencia', 'Ñuñoa', 'Vitacura'], tel: '+56 9 7340 2291', resp: '40 min',
+    bio: 'Enfermera de la U. de los Andes. Nueve años en pabellón y recuperación de la Clínica Alemana. Hoy atiendo post operatorios y toma de muestras a domicilio.',
+    spec: ['Post operatorio', 'Toma de muestras', 'Inyecciones'],
+    edu: [['Enfermería', 'Universidad de los Andes', '2017'], ['Diplomado en Enfermería Quirúrgica', 'Universidad de Chile', '2019']],
+    dist: [85, 11, 3, 1, 0], crit: [['Puntualidad', '4,8'], ['Trato', '4,9'], ['Técnica', '4,9'], ['Explica todo', '4,7']],
+    p: { iny: 20000, cur: 27000, cura: 40000, mue: 16000 }, night: { iny: 24000 }, xinc: 'Control de presión antes y después',
+    sl: [[], ['18:00', '19:00'], ['08:00', '18:00'], ['08:00'], ['07:30', '09:00'], ['10:00', '11:00']] },
+  { id: 'dn', n: 'Diego Navarro', i: 'DN', t: 'Enfermero', k: 'enf', g: 'm', reg: '517.402', r: '4,7', rn: 4.7, a: 64, rv: 47, km: 2.9, yrs: 4, bg: '#EEEBE4', fg: '#56492F',
+    com: ['Macul', 'La Florida', 'Ñuñoa', 'Peñalolén'], tel: '+56 9 6118 4420', resp: '35 min',
+    bio: 'Enfermero de la U. Mayor. Trabajo en el Hospital Sótero del Río y atiendo a domicilio en la tarde. Llego con todo lo necesario y dejo todo limpio.',
+    spec: ['Inyecciones', 'Signos vitales', 'Toma de muestras'],
+    edu: [['Enfermería', 'Universidad Mayor', '2021'], ['Curso de Toma de Muestras', 'Laboratorio Bionet', '2022']],
+    dist: [74, 21, 3, 2, 0], crit: [['Puntualidad', '4,7'], ['Trato', '4,8'], ['Técnica', '4,7'], ['Explica todo', '4,6']],
+    p: { iny: 16000, cur: 22000, mue: 14000, sig: 11000 }, night: { iny: 19000 }, xinc: '',
+    sl: [[], ['17:00', '18:30', '20:00'], ['17:00', '19:00'], ['18:00'], ['17:30', '19:00'], ['09:00', '10:30']] },
 ];
+const comStr = p => p.com.length > 1 ? p.com.slice(0, -1).join(', ') + ' y ' + p.com[p.com.length - 1] : p.com[0];
+/* reseñas de ejemplo (r: estrellas) */
+const REVIEWS = {
+  cr: [
+    { id: 'cr1', n: 'Carolina Méndez', c: 'Ñuñoa', d: 'hace 5 días', s: 'iny', r: 5, t: 'Vino a ponerle la Neurobionta a mi mamá de 78 años. Llegó puntual, le explicó todo con calma y ni lo sintió. Ya la agendamos para las otras dos dosis.' },
+    { id: 'cr2', n: 'Jorge Tapia', c: 'Providencia', d: 'hace 2 semanas', s: 'cur', r: 5, t: 'Curación del pie impecable. Dejó todo limpio, anotó cómo estaba la herida y me mandó una foto por el chat para mostrársela a mi doctor.' },
+    { id: 'cr3', n: 'Marcela Pizarro', c: 'La Reina', d: 'hace 3 semanas', s: 'mue', r: 5, t: 'Tomó las muestras a las 7:30 y antes de las 9 ya estaban en el laboratorio. Muy cuidadosa con las venas difíciles de mi papá.' },
+    { id: 'cr4', n: 'Francisco Lagos', c: 'Ñuñoa', d: 'hace 1 mes', s: 'sig', r: 4, t: 'Muy amable y profesional. Llegó 10 minutos tarde, pero avisó por el chat con tiempo.' },
+    { id: 'cr5', n: 'Rocío Villalobos', c: 'Santiago', d: 'hace 1 mes', s: 'iny', r: 5, t: 'Me dan pánico las agujas y Camila tuvo toda la paciencia del mundo. Súper recomendada.' },
+    { id: 'cr6', n: 'Patricio Núñez', c: 'Providencia', d: 'hace 2 meses', s: 'cur', r: 5, t: 'Atendió a mi señora después de la operación de cadera. Puntual, ordenada y muy humana.' },
+  ],
+  fa: [
+    { id: 'fa1', n: 'Soledad Ríos', c: 'Macul', d: 'hace 1 semana', s: 'cura', r: 5, t: 'Lleva tres semanas curando el pie diabético de mi papá y la herida ha mejorado muchísimo. Nos enseñó a cuidarla entre visitas.' },
+    { id: 'fa2', n: 'Andrés Cifuentes', c: 'Ñuñoa', d: 'hace 3 semanas', s: 'iny', r: 5, t: 'Rápida, prolija y muy simpática. Llegó con todo.' },
+    { id: 'fa3', n: 'Gloria Henríquez', c: 'La Florida', d: 'hace 1 mes', s: 'son', r: 5, t: 'Cambió la sonda de mi mamá sin ningún problema. Se nota que sabe.' },
+  ],
+  mc: [
+    { id: 'mc1', n: 'Diego Saavedra', c: 'Ñuñoa', d: 'hace 4 días', s: 'iny', r: 5, t: 'Puntual y muy claro. Buen precio.' },
+    { id: 'mc2', n: 'Paula Espinoza', c: 'Santiago', d: 'hace 2 semanas', s: 'mue', r: 4, t: 'La toma fue rápida. Le faltó avisar cuándo llegaban los resultados.' },
+    { id: 'mc3', n: 'Hernán Bustos', c: 'Ñuñoa', d: 'hace 1 mes', s: 'sig', r: 5, t: 'Me controló la presión toda la semana. Muy responsable.' },
+  ],
+  pg: [
+    { id: 'pg1', n: 'Teresa Alarcón', c: 'Providencia', d: 'hace 6 días', s: 'tens4', r: 5, t: 'Cuida a mi mamá dos veces por semana. Es cariñosa, ordenada y la tiene feliz.' },
+    { id: 'pg2', n: 'Luis Cárdenas', c: 'Santiago', d: 'hace 2 semanas', s: 'iny', r: 5, t: 'Excelente y muy cuidadosa. No dolió nada.' },
+    { id: 'pg3', n: 'Mónica Fuenzalida', c: 'Ñuñoa', d: 'hace 1 mes', s: 'mue', r: 4, t: 'Muy amable. Tuvo que pincharme dos veces, pero me explicó por qué.' },
+  ],
+  vm: [
+    { id: 'vm1', n: 'Isabel Montt', c: 'Las Condes', d: 'hace 1 semana', s: 'cura', r: 5, t: 'La mejor para heridas. Muy seria y muy dulce con mi papá postrado.' },
+    { id: 'vm2', n: 'Cristián Ossa', c: 'Vitacura', d: 'hace 3 semanas', s: 'iny', r: 5, t: 'Puntualísima, y después me mandó un informe por correo.' },
+    { id: 'vm3', n: 'Ana María Pino', c: 'La Reina', d: 'hace 1 mes', s: 'son', r: 5, t: 'Instaló la sonda con mucho cuidado. Volvería a agendar sin dudarlo.' },
+  ],
+  fl: [
+    { id: 'fl1', n: 'Bernardita Soto', c: 'Las Condes', d: 'hace 3 días', s: 'cur', r: 5, t: 'Me hizo las curaciones después de la cirugía. Muy profesional y tranquila.' },
+    { id: 'fl2', n: 'Rodrigo Vial', c: 'Providencia', d: 'hace 2 semanas', s: 'mue', r: 5, t: 'Llegó a las 7 en punto. Ni sentí el pinchazo.' },
+    { id: 'fl3', n: 'Carmen Gloria Díaz', c: 'Ñuñoa', d: 'hace 1 mes', s: 'iny', r: 4, t: 'Todo bien, aunque tuvimos que mover la hora una vez.' },
+  ],
+  dn: [
+    { id: 'dn1', n: 'Valeria Cortés', c: 'Macul', d: 'hace 1 semana', s: 'iny', r: 5, t: 'Vino en la tarde después de mi pega, justo lo que necesitaba. Muy amable.' },
+    { id: 'dn2', n: 'Sergio Molina', c: 'La Florida', d: 'hace 3 semanas', s: 'sig', r: 5, t: 'Le controla la presión a mi papá cada semana. Responsable y puntual.' },
+    { id: 'dn3', n: 'Javiera Rubio', c: 'Peñalolén', d: 'hace 1 mes', s: 'mue', r: 4, t: 'Rápido y ordenado. Recomendado.' },
+  ],
+};
 const PRO = (id = S.pro) => PROS.find(p => p.id === id);
 const proName = () => PRO();
 // precio de una profesional para un servicio. Camila (la cuenta profesional del prototipo) usa lo que ella edita.
 function priceOf(pr, item = S.item, slot) {
+  if (!item) { const l = Object.keys(CAT).map(k => priceOf(pr, k)).filter(Boolean); return l.length ? Math.min(...l) : 0; }
   let base = pr.p[item], nt = pr.night[item];
   if (pr.id === 'cr') { const m = S.my[item]; base = m && m.on ? m.p : undefined; nt = m && m.nOn ? m.night : 0; }
   if (!base) return 0;
   return slot && slot >= '21:00' && nt ? nt : base;
 }
 const nightOf = (pr, item = S.item) => pr.id === 'cr' ? (S.my[item] && S.my[item].nOn ? S.my[item].night : 0) : (pr.night[item] || 0);
-const durOf = (pr, item = S.item) => pr.id === 'cr' && S.my[item] ? S.my[item].dur : CAT[item].dur;
+const durOf = (pr, item = S.item) => !item ? 0 : pr.id === 'cr' && S.my[item] ? S.my[item].dur : CAT[item].dur;
+const svcsOf = pr => Object.keys(CAT).filter(k => priceOf(pr, k));
 function incOf(pr, item = S.item) {
   if (pr.id === 'cr' && S.my[item]) return Object.keys(INC).filter(k => S.my[item].inc[k]).map(k => INC[k]);
   return [INC.ins, INC.res].concat(pr.xinc ? [pr.xinc] : []);
@@ -117,10 +203,13 @@ const nextSlots = (pr, n = 3) => { const o = []; pr.sl.forEach((l, d) => l.forEa
 function prosFor(item = S.item) {
   let l = PROS.filter(p => priceOf(p, item) && S.f[p.k]);
   if (S.fmax) l = l.filter(p => priceOf(p, item) <= S.fmax);
-  if (S.frat) l = l.filter(p => p.rn >= 4.8);
+  if (S.frat) l = l.filter(p => p.rn >= S.frat);
+  if (S.fgen) l = l.filter(p => p.g === S.fgen);
+  if (S.fcom) l = l.filter(p => p.com.includes(S.fcom));
+  if (S.fday === 'hoy') l = l.filter(p => p.sl[0].length);
   if (S.fday === 'man') l = l.filter(p => p.sl[0].length || p.sl[1].length);
   const nx = p => { const x = nextOf(p); return x ? x[0] * 100 + parseInt(x[1]) : 9999; };
-  const s = { rec: (a, b) => (b.rn * 40 + Math.min(b.a, 150) / 10 - b.km) - (a.rn * 40 + Math.min(a.a, 150) / 10 - a.km), pre: (a, b) => priceOf(a, item) - priceOf(b, item), rat: (a, b) => b.rn - a.rn || b.a - a.a, pro: (a, b) => nx(a) - nx(b) }[S.sort];
+  const s = { rel: (a, b) => (b.rn * 40 + Math.min(b.a, 150) / 10 - b.km) - (a.rn * 40 + Math.min(a.a, 150) / 10 - a.km), pre: (a, b) => priceOf(a, item) - priceOf(b, item), rat: (a, b) => b.rn - a.rn || b.a - a.a, pro: (a, b) => nx(a) - nx(b) }[S.sort];
   return l.sort(s);
 }
 function price() {
@@ -166,7 +255,7 @@ function orden() {
 }
 const idcard = () => `<div class="idcard"><div class="ph">${ic('user', 1).replace('<i ', '<i style="font-size:56px;color:#93A6B6" ')}</div><div style="flex:1"><b>CÉDULA DE IDENTIDAD</b><br>República de Chile<div class="blurline" style="width:80%"></div><div class="blurline" style="width:60%"></div><div class="blurline" style="width:70%"></div><div class="blurline" style="width:40%"></div></div></div>`;
 const logoImg = (n = 'horizontal-color', h = 28, st = '') => `<img src="${LOGO(n)}" alt="Cuidapp" style="height:${h}px;${st}">`;
-const tabsP = [['inicio', 'house', 'Inicio', 'P06'], ['servicios', 'squares-four', 'Servicios', 'P07'], ['actividad', 'receipt', 'Actividad', 'P26'], ['cuenta', 'user', 'Cuenta', 'P28']];
+const tabsP = [['servicios', 'magnifying-glass', 'Servicios', 'P06'], ['citas', 'calendar-blank', 'Mis citas', 'P26'], ['favoritos', 'heart', 'Favoritos', 'P34'], ['cuenta', 'user-circle', 'Cuenta', 'P28']];
 const tabsR = [['inicio', 'house', 'Inicio', 'R16'], ['agenda', 'calendar-blank', 'Agenda', 'R24'], ['ganancias', 'wallet', 'Ganancias', 'R23'], ['perfil', 'user', 'Perfil', 'R25']];
 const tabbar = (role, on) => `<div class="tabbar">${(role === 'pro' ? tabsR : tabsP).map(t => `<button class="${t[0] === on ? 'on' : ''}" data-go="${t[3]}">${ic(t[1], t[0] === on)}${t[2]}</button>`).join('')}</div>`;
 const sbar = () => `<div class="sb ${'%M%'}"><span class="num">21:10</span><span class="ic">${ic('cell-signal-full', 1)}${ic('wifi-high', 1)}${ic('battery-full', 1)}</span></div>`;
@@ -177,8 +266,11 @@ function I(fn, ms) { timers.push(setInterval(fn, ms)); }
 function clearT() { timers.forEach(t => { clearTimeout(t); clearInterval(t); }); timers = []; maps.forEach(m => m.remove()); maps = []; }
 function toast(m) { toastMsg = m; }
 
-function go(id, push = true) {
-  if (id === 'back') { const p = stack.pop(); if (!p) return; cur = null; return go(p, false); }
+let navDir = 'f', lastId = null;
+function go(id, push = true, isBack = false) {
+  if (id === 'back') { const p = stack.pop(); if (!p) return; cur = null; navDir = 'b'; return go(p, false, true); }
+  if (!isBack) { const a = SC[cur], b = SC[resolve(id)]; navDir = a && b && (a.tab || a.dtab) && (b.tab || b.dtab) && !b.back ? 'fade' : 'f'; }
+  S.sheet = '';
   id = resolve(id);
   if (!SC[id]) { console.error('pantalla inexistente', id); return; }
   if (roleOf(id) === 'adm' && view === 'm') { view = 'd'; window.__forced = true; }
@@ -191,31 +283,41 @@ function go(id, push = true) {
 
 function frameM(s) {
   const k = s.kind;
-  const nav = s.title || s.back ? `<div class="nav">${s.back ? `<button class="ib" data-go="back">${ic(s.back === 'x' ? 'x' : 'arrow-left')}</button>` : '<span style="width:44px"></span>'}<div class="t">${s.title || ''}</div></div>` : '';
-  const foot = s.foot ? `<div class="foot ${s.tab ? 'withtab' : ''}">${s.foot()}</div>` : '';
+  const bk = s.back ? `<button class="ib" data-go="back" aria-label="Volver">${ic(s.back === 'x' ? 'x' : 'caret-left')}</button>` : '<span class="ib"></span>';
+  const right = s.navR ? s.navR() : '';
+  const nav = s.title || s.back || right ? `<div class="nav ${s.navCls || ''}">${bk}<div class="t">${s.title || ''}</div><div class="nr">${right || '<span class="ib"></span>'}</div></div>` : '';
+  const foot = s.foot ? `<div class="foot ${s.tab ? 'withtab' : ''} ${s.footCls || ''}">${s.foot()}</div>` : '';
   const tb = s.tab ? tabbar(roleOf(s.id), s.tab) : '';
+  const sh = s.sheet && S.sheet ? s.sheet() : '';
+  const ov = sh ? `<div class="ovl" data-act="set" data-arg="sheet="></div><div class="bsheet"><div class="grab"></div>${sh}</div>` : '';
   if (k === 'map') {
     return `<div class="scr"><div style="flex:1;position:relative;min-height:0"><div class="mapwrap" data-map="1"></div>${sbar().replace('%M%', 'on-map')}
-      ${s.back ? `<button class="ib float" style="top:60px;left:16px" data-go="back">${ic(s.back === 'x' ? 'x' : 'arrow-left')}</button>` : ''}
+      ${s.back ? `<button class="ib float" style="top:60px;left:16px" data-go="back" aria-label="Volver">${ic(s.back === 'x' ? 'x' : 'caret-left')}</button>` : ''}
       ${s.float ? s.float() : ''}
-      <div class="sheet"><div class="grab"></div>${s.top ? s.top() : ''}<div class="body">${s.body()}</div>${foot}</div></div>${tb}</div>`;
+      <div class="sheet ${s.sheetCls || ''}"><div class="grab"></div>${s.top ? s.top() : ''}<div class="body">${s.body()}</div>${foot}</div></div>${tb}${ov}</div>`;
   }
-  return `<div class="scr">${sbar().replace('%M%', '')}${nav}<div class="body">${s.body()}</div>${foot}${tb}</div>`;
+  return `<div class="scr">${sbar().replace('%M%', '')}${s.top ? `<div class="topx">${s.top()}</div>` : nav}<div class="body ${s.bodyCls || ''}">${s.body()}</div>${s.float ? s.float() : ''}${foot}${tb}${ov}</div>`;
 }
 function headerD(s) {
   const r = roleOf(s.id);
   const items = r === 'pro' ? [['house', 'Inicio', 'R16', 'inicio'], ['calendar-blank', 'Agenda', 'R24', 'agenda'], ['wallet', 'Ganancias', 'R23', 'ganancias'], ['user', 'Perfil', 'R25', 'perfil']]
-    : [['calendar-plus', 'Agendar', 'W01', 'inicio'], ['squares-four', 'Servicios', 'P07', 'servicios'], ['receipt', 'Actividad', 'P26', 'actividad'], ['user', 'Cuenta', 'P28', 'cuenta']];
+    : [['magnifying-glass', 'Servicios', 'W01', 'servicios'], ['calendar-blank', 'Mis citas', 'P26', 'citas'], ['heart', 'Favoritos', 'P34', 'favoritos'], ['user-circle', 'Cuenta', 'P28', 'cuenta']];
   const on = s.tab || s.dtab;
   const nav = s.noNav ? '' : `<nav>${items.map(t => `<button class="${t[3] === on ? 'on' : ''}" data-go="${t[2]}">${ic(t[0], t[3] === on)}${t[1]}</button>`).join('')}</nav>`;
-  const me = s.noNav ? '' : (r === 'pro' ? `<div class="me">${av('CR', 's')}Camila</div>` : `<div class="me">${av('DF', 's')}Daniela</div>`);
+  const me = s.noNav ? '' : (r === 'pro' ? `<div class="me">${av('CR', 's')}Camila</div>` : `<button class="me" data-go="P28">${av('DF', 's')}Daniela</button>`);
   return `<div class="dh">${logoImg('horizontal-color', 30)}${r === 'pro' ? '<span class="tag">Profesionales</span>' : ''}${nav}<span class="sp"></span>${me}</div>`;
 }
 function frameD(s) {
+  const sh = s.sheet && S.sheet ? s.sheet() : '';
+  const ov = sh ? `<div class="ovl" data-act="set" data-arg="sheet="></div><div class="bsheet dsheet">${sh}</div>` : '';
+  return frameD0(s).replace(/<\/div>$/, ov + '</div>');
+}
+function frameD0(s) {
+  if (s.kind === 'dfree') return `<div class="desk">${headerD(s)}<div class="dfree">${s.body()}</div></div>`;
   if (s.kind === 'adm') return `<div class="desk"><div class="adm">${s.side === 'none' ? '' : sideA(s.side)}<div class="acont">${s.body()}</div></div></div>`;
   const back = s.back ? `<button class="ib" data-go="back">${ic(s.back === 'x' ? 'x' : 'arrow-left')}</button>` : '';
   const title = s.dtitle || s.title;
-  const head = title ? `<div class="dtitle">${back}<div class="h-m">${title}</div></div>` : (back ? `<div class="dtitle">${back}</div>` : '');
+  const head = title ? `<div class="dtitle">${back}<div class="h-m">${title}</div>${s.navR ? `<span style="flex:1"></span>${s.navR()}` : ''}</div>` : (back ? `<div class="dtitle">${back}</div>` : '');
   const foot = s.foot ? `<div class="foot">${s.foot()}</div>` : '';
   if (s.kind === 'map') {
     return `<div class="desk">${headerD(s)}<div class="dmain"><div class="dpanel"><div class="card"><div class="body">${head}${s.top ? s.top() : ''}${s.body()}</div>${foot}</div></div><div class="dmap"><div class="mapwrap" data-map="1"></div>${s.dfloat ? s.dfloat() : s.float ? s.float() : ''}</div></div></div>`;
@@ -240,6 +342,7 @@ function render() {
     const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = ic('check-circle', 1) + `<span>${toastMsg}</span>`;
     scr.appendChild(t); toastMsg = null; clearTimeout(toastT); toastT = setTimeout(() => t.remove(), 2600);
   }
+  if (cur !== lastId) { const el = stage.querySelector('.scr,.dpage,.dmain,.dfree,.acont'); if (el) el.classList.add('a-' + navDir); lastId = cur; }
   fit();
   updateBar();
   if (s.map) { const el = stage.querySelector('[data-map]'); if (el) mkMap(el, s.map()); }
@@ -348,7 +451,8 @@ function linksOf(id) {
   const s = SC[id], out = new Set();
   const grab = f => { try { const h = f(); (h.match(/data-go="([A-Z]\d\d)"/g) || []).forEach(x => out.add(x.slice(9, 12))); } catch (e) { } };
   const saved = JSON.stringify(S);
-  ['body', 'foot', 'aside', 'top', 'float', 'dfloat'].forEach(k => s[k] && grab(s[k]));
+  ['body', 'foot', 'aside', 'top', 'float', 'dfloat', 'navR'].forEach(k => s[k] && grab(s[k]));
+  (s.sheets || []).forEach(v => { S.sheet = v; grab(s.sheet); });
   (s.next || []).forEach(x => out.add(x));
   if (s.auto && typeof s.auto === 'string') out.add(s.auto);
   if (s.tab) (roleOf(id) === 'pro' ? tabsR : tabsP).forEach(t => out.add(t[3]));
@@ -359,8 +463,8 @@ function linksOf(id) {
 }
 window.__links = linksOf;
 const LANES = [
-  ['pac', 'Paciente', [['P01', 'P02', 'P03', 'P04', 'P05'], ['P06', 'P07', 'P08', 'P09', 'P31'], ['P10', 'P11', 'P12', 'P13'], ['P14', 'P15', 'P16', 'P17', 'P18'], ['P19', 'P20', 'P22', 'P30'], ['P21', 'P23', 'P24', 'P25'], ['P26', 'P27', 'P28', 'P29'], ['W01', 'W02', 'W03', 'W04']]],
-  ['pro', 'Profesional', [['R01', 'R02', 'R03'], ['R04', 'R05', 'R06', 'R07'], ['R08', 'R09', 'R10', 'R26'], ['R11', 'R12', 'R13', 'R14', 'R15'], ['R16', 'R17', 'R18'], ['R19', 'R20', 'R21', 'R22'], ['R23', 'R24', 'R25']]],
+  ['pac', 'Paciente', [['P01', 'P02', 'P03', 'P04', 'P05'], ['P06', 'P07', 'P08', 'P09'], ['P10', 'P11', 'P36', 'P34'], ['P12', 'P32', 'P33', 'P22'], ['P13', 'P14', 'P15', 'P16'], ['P17', 'P18', 'P19', 'P20'], ['P26', 'P27', 'P30', 'P28', 'P29'], ['P21', 'P23', 'P24', 'P25'], ['W01', 'W02', 'W03', 'W04']]],
+  ['pro', 'Profesional', [['R01', 'R02', 'R03'], ['R04', 'R05', 'R06', 'R07'], ['R08', 'R09', 'R10', 'R26'], ['R11', 'R12', 'R13', 'R14', 'R15'], ['R16', 'R17', 'R18'], ['R19', 'R20', 'R21', 'R22'], ['R23', 'R24', 'R25'], ['R27', 'R28', 'R29']]],
   ['adm', 'Admin', [['A01', 'A02', 'A03'], ['A04', 'A05', 'A07'], ['A06']]],
 ];
 function openFlow() {
@@ -413,16 +517,18 @@ window.__audit = function () {
   for (const v of vs) for (const id of ids) {
     if (v === 'm' && (roleOf(id) === 'adm' || TO_M[id])) continue;
     if (v === 'd' && TO_D[id]) continue;
-    view = v; S = S0(); stack = ['P06']; cur = id; render(); clearT();
+    for (const shv of [''].concat(SC[id].sheets || [])) {
+    view = v; S = S0(); stack = ['P06']; cur = id; if (SC[id].prep) SC[id].prep(); S.sheet = shv; render(); clearT();
     document.querySelectorAll('#stage button, #stage a, #stage tr.cl').forEach(b => {
       const g = b.dataset.go, a = b.dataset.act;
       if (!g && !a && !b.disabled) bad.push(`${v} ${id}: botón muerto «${b.textContent.trim().slice(0, 40)}»`);
       if (g && g !== 'back' && !SC[resolve(g)]) bad.push(`${v} ${id}: destino inexistente ${g}`);
       if (a && !ACT[a]) bad.push(`${v} ${id}: acción inexistente ${a}`);
     });
+    }
   }
   // alcanzables desde los inicios
-  const seen = new Set(), q = ['P01', 'R01', 'A01'];
+  const seen = new Set(), q = ['P06', 'P01', 'R01', 'A01'];
   while (q.length) { const x = q.shift(); if (seen.has(x)) continue; seen.add(x); linksOf(x).forEach(y => { q.push(y); if (TO_D[y]) q.push(TO_D[y]); if (TO_M[y]) q.push(TO_M[y]); }); }
   ids.forEach(id => { if (!seen.has(id)) bad.push('pantalla suelta (no se llega): ' + id); });
   return { pantallas: ids.length, problemas: bad };
@@ -435,6 +541,6 @@ window.addEventListener('DOMContentLoaded', () => {
   const h = location.hash.replace('#/', '');
   const q = new URLSearchParams(location.search);
   if (q.get('v') && !NATIVE) { view = q.get('v'); }
-  go(SC[h] ? h : 'P01', false);
+  go(SC[h] ? h : 'P06', false);
   window.addEventListener('hashchange', () => { const x = location.hash.replace('#/', ''); if (SC[x] && x !== cur) { closeFlow(); go(x); } });
 });

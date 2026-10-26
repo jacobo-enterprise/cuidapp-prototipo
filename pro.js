@@ -94,7 +94,7 @@ def({ id: 'R10', name: 'Arma tu perfil', kind: 'page', back: true, title: 'Tu pe
   ${stepRow('serv', 'currency-circle-dollar', 'Servicios y precios', `${mySvcs().filter(k => S.my[k].on).length} servicios · desde ${clp(Math.min(...mySvcs().filter(k => S.my[k].on).map(k => S.my[k].p)))}`, 'R11')}
   ${stepRow('com', 'map-pin-area', 'Comunas donde atiendes', comTxt().join(', '), 'R13')}
   ${stepRow('hor', 'calendar-blank', 'Horario semanal', 'Lun a sáb · bloquear días', 'R14')}</div>
-  <button class="pill mt16" data-act="pick" data-arg="cr|" data-go="P12">${ic('eye')}Ver cómo me ven las pacientes</button>`; },
+  <button class="pill mt16" data-act="pick" data-arg="cr|" data-go="R29">${ic('eye')}Ver cómo me ven las pacientes</button>`; },
   foot: () => abtn('Publicar mi perfil', 'publish', '', '', 'R16') });
 
 def({ id: 'R26', name: 'Foto y presentación', kind: 'page', back: true, title: 'Presentación',
@@ -154,7 +154,7 @@ def({ id: 'R16', name: 'Inicio profesional', kind: 'page', tab: 'inicio', next: 
   <div class="sec-t">Hoy</div>
   ${row('box:bandaids', '19:00 · Curación simple', 'Providencia · Jorge T. · confirmada', 'R18', money(S.my.cur.p))}
   ${row('box:heartbeat', '20:30 · Signos vitales', 'Ñuñoa · Carmen V. · confirmada', 'R18', money(S.my.sig.p))}
-  <div class="asap2 mt16"><span class="tx"><b>Atender “lo antes posible” hoy</b><span class="sm t2">Opcional. Te llegan pedidos urgentes cerca mientras esté activo.</span></span><button class="tog ${S.online ? 'on' : ''}" data-act="online"></button></div>
+  <div class="asap2 mt16"><span class="tx"><b>Aparecer en «Disponible hoy»</b><span class="sm t2">Opcional. Sales primero cuando una paciente filtra por atención hoy.</span></span><button class="tog ${S.online ? 'on' : ''}" data-act="online"></button></div>
   <div class="mt12">${row('box:storefront', 'Mi perfil público', '4 servicios · desde ' + clp(Math.min(...mySvcs().filter(k => S.my[k].on).map(k => S.my[k].p))) + ' · 4 comunas', 'R10')}</div>`; } });
 
 def({ id: 'R17', name: 'Solicitud de reserva', kind: 'page', back: true, title: 'Nueva solicitud', auto: 'R18', autoAct: () => { S.req.r1 = 'ok'; },
@@ -225,5 +225,21 @@ def({ id: 'R24', name: 'Agenda', kind: 'page', tab: 'agenda', next: ['R17', 'R18
 
 def({ id: 'R25', name: 'Perfil profesional', kind: 'page', tab: 'perfil',
   body: () => `<div style="display:flex;align-items:center;gap:16px;margin-top:8px">${av('CR', 'l', true)}<div><div class="h-l">Camila Rojas</div><div class="sm t2">Enfermera · SIS 482.317 · ★ 4,9</div></div></div>
-  <div class="mt16">${row('storefront', 'Ver mi perfil público', 'Como lo ven las pacientes', 'P12', ic('caret-right'), '', 'pick', 'cr|')}${row('user-circle', 'Foto y presentación', '', 'R26')}${row('currency-circle-dollar', 'Servicios y precios', `${mySvcs().filter(k => S.my[k].on).length} servicios`, 'R11')}${row('map-pin-area', 'Comunas', comTxt().join(', '), 'R13')}${row('calendar-blank', 'Horario semanal', 'Lun a sáb', 'R14')}
+  <div class="mt16">${row('storefront', 'Ver mi perfil público', 'Como lo ven las pacientes', 'R29', ic('caret-right'), '', 'pick', 'cr|')}${row('star', 'Mis reseñas', `★ 4,9 · ${REVIEWS.cr.filter(r => !S.resp[r.id]).length} sin responder`, 'R27')}${row('user-circle', 'Foto y presentación', '', 'R26')}${row('currency-circle-dollar', 'Servicios y precios', `${mySvcs().filter(k => S.my[k].on).length} servicios`, 'R11')}${row('map-pin-area', 'Comunas', comTxt().join(', '), 'R13')}${row('calendar-blank', 'Horario semanal', 'Lun a sáb', 'R14')}
   ${row('identification-card', 'Documentos', 'Todos vigentes', 'R03', st('ok', 'Verificada', 'seal-check'))}${row('bank', 'Cuenta para pagos', 'BancoEstado CuentaRUT', 'R07')}${row('first-aid-kit', 'Pedir una atención para mí', 'Ir a la app de pacientes', 'P06')}${row('sign-out', 'Cerrar sesión', '', 'R01', '')}</div>` });
+
+/* ===== reseñas de la profesional ===== */
+def({ id: 'R27', name: 'Mis reseñas', kind: 'page', back: true, title: 'Mis reseñas',
+  body: () => { const p = PRO('cr'), l = REVIEWS.cr; return `${scoreBlock(p)}${bars(p)}${crits(p)}
+  <div class="lbl2">${l.filter(r => !S.resp[r.id]).length} sin responder</div>
+  ${l.map(r => `${rvCard(r, true, 'cr')}${S.resp[r.id] ? '' : `<button class="pill mt8 mb16" data-act="set" data-arg="replyTo=${r.id}" data-go="R28">${ic('arrow-bend-up-left')}Responder</button>`}`).join('')}
+  <div class="xs t3 mt16">Tu respuesta se publica en tu perfil, bajo la reseña.</div>`; } });
+def({ id: 'R28', name: 'Responder reseña', kind: 'page', back: true, title: 'Responder',
+  body: () => { const r = REVIEWS.cr.find(x => x.id === S.replyTo) || REVIEWS.cr[0]; return `<div class="mt8">${rvCard(r, false, 'cr')}</div>
+  <div class="lbl2">Tu respuesta</div><div class="field ta"><span>Muchas gracias, ${r.n.split(' ')[0]}. Fue un gusto atender a tu familia. Cuando necesiten otra visita, aquí estoy.</span></div>
+  <div class="mt16">${note('info', 'Sé breve y amable. No compartas datos de salud de la paciente.')}</div>`; },
+  foot: () => abtn('Publicar respuesta', 'pubResp', '', '', 'R27') });
+ACT.pubResp = () => { const r = REVIEWS.cr.find(x => x.id === S.replyTo); S.resp[S.replyTo] = `Muchas gracias, ${r.n.split(' ')[0]}. Fue un gusto atender a tu familia. Cuando necesiten otra visita, aquí estoy.`; toast('Respuesta publicada en tu perfil.'); };
+def({ id: 'R29', name: 'Vista previa del perfil público', kind: 'page', back: true, title: 'Vista previa',
+  body: () => `<div class="pvb">${ic('eye')}<span>Así te ven las pacientes cuando buscan un servicio.</span></div>${profileBody(PRO('cr'), 'pre')}`,
+  foot: () => `<div class="row8"><button class="btn sec" data-go="R26">Editar presentación</button><button class="btn sec" data-go="R11">Editar precios</button></div>` });

@@ -1,49 +1,125 @@
-/* ===== Paciente ===== */
+/* ===== Paciente · marketplace de servicios de enfermería ===== */
 Object.assign(ACT, {
   set: a => { const i = a.indexOf('='); const k = a.slice(0, i), v = a.slice(i + 1); S[k] = isNaN(+v) || v === '' ? v : +v; },
   tog: a => { const [o, k] = a.split('.'); if (k === undefined) S[o] = !S[o]; else S[o][k] = !S[o][k]; },
-  svc: a => { S.item = a; S.when = 'prog'; },
-  pick: a => { const [pro, d, t] = a.split('|'); S.pro = pro; S.when = 'prog'; if (d !== undefined && d !== '') { S.day = +d; S.slot = t; } else { const x = nextOf(PRO()); if (x) { S.day = x[0]; S.slot = x[1]; } } S.ptab = 'serv'; },
-  day: d => { S.day = +d; const l = slotsOf(PRO(), +d); if (l.length && !l.includes(S.slot)) S.slot = l[0]; },
-  asap: p => { S.when = 'ahora'; S.pro = p || 'pg'; if (!priceOf(PRO())) S.item = 'iny'; },
+  svc: a => { S.item = a; S.when = 'prog'; S.sheet = ''; fixSlot(); },
+  pick: a => { const [pro, d, t] = a.split('|'); S.pro = pro; S.when = 'prog'; if (!S.item || !priceOf(PRO(), S.item)) S.item = svcsOf(PRO())[0]; if (d !== undefined && d !== '') { S.day = +d; S.slot = t; } else { const x = nextOf(PRO()); if (x) { S.day = x[0]; S.slot = x[1]; } } S.pday = S.day; },
+  day: d => { S.day = +d; fixSlot(); },
+  pday: d => { S.pday = +d; },
+  fav: id => { S.fav[id] = !S.fav[id]; toast(S.fav[id] ? `${PRO(id).n} quedó en tus favoritos.` : `Quitaste a ${PRO(id).n} de favoritos.`); },
+  sort: v => { S.sort = v; S.sheet = ''; if (cur === 'P06') S.item = ''; },
+  rsort: v => { S.revSort = v; S.sheet = ''; },
+  today: () => { S.fday = S.fday === 'hoy' ? 'all' : 'hoy'; },
+  only: k => { const on = S.f[k] && !S.f[k === 'enf' ? 'tens' : 'enf']; S.f = on ? { enf: true, tens: true } : { enf: k === 'enf', tens: k === 'tens' }; },
+  r48: () => { S.frat = S.frat ? 0 : 4.8; },
+  clearF: () => { S.f = { enf: true, tens: true }; S.fmax = 0; S.fday = 'all'; S.frat = 0; S.fgen = ''; S.fcom = ''; },
+  clearQ: () => { S.q = ''; S.typed = true; },
+  share: () => toast('Link del perfil copiado. Compártelo por WhatsApp.'),
   consent: () => { S.consent = !S.consent; },
   receta: () => { S.receta = true; },
   toast: m => toast(m),
   send: () => { S.chat.push(S.booked ? 'Te espero abajo, gracias.' : 'Perfecto, gracias. Te agendo ahora.'); },
   rate: n => { S.rating = +n; },
   tag: t => { S.tags[t] = !S.tags[t]; },
-  sent: () => { toast(`Gracias. ${first()} recibió tu calificación.`); S.hecho = true; },
-  cancel: () => { toast(S.cancelFrom === 'P19' ? 'Solicitud cancelada. No se cobró nada.' : 'Reserva cancelada. Liberamos el monto retenido.'); S.booked = false; },
+  rtxt: () => { S.rtxt = true; },
+  sent: () => { toast(`Gracias. Tu reseña quedó publicada en el perfil de ${first()}.`); S.hecho = true; S.myRev = { pro: S.pro, r: S.rating, s: S.item }; },
+  cancel: () => { toast(S.cancelFrom === 'P19' ? 'Solicitud cancelada. No se cobró nada.' : 'Cita cancelada. Liberamos el monto retenido.'); S.booked = false; },
   inCourse: () => { S.phase = 'curso'; },
   book: () => { S.booked = true; },
   again: () => { S.when = 'prog'; S.day = 2; S.slot = slotsOf(PRO(), 2)[0] || '08:00'; },
 });
+function fixSlot() { const l = slotsOf(PRO(), S.day); if (l.length && !l.includes(S.slot)) S.slot = l[0]; }
+
+/* ---------- piezas ---------- */
 const R = n => `<span class="num">${clp(n)}</span>`;
-const sis = () => `<span class="sis">${ic('seal-check', 1)}Registro SIS verificado</span>`;
-const proCard = (big, phone) => { const p = PRO(); return `<div class="procard">${av(p.i, big ? 'l' : '', true)}<div style="flex:1;min-width:0"><div class="h-s">${p.n}</div><div class="sm t2">${p.t} · Registro SIS ${p.reg}</div><div class="sm mt4"><span style="font-weight:600">★ ${p.r}</span> <span class="t2">· ${p.a} atenciones${phone ? ` · ${p.tel}` : ''}</span></div></div></div>`; };
-const svcTiles = (list, h) => list.map(k => `<button class="tile" ${h ? `style="height:${h}px"` : ''} data-act="svc" data-arg="${k}" data-go="P08">${ic(CAT[k].ic)}<span class="n">${CAT[k].s}</span></button>`).join('');
+const vb = `<span class="vb">${ic('check', 0).replace('ph ', 'ph-bold ')}</span>`;
+const pav = (p, k = '', ver = false) => `<span class="av ${k}" style="background:${p.bg};color:${p.fg}">${p.i}${ver ? vb : ''}</span>`;
+const kmT = p => String(p.km).replace('.', ',') + ' km';
+const star = () => '<i class="ph-fill ph-star"></i>';
+const rate = (p, n = true) => `<span class="rt">${star()}<b>${p.r}</b>${n ? `<span>(${p.rv})</span>` : ''}</span>`;
+const heart = (id, k = '') => `<button class="hrt ${k} ${S.fav[id] ? 'on' : ''}" data-act="fav" data-arg="${id}" aria-label="Guardar">${ic('heart', S.fav[id])}</button>`;
+const seal = () => `<i class="ph-fill ph-seal-check sealc"></i>`;
+const sis = () => `<span class="badge">${ic('seal-check', 1)}SIS verificado</span>`;
+const svcN = k => k ? CAT[k].n : 'Todos los servicios';
+const dayLbl = d => d === 0 ? 'Hoy' : d === 1 ? 'Mañana' : `${DAYS[d][0]} ${DAYS[d][1]}`;
+const SHORT = { [INC.ins]: 'Insumos incluidos', [INC.pre]: 'Control de presión', [INC.res]: 'Retiro de residuos', [INC.edu]: 'Indicaciones por escrito' };
+const shortInc = t => SHORT[t] || t;
+const mini = (p = PRO(), sub) => `<div class="mini">${pav(p, 's', true)}<div class="tx"><div class="b-m">${p.n}</div><div class="sm t2">${sub || `${p.t} · ${rate(p, false)}`}</div></div></div>`;
+const proCard = (big, phone) => { const p = PRO(); return `<div class="procard">${pav(p, big ? 'l' : '', true)}<div style="flex:1;min-width:0"><div class="h-s">${p.n}</div><div class="sm t2">${p.t} · Registro SIS ${p.reg}</div><div class="sm mt4">${rate(p)} <span class="t2">· ${p.a} atenciones${phone ? ` · ${p.tel}` : ''}</span></div></div></div>`; };
+const shd = (t, go, act, arg, lab = 'Ver todas') => `<div class="shd"><h3>${t}</h3>${go || act ? `<button class="lk" ${go ? `data-go="${go}"` : ''} ${act ? `data-act="${act}" data-arg="${arg}"` : ''}>${lab}</button>` : ''}</div>`;
+const revsOf = id => { const l = (REVIEWS[id] || []).slice(); if (S.myRev && S.myRev.pro === id) l.unshift({ id: 'me', n: 'Daniela Fuentes', c: 'Ñuñoa', d: 'recién', s: S.myRev.s, r: S.myRev.r, t: 'Llegó puntual, le explicó todo a mi mamá y dejó las indicaciones por escrito. Muy recomendada.' }); return l; };
+const starsN = n => `<span class="strs">${[1, 2, 3, 4, 5].map(i => `<i class="ph-fill ph-star ${i <= n ? '' : 'off'}"></i>`).join('')}</span>`;
+const ini = n => n.split(' ').map(x => x[0]).slice(0, 2).join('');
+const rvCard = (r, full, pid) => `<div class="rv ${full ? 'full' : ''}"><div class="rv-h"><span class="av s rvav">${ini(r.n)}</span><div><div class="rv-n">${r.n}</div><div class="rv-m">${r.c} · ${r.d}</div></div></div>
+  <div class="rv-s">${starsN(r.r)}<span>${CAT[r.s].n}</span></div><div class="rv-t">${r.t}</div>
+  ${full && S.resp[r.id] ? `<div class="rv-resp"><div class="rv-n sm">Respuesta de ${first(PRO(pid))}</div><div class="sm t2 mt4">${S.resp[r.id]}</div></div>` : ''}</div>`;
+const bars = p => `<div class="rbars">${[5, 4, 3, 2, 1].map((n, i) => `<div class="rb"><span>${n}</span><div class="tr"><i style="width:${p.dist[i]}%"></i></div></div>`).join('')}</div>`;
+const crits = p => `<div class="crit">${p.crit.map(c => `<div><span>${c[0]}</span><b class="num">${c[1]}</b></div>`).join('')}</div>`;
+const scoreBlock = p => `<div class="score"><div class="big num">${p.r}</div><div>${starsN(5)}<div class="sm t2 mt4">${p.rv} reseñas de pacientes verificadas</div></div></div>`;
 
-// tarjeta del catálogo de profesionales
-const pcard = (pr, wide) => {
-  const p = priceOf(pr), nx = nextSlots(pr, wide ? 4 : 3), inc = incOf(pr);
-  return `<div class="pcard"><button class="ptop" data-act="pick" data-arg="${pr.id}|" data-go="P12">${av(pr.i, '', true)}
-   <span class="tx"><span class="b-m" style="font-weight:600">${pr.n}</span><span class="sm t2">${pr.t} · ${String(pr.km).replace('.', ',')} km</span>
-   <span class="sm"><b style="font-weight:600">★ ${pr.r}</b> <span class="t2">(${pr.a} atenciones)</span></span></span>
-   <span class="pp"><span class="price-s num">${clp(p)}</span><span class="xs t2">${durOf(pr)} min</span></span></button>
-   <div class="sis-row">${sis()}${nightOf(pr) ? `<span class="xs t2">Noche: ${clp(nightOf(pr))}</span>` : ''}</div>
-   <div class="inc sm t2">${ic('check')}<span>${inc.slice(0, 2).join(' · ')}</span></div>
-   <div class="nslots">${nx.length ? `<span class="nd">${dayShort(nx[0][0])}</span>${nx.filter(x => x[0] === nx[0][0]).map(x => `<button class="spill" data-act="pick" data-arg="${pr.id}|${x[0]}|${x[1]}" data-go="P13">${x[1]}</button>`).join('')}` : '<span class="sm t3">Sin horas esta semana</span>'}</div></div>`;
+// tarjeta destacada (carrusel)
+const fcard = p => `<div class="fcard" data-act="pick" data-arg="${p.id}|" data-go="P12" role="button">
+  <div class="fc-hd" style="background:${p.bg}">${pav(p, 'l', true)}${heart(p.id, 'fl')}${p.top ? '<span class="fc-tag">Destacada</span>' : ''}</div>
+  <div class="fc-b"><div class="fc-n">${p.n}</div><div class="fc-m">${p.t} · ${kmT(p)}</div><div class="fc-m mt4">${rate(p)}</div>
+  <div class="fc-f"><span class="sm">Desde <b class="num">${clp(priceOf(p, ''))}</b></span>${nextOf(p) ? `<span class="nx">${dayLbl(nextOf(p)[0])} ${nextOf(p)[1]}</span>` : ''}</div></div></div>`;
+// tarjeta de lista simple
+const lcard = (p, k = '') => `<div class="lcard ${k}" data-act="pick" data-arg="${p.id}|" data-go="P12" role="button">${pav(p, '', true)}
+  <div class="tx"><div class="b-m">${p.n}</div><div class="sm t2">${p.t} · ${p.com[0]}, a ${kmT(p)}</div><div class="sm mt4">${rate(p)}</div></div>
+  <div class="pr"><span class="xs t2">Desde</span><b class="num">${clp(priceOf(p, ''))}</b></div></div>`;
+// tarjeta de resultado (el corazón del marketplace)
+const rcard = (pr, wide) => {
+  const it = S.item, p = priceOf(pr, it), inc = it ? incOf(pr, it) : [], nx = nextSlots(pr, 12);
+  const d0 = nx.length ? nx[0][0] : -1, sl = nx.filter(x => x[0] === d0).slice(0, wide ? 4 : 3);
+  return `<div class="rcard ${wide ? 'w' : ''}" data-act="pick" data-arg="${pr.id}|" data-go="P12" role="button">
+  <div class="rc-top">${pav(pr, wide ? 'l' : '', true)}<div class="rc-id"><div class="rc-n">${pr.n}</div><div class="rc-m">${pr.t} · ${pr.yrs} años de experiencia</div><div class="rc-m">${rate(pr)}</div><div class="rc-m">${ic('map-pin')}${pr.com[0]} · a ${kmT(pr)}</div></div>${heart(pr.id)}</div>
+  <div class="rc-price"><div class="rc-l"><div class="rc-svc">${it ? CAT[it].n : 'Precio desde'}</div><div class="rc-inc">${(inc.length ? inc.slice(0, 2) : [INC.ins]).map(t => `<span>${ic('check')}${shortInc(t)}</span>`).join('')}</div></div>
+  <div class="rc-p"><b class="num">${clp(p)}</b><span>${it ? durOf(pr, it) + ' min' : 'por visita'}</span></div></div>
+  <div class="rc-sl"><span class="rc-d">${d0 >= 0 ? dayLbl(d0) : 'Sin horas'}</span>${sl.map(x => `<button class="spill" data-act="pick" data-arg="${pr.id}|${x[0]}|${x[1]}" data-go="P13">${x[1]}</button>`).join('')}<button class="more" data-act="pick" data-arg="${pr.id}|" data-go="P13">Ver más</button></div>
+  <div class="rc-v">${sis()}<span>Antecedentes revisados</span></div></div>`;
 };
-const sortChips = () => `<div class="hscroll">${[['rec', 'Recomendadas'], ['pre', 'Menor precio'], ['rat', 'Mejor nota'], ['pro', 'Más pronto']].map(x => chip(x[1], S.sort === x[0], 'set', 'sort=' + x[0])).join('')}</div>`;
+const CATS = [['iny', 'Inyecciones'], ['cur', 'Curaciones'], ['cura', 'Heridas complejas'], ['mue', 'Toma de muestras'], ['sig', 'Signos vitales'], ['son', 'Sondas'], ['tens4', 'Cuidados TENS']];
+const catGrid = () => `<div class="cats">${CATS.map(c => `<button class="cat" data-act="svc" data-arg="${c[0]}" data-go="P10"><span class="ci">${ic(CAT[c[0]].ic)}</span><span class="cn">${c[1]}</span></button>`).join('')}<button class="cat" data-go="P33"><span class="ci">${ic('squares-four')}</span><span class="cn">Ver todos</span></button></div>`;
+const featured = () => PROS.filter(p => priceOf(p, '')).sort((a, b) => (b.top ? 1 : 0) - (a.top ? 1 : 0) || a.km - b.km).slice(0, 5);
+const topRated = () => PROS.slice().sort((a, b) => b.rn - a.rn || b.rv - a.rv).slice(0, 3);
+const range = l => { const ps = l.map(p => priceOf(p, S.item)); return ps.length ? [Math.min(...ps), Math.max(...ps)] : [0, 0]; };
+const nFilt = () => (S.f.enf && S.f.tens ? 0 : 1) + (S.fmax ? 1 : 0) + (S.fday !== 'all' ? 1 : 0) + (S.frat ? 1 : 0) + (S.fgen ? 1 : 0) + (S.fcom ? 1 : 0);
+const SORTS = [['rel', 'Relevancia', 'Nota, reseñas y cercanía'], ['pre', 'Menor precio', 'Del más barato al más caro'], ['rat', 'Mejor valorada', 'Mayor nota primero'], ['pro', 'Disponibilidad más pronta', 'La hora libre más cercana']];
+const sortSheet = () => `<div class="h-s">Ordenar por</div><div class="mt8">${SORTS.map(x => radioRow(x[1], x[2], S.sort === x[0], 'sort', x[0])).join('')}</div>`;
+const svcSheet = () => `<div class="h-s">Elige el servicio</div><div class="sm t2 mt4">Precios de ${first()}</div><div class="mt8">${svcsOf(PRO()).map(k => `<button class="row" data-act="svc" data-arg="${k}"><span class="ri box">${ic(CAT[k].ic)}</span><span class="tx"><div class="a">${CAT[k].n}</div><div class="b">${durOf(PRO(), k)} min</div></span><span class="b-m num">${clp(priceOf(PRO(), k))}</span><span class="radio ${S.item === k ? 'on' : ''}"></span></button>`).join('')}</div>`;
+const quick = () => `<div class="qchips">
+  <button class="qc ${S.sort !== 'rel' ? 'on' : ''}" data-act="set" data-arg="sheet=sort">${ic('arrows-down-up')}${SORTS.find(x => x[0] === S.sort)[1]}${ic('caret-down')}</button>
+  <button class="qc ${S.fday === 'hoy' ? 'on' : ''}" data-act="today">Disponible hoy</button>
+  <button class="qc ${S.f.enf && !S.f.tens ? 'on' : ''}" data-act="only" data-arg="enf">Enfermera/o</button>
+  <button class="qc ${S.f.tens && !S.f.enf ? 'on' : ''}" data-act="only" data-arg="tens">TENS</button>
+  <button class="qc ${S.frat ? 'on' : ''}" data-act="r48">${star()}4,8 o más</button></div>`;
+const norm = t => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+const SUG = [['Inyección intramuscular', 'iny'], ['Inyección de Neurobionta', 'iny'], ['Inyección de vitamina B12', 'iny'], ['Inyección con receta médica', 'iny'], ['Curación simple', 'cur'], ['Curación de pie diabético', 'cura'], ['Curación avanzada de heridas', 'cura'], ['Toma de muestras', 'mue'], ['Toma de muestras en ayunas', 'mue'], ['Control de presión', 'sig'], ['Control de signos vitales', 'sig'], ['Instalación de sonda', 'son'], ['Cambio de sonda Foley', 'son'], ['Cuidados TENS por 4 horas', 'tens4'], ['Cuidado de adulto mayor', 'tens4']];
+const hl = (t, q) => { const i = norm(t).indexOf(norm(q)); return i < 0 ? t : `${t.slice(0, i)}<b>${t.slice(i, i + q.length)}</b>${t.slice(i + q.length)}`; };
+const statsOf = k => { const ps = PROS.filter(p => priceOf(p, k)).map(p => priceOf(p, k)); return [ps.length, Math.min(...ps)]; };
+const nPro = n => `${n} profesional${n === 1 ? '' : 'es'}`;
+const svcRow = (k, label, q) => { const [n, mn] = statsOf(k); return `<button class="srow" data-act="svc" data-arg="${k}" data-go="P10"><span class="si">${ic(CAT[k].ic)}</span><span class="tx"><span class="a">${q ? hl(label, q) : CAT[k].n}</span><span class="b">${nPro(n)} · desde ${clp(mn)}</span></span>${ic('caret-right')}</button>`; };
+function sugg() {
+  const q = S.q, s = SUG.filter(x => norm(x[0]).includes(norm(q))), ps = PROS.filter(p => norm(p.n).includes(norm(q)));
+  return `${s.length ? `<div class="lbl2">Servicios</div>${s.slice(0, 5).map(x => svcRow(x[1], x[0], q)).join('')}` : ''}
+  ${ps.length ? `<div class="lbl2">Profesionales</div>${ps.map(p => lcard(p, 'flat')).join('')}` : ''}
+  ${!s.length && !ps.length ? `<div class="empty"><div class="b-m">No encontramos “${q}”</div><div class="sm t2 mt4">Prueba con otra palabra o mira todos los servicios.</div>${btn('Ver todos los servicios', 'P33', 'sec')}</div>` : ''}
+  <div class="lbl2">Búsquedas parecidas</div><div class="chips">${['Neurobionta', 'Vitamina B12', 'Con receta'].map(t => `<button class="chip" data-act="svc" data-arg="iny" data-go="P10">${t}</button>`).join('')}</div>`;
+}
+const groups = l => [['Por la mañana', t => t < '12:00'], ['Por la tarde', t => t >= '12:00' && t < '19:00'], ['Por la noche', t => t >= '19:00']].map(g => [g[0], l.filter(g[1])]).filter(g => g[1].length);
+const hist = () => { const ps = PROS.filter(p => priceOf(p, S.item)).map(p => priceOf(p, S.item)); const bins = [12, 14, 16, 18, 20, 22, 24, 26, 28].map(x => x * 1000); return `<div class="hist">${bins.map(b => { const n = ps.filter(p => p >= b && p < b + 2000).length; return `<i class="${!S.fmax || b < S.fmax ? 'on' : ''}" style="height:${8 + n * 18}px"></i>`; }).join('')}</div><div class="hist-l xs t2"><span>$12.000</span><span>$30.000</span></div>`; };
+const ll = p => { const a = { cr: [.006, -.008], fa: [-.012, .010], mc: [.003, .004], pg: [.010, -.002], vm: [-.004, .022], fl: [.014, .012], dn: [-.016, -.004] }[p.id]; return [P().ll[0] + a[0], P().ll[1] + a[1]]; };
+const dstrip = (p, key, act, pre) => `<div class="dstrip">${DAYS.map((d, i) => { const n = slotsOf(p, i).length; const on = S[key] === i; return !pre && n ? `<button class="ds ${on ? 'on' : ''}" data-act="${act}" data-arg="${i}"><span>${d[2] || d[0]}</span><b>${d[1]}</b><i></i></button>` : `<div class="ds ${on ? 'on' : ''} ${n ? '' : 'off'}"><span>${d[2] || d[0]}</span><b>${d[1]}</b><i></i></div>`; }).join('')}</div>`;
+const acts = l => `<div class="acts">${l.map(a => `<button class="act" ${a[4] ? `data-go="${a[4]}"` : `data-act="${a[2]}" data-arg="${a[3]}"`}>${ic(a[0])}<span>${a[1]}</span>${ic('caret-right')}</button>`).join('')}</div>`;
 
+/* ---------- ingreso ---------- */
 def({ id: 'P01', name: 'Ingreso', kind: 'page', noNav: true,
   body: () => `<div style="padding-top:40px">${logoImg('simbolo-color', 64)}</div>
-  <div class="h-l mt24">Atención de salud en tu casa</div><div class="t2 mt8">Elige a tu enfermera o TENS verificada y agenda a la hora que te acomode.</div>
+  <div class="h-l mt24">Enfermeras y TENS que van a tu casa</div><div class="t2 mt8">Busca el servicio, compara precios y reseñas, y agenda con la profesional que elijas.</div>
   ${lbl('Tu celular')}<div style="display:flex;gap:8px"><div class="field" style="width:96px;flex:none">🇨🇱&nbsp;+56</div>${field('', '9 8765 4321', '', 'focus')}</div>`,
   foot: () => `${btn('Continuar', 'P02')}
   <div style="display:flex;align-items:center;gap:12px;margin:6px 0" class="t3 sm"><span style="flex:1;height:1px;background:var(--border)"></span>o<span style="flex:1;height:1px;background:var(--border)"></span></div>
   ${btn(ic('apple-logo', 1) + 'Continuar con Apple', 'P02', 'sec')}${btn(ic('google-logo', 1) + 'Continuar con Google', 'P02', 'sec')}
-  <button class="btn ghost sm" data-go="R01" style="font-size:15px">¿Eres enfermera o TENS? <span class="link" style="margin-left:4px">Postula aquí</span></button>
+  <button class="btn ghost sm" data-go="R01" style="font-size:15px">¿Eres enfermera o TENS? <span class="link" style="margin-left:4px">Ofrece tus servicios</span></button>
   <div class="xs t3" style="text-align:center">Al continuar aceptas los Términos y la Política de privacidad de Cuidapp.</div>` });
 
 def({ id: 'P02', name: 'Código SMS', kind: 'page', back: true, noNav: true,
@@ -69,128 +145,167 @@ def({ id: 'P04', name: 'Consentimiento de datos de salud', kind: 'page', back: t
   <div class="hr"></div>${checkRow('Autorizo a Cuidapp a tratar mis datos de salud para coordinar mi atención, según la Ley 19.628.', S.consent, 'consent', '')}`,
   foot: () => abtn('Aceptar y seguir', '', '', '', 'P05', !S.consent) });
 
-def({ id: 'P05', name: 'Permiso de ubicación', kind: 'map', noNav: true, map: () => ({ me: G.casa, zoom: 15 }),
-  body: () => `<div class="h-m">Activa tu ubicación</div><div class="t2 mt8">Así te mostramos las profesionales que atienden en tu comuna.</div>`,
-  foot: () => `${btn('Permitir ubicación', 'P06')}${btn('Escribir mi dirección', 'P08', 'sec')}` });
+def({ id: 'P05', name: 'Dirección de atención', kind: 'page', noNav: true, back: true, title: '',
+  body: () => `<div class="h-l">¿Dónde serán las atenciones?</div><div class="t2 mt8">Te mostramos las profesionales que atienden en esa comuna, con sus precios.</div>
+  <div class="mt24">${row('box:navigation-arrow', 'Usar mi ubicación actual', 'Ñuñoa, Santiago', 'P06', ic('caret-right'), '', 'toast', 'Listo. Te mostramos profesionales que atienden en Ñuñoa.')}
+  ${row('box:magnifying-glass', 'Escribir una dirección', 'Calle, número y comuna', 'P08', ic('caret-right'), '', 'set', 'addrNext=P06')}</div>
+  <div class="mt24">${note('lock-simple', 'Tu dirección exacta solo la ve la profesional que agendas, cuando confirma la cita.')}</div>` });
 
-const nearDots = () => [[[-33.4268, -70.6123]], [[-33.4205, -70.5985]], [[-33.4282, -70.5952]], [[-33.4405, -70.6010]], [[-33.4330, -70.6190]]];
-def({ id: 'P06', name: 'Inicio', kind: 'map', tab: 'inicio', map: () => ({ me: G.casa, dots: nearDots(), zoom: 14.25 }),
-  body: () => `<button class="search" data-go="P07">${ic('magnifying-glass', 0)}¿Qué necesitas?<span class="when">${ic('calendar-blank', 1)}Agendar</span></button>
-  ${S.booked ? `<div class="mt8">${row('box:calendar-check', `${dayShort(S.day)}, ${S.slot} · ${PRO().n}`, `${CAT[S.item].n} · confirmada`, 'P27', '', '', 'set', 'det=next')}</div>` : ''}
-  <div class="tiles2 mt12">${svcTiles(['iny', 'cur', 'mue'], 84)}</div>
-  <button class="asap mt12" data-act="asap" data-arg="pg" data-go="P31"><span class="dot"></span><span class="tx"><b>¿La necesitas hoy?</b><span class="sm t2">2 profesionales disponibles ahora cerca de ti</span></span>${ic('caret-right')}</button>` });
+/* ---------- Servicios (inicio de la app) ---------- */
+def({ id: 'P06', name: 'Servicios (inicio)', kind: 'page', tab: 'servicios', bodyCls: 'home',
+  body: () => `<div class="locrow"><button class="locb" data-act="set" data-arg="addrNext=P06" data-go="P08"><span class="xs t2">Atención a domicilio en</span><span class="lv">${P().n}, ${P().c}${ic('caret-down')}</span></button><button class="ib bell" data-act="toast" data-arg="No tienes notificaciones nuevas." aria-label="Notificaciones">${ic('bell')}</button></div>
+  <h1 class="h-xl mt16">¿Qué necesitas?</h1>
+  <button class="sbig mt16" data-go="P07">${ic('magnifying-glass')}<span>Inyección, curación, exámenes…</span></button>
+  ${S.booked && !S.hecho ? `<button class="upc mt16" data-act="set" data-arg="det=next" data-go="P27"><span class="db"><span>${DAYS[S.day][0]}</span><b>${DAYS[S.day][1]}</b></span><span class="tx"><span class="xs t2">Tu próxima cita</span><b>${CAT[S.item].n}</b><span class="sm t2">${S.slot} · ${PRO().n}</span></span>${ic('caret-right')}</button>` : ''}
+  <div class="mt24">${catGrid()}</div>
+  ${shd('Profesionales destacadas cerca de ti', 'P10', 'svc', '')}
+  <div class="hcar">${featured().map(fcard).join('')}</div>
+  ${shd('Búsquedas recientes')}
+  <div class="recent">${[['iny', 'Inyección intramuscular', 'Ñuñoa · 7 profesionales'], ['mue', 'Toma de muestras en ayunas', 'Ñuñoa · 7 profesionales'], ['cur', 'Curación simple', 'Providencia · 6 profesionales']].map(r => `<button class="rrow" data-act="svc" data-arg="${r[0]}" data-go="P10"><span class="rc">${ic('clock-counter-clockwise')}</span><span class="tx"><span class="a">${r[1]}</span><span class="b">${r[2]}</span></span>${ic('arrow-up-right')}</button>`).join('')}</div>
+  ${shd('Mejor valoradas', 'P10', 'sort', 'rat')}
+  <div class="llist">${topRated().map(p => lcard(p)).join('')}</div>
+  <div class="soon mt24"><div class="soon-i">${ic('person-simple-walk')}${ic('pill')}${ic('flask')}</div><div class="b-m mt12">Muy pronto en Cuidapp</div><div class="sm t2 mt4">Kinesiología, farmacia y laboratorios a domicilio.</div></div>
+  <div class="xs t3 mt16 center">Profesionales, precios y reseñas de ejemplo.</div>` });
 
-def({ id: 'P07', name: 'Servicios', kind: 'page', tab: 'servicios',
-  body: () => `<div class="h-xl mt8">Servicios</div><div class="t2 mt4 sm">Elige el servicio y te mostramos quién lo hace cerca de ti, con su precio.</div><div class="sec-t">Enfermería y TENS</div>
-  <div class="grid mt8">${svcTiles(['iny', 'cur', 'cura', 'mue', 'sig', 'son', 'tens4'])}</div>
-  <div class="sec-t">Muy pronto</div><div class="grid mt8"><div class="tile dim"><span class="tag">Pronto</span>${ic('person-simple-walk')}<span class="n">Kinesiología</span></div><div class="tile dim"><span class="tag">Pronto</span>${ic('pill')}<span class="n">Farmacia</span></div><div class="tile dim"><span class="tag">Pronto</span>${ic('flask')}<span class="n">Laboratorios</span></div></div>
-  <div class="mt24">${note('info', 'Cada profesional pone su precio y dice qué incluye. Lo ves antes de agendar y pagas en la app.')}</div>` });
+def({ id: 'P07', name: 'Buscar servicio', kind: 'page', back: true,
+  top: () => `<div class="srch"><button class="ib" data-go="back" aria-label="Volver">${ic('caret-left')}</button><div class="sinput">${ic('magnifying-glass')}<span class="qv">${S.q}<i class="caret"></i>${S.q ? '' : '<span class="ph-t">¿Qué necesitas?</span>'}</span>${S.q ? `<button class="clr" data-act="clearQ" aria-label="Borrar">${ic('x-circle', 1)}</button>` : ''}</div></div>
+  <button class="sloc" data-act="set" data-arg="addrNext=P07" data-go="P08">${ic('map-pin')}<span>En ${P().n}, ${P().c}</span><span class="link">Cambiar</span></button>`,
+  body: () => S.q ? sugg() : `<div class="lbl2">Búsquedas recientes</div><div class="chips">${['Inyección intramuscular', 'Toma de muestras', 'Curación'].map((t, i) => `<button class="chip" data-act="svc" data-arg="${['iny', 'mue', 'cur'][i]}" data-go="P10">${ic('clock-counter-clockwise')}&nbsp;${t}</button>`).join('')}</div>
+  <div class="shd"><h3>Lo más pedido</h3><button class="lk" data-go="P33">Ver todos</button></div>${['iny', 'mue', 'cur', 'tens4'].map(k => svcRow(k)).join('')}`,
+  enter: () => { if (S.typed || S.q) return; S.typed = true; const w = 'inyec'; const step = i => setTimeout(() => { if (cur !== 'P07' || S.q === w) return; S.q = w.slice(0, i); render(); if (i < w.length) step(i + 1); }, i === 1 ? 700 : 150); step(1); } });
 
+def({ id: 'P33', name: 'Todos los servicios', kind: 'page', back: true, title: 'Servicios',
+  body: () => `<div class="sm t2">Cada profesional pone su precio y dice qué incluye. Lo ves antes de agendar.</div>
+  ${[['Enfermería', ['iny', 'cur', 'cura', 'mue', 'sig', 'son']], ['Cuidados TENS', ['tens4']]].map(g => `<div class="lbl2">${g[0]}</div>${g[1].map(k => { const [n, mn] = statsOf(k); return `<button class="svcard" data-act="svc" data-arg="${k}" data-go="P10"><span class="si">${ic(CAT[k].ic)}</span><span class="tx"><span class="a">${CAT[k].n}</span><span class="b">${CAT[k].d}</span><span class="c">${nPro(n)} · desde <b>${clp(mn)}</b></span></span>${ic('caret-right')}</button>`; }).join('')}`).join('')}
+  <div class="lbl2">Muy pronto</div><div class="chips">${['Kinesiología', 'Farmacia', 'Laboratorios'].map(t => `<span class="chip dim">${t}</span>`).join('')}</div>` });
+
+/* ---------- direcciones ---------- */
 def({ id: 'P08', name: 'Buscar dirección', kind: 'page', back: true, title: 'Dirección de la atención',
   body: () => `${field('magnifying-glass', 'Irarrázaval 34', '', 'focus')}
   <div class="mt8">${row('box:map-pin', 'Av. Irarrázaval 3450', 'Ñuñoa, Santiago', 'P09', '', '', 'set', 'addr=mama')}
   ${row('box:map-pin', 'Av. Irarrázaval 3400', 'Ñuñoa, Santiago', 'P09', '', '', 'set', 'addr=mama')}
   ${row('box:map-pin', 'Av. Irarrázaval 3499', 'Ñuñoa, Santiago', 'P09', '', '', 'set', 'addr=mama')}</div>
-  <div class="sec-t">Guardadas</div>
+  <div class="lbl2">Guardadas</div>
   ${row('box:house', 'Casa', 'Los Leones 1180, Providencia', 'P09', '', '', 'set', 'addr=casa')}
   ${row('box:heart', 'Mamá', 'Av. Irarrázaval 3450, Ñuñoa', 'P09', '', '', 'set', 'addr=mama')}
-  ${row('box:crosshair', 'Fijar en el mapa', '', 'P09')}` });
+  ${row('box:navigation-arrow', 'Usar mi ubicación actual', '', 'P09', '', '', 'set', 'addr=casa')}` });
 
-def({ id: 'P09', name: 'Confirmar domicilio', kind: 'map', back: true, map: () => ({ home: P().ll, homeLabel: 'La profesional llega aquí', zoom: 17 }), next: ['P10', 'P31'],
-  body: () => `<div class="h-s" style="text-align:center">Confirma el domicilio</div><div class="b-m mt12">${P().n}</div><div class="t2 sm">${P().c}, Santiago</div>
+def({ id: 'P09', name: 'Confirmar domicilio', kind: 'page', back: true, title: 'Confirma la dirección', next: ['P06', 'P07', 'P14', 'P17'],
+  body: () => `<div class="addrc">${ic('map-pin', 1)}<div><div class="b-m">${P().n}</div><div class="sm t2">${P().c}, Región Metropolitana</div></div></div>
   ${lbl('Depto, casa o block')}${field('', S.addr === 'mama' ? 'Depto 1204, torre B' : 'Depto 52')}
-  ${lbl('Indicaciones para llegar')}${field('', S.addr === 'mama' ? 'Conserjería abierta 24 h. Estacionar en visitas.' : 'Timbre 52. Portón negro.')}`,
-  foot: () => `<button class="btn" data-go="${S.when === 'ahora' ? 'P31' : 'P10'}">${S.when === 'ahora' ? 'Confirmar domicilio' : 'Ver profesionales'}</button>` });
+  ${lbl('Indicaciones para llegar')}${field('', S.addr === 'mama' ? 'Conserjería abierta 24 h. Estacionar en visitas.' : 'Timbre 52. Portón negro.')}
+  ${lbl('Guardar como')}<div class="chips">${chip('Mamá', S.addr === 'mama', 'set', 'addr=mama')}${chip('Casa', S.addr === 'casa', 'set', 'addr=casa')}${chip('Otra', false, 'toast', 'Ponle un nombre a esta dirección.')}</div>
+  <div class="mt24">${note('lock-simple', 'La dirección exacta solo la ve la profesional que agendas.')}</div>`,
+  foot: () => `<button class="btn" data-go="${S.addrNext || 'P06'}">Guardar dirección</button>` });
 
-def({ id: 'P10', name: 'Profesionales cerca (catálogo)', kind: 'page', back: true,
-  title: '', body: () => { const l = prosFor(); return `<div class="h-m">${CAT[S.item].n}</div>
-  <button class="addr-l mt4" data-go="P08">${ic('map-pin', 1)}<span>${P().n}, ${P().c}</span>${ic('caret-down')}</button>
-  <div class="sortbar mt12"><button class="pill flt ico" data-go="P11" aria-label="Filtros">${ic('sliders-horizontal')}</button>${sortChips()}</div>
-  <div class="sm t2 mt12">${l.length} profesionales atienden en ${P().c}</div>
-  ${CAT[S.item].receta ? `<div class="mt8">${note('file-text', 'Para inyecciones necesitas una foto de la receta médica. La subes al agendar.')}</div>` : ''}
-  <div class="plist mt8">${l.map(p => pcard(p)).join('')}</div>
-  <div class="xs t3 mt12" style="text-align:center">Profesionales y precios de ejemplo para el prototipo.</div>`; } });
+/* ---------- resultados ---------- */
+def({ id: 'P10', name: 'Resultados del servicio', kind: 'page', back: true, sheets: ['sort'], sheet: sortSheet,
+  top: () => `<div class="rtop"><button class="ib" data-go="back" aria-label="Volver">${ic('caret-left')}</button><button class="spl" data-go="P07"><b>${svcN(S.item)}</b><span>${P().c} · Cualquier día</span></button><button class="ib fb" data-go="P11" aria-label="Filtros">${ic('sliders-horizontal')}${nFilt() ? `<span class="cnt">${nFilt()}</span>` : ''}</button></div>${quick()}`,
+  body: () => { const l = prosFor(), [a, b] = range(l); return `<div class="rsum"><div class="h-s">${nPro(l.length)} en ${P().c}</div><div class="sm t2 mt4">${l.length ? `Desde <b class="num">${clp(a)}</b> hasta <b class="num">${clp(b)}</b> · cada una pone su precio` : 'Prueba quitando algún filtro.'}</div></div>
+  ${S.item && CAT[S.item].receta ? `<div class="rnote">${ic('file-text')}<span>Necesitas receta médica. La subes al agendar.</span></div>` : ''}
+  <div class="rlist">${l.map(p => rcard(p)).join('')}</div>
+  ${l.length ? '' : `<div class="empty">${abtn('Quitar filtros', 'clearF', '', 'sec')}</div>`}
+  <div class="xs t3 mt16 center" style="padding-bottom:64px">Precios fijados por cada profesional. Datos de ejemplo.</div>`; },
+  float: () => `<button class="mapfab" data-go="P36">${ic('map-trifold')}Ver en mapa</button>` });
 
 def({ id: 'P11', name: 'Filtros', kind: 'page', back: 'x', title: 'Filtros',
-  body: () => `${lbl('Profesión')}<div class="chips">${chip('Enfermera/o', S.f.enf, 'tog', 'f.enf')}${chip('TENS', S.f.tens, 'tog', 'f.tens')}</div>
-  ${lbl('Precio máximo')}<div class="chips">${[[0, 'Sin límite'], [15000, '$15.000'], [20000, '$20.000'], [25000, '$25.000']].map(x => chip(x[1], S.fmax === x[0], 'set', 'fmax=' + x[0])).join('')}</div>
-  ${lbl('Disponibilidad')}<div class="chips">${chip('Hoy o mañana', S.fday === 'man', 'set', 'fday=man')}${chip('Esta semana', S.fday === 'sem', 'set', 'fday=sem')}</div>
-  ${lbl('Nota')}${checkRow('Solo 4,8 o más', S.frat, 'tog', 'frat')}
-  <div class="mt16">${note('seal-check', 'Todas las profesionales de Cuidapp tienen su registro verificado en la Superintendencia de Salud.')}</div>`,
-  foot: () => `${btn(`Ver ${prosFor().length} profesionales`, 'back')}${abtn('Limpiar filtros', 'set', 'fmax=0', 'ghost')}` });
+  body: () => `<div class="fsec"><div class="h-s">Precio</div><div class="sm t2 mt4">${S.item ? CAT[S.item].n : 'Precio por visita'} · lo fija cada profesional</div>${hist()}
+  <div class="chips mt12">${[[0, 'Cualquiera'], [15000, 'Hasta $15.000'], [20000, 'Hasta $20.000'], [25000, 'Hasta $25.000']].map(x => chip(x[1], S.fmax === x[0], 'set', 'fmax=' + x[0])).join('')}</div></div>
+  <div class="fsec"><div class="h-s">Disponibilidad</div><div class="chips mt12">${[['all', 'Cualquier día'], ['hoy', 'Disponible hoy'], ['man', 'Hoy o mañana']].map(x => chip(x[1], S.fday === x[0], 'set', 'fday=' + x[0])).join('')}</div></div>
+  <div class="fsec"><div class="h-s">Comuna donde atiende</div><div class="chips mt12">${[['', 'Todas'], ['Ñuñoa', 'Ñuñoa'], ['Providencia', 'Providencia'], ['La Reina', 'La Reina'], ['Las Condes', 'Las Condes'], ['Macul', 'Macul'], ['Santiago', 'Santiago']].map(x => chip(x[1], S.fcom === x[0], 'set', 'fcom=' + x[0])).join('')}</div></div>
+  <div class="fsec"><div class="h-s">Profesión</div><div class="mt4">${checkRow('Enfermera o enfermero', S.f.enf, 'tog', 'f.enf', 'Inyecciones, curaciones, sondas y exámenes')}${checkRow('TENS', S.f.tens, 'tog', 'f.tens', 'Técnico en enfermería: cuidados, inyecciones y muestras')}</div></div>
+  <div class="fsec"><div class="h-s">Valoración</div><div class="chips mt12">${[[0, 'Todas'], [4.5, '4,5 o más'], [4.8, '4,8 o más']].map(x => chip(x[1], S.frat === x[0], 'set', 'frat=' + x[0])).join('')}</div></div>
+  <div class="fsec last"><div class="h-s">Género de la profesional</div><div class="chips mt12">${[['', 'Indistinto'], ['f', 'Mujer'], ['m', 'Hombre']].map(x => chip(x[1], S.fgen === x[0], 'set', 'fgen=' + x[0])).join('')}</div></div>`,
+  foot: () => `<div class="fbar"><button class="lk u" data-act="clearF">Limpiar todo</button><button class="btn fbtn" data-go="back">Ver ${nPro(prosFor().length)}</button></div>` });
 
-const svcRows = (pr, icons) => Object.keys(CAT).filter(k => priceOf(pr, k)).map(k => `<button class="opt ${S.item === k ? 'sel' : ''}" data-act="svc" data-arg="${k}">${icons ? `<span class="im">${ic(CAT[k].ic)}</span>` : ''}<span class="tx"><div class="b-m">${CAT[k].n}</div><div class="sm t2">${durOf(pr, k)} min · ${incOf(pr, k).includes(INC.ins) ? 'Insumos incluidos' : 'Sin insumos'}</div>${nightOf(pr, k) ? `<div class="sm t2">Noche y feriados: ${clp(nightOf(pr, k))}</div>` : ''}</span><span class="pr">${clp(priceOf(pr, k))}</span></button>`).join('');
-const reviews = () => `<div style="display:flex;align-items:baseline;gap:8px"><span class="price num">${PRO().r}</span><span class="t2">★ · ${Math.round(PRO().a * .7)} reseñas</span></div>
-  ${[['Carolina M.', 'hace 1 semana', 'Súper puntual y muy cariñosa con mi papá. Le explicó todo con paciencia.'], ['Jorge T.', 'hace 3 semanas', 'Curación impecable. Dejó todo limpio y anotado.'], ['Marcela P.', 'hace 1 mes', 'La agendé para la Neurobionta de mi mamá. Llegó a la hora y no dolió nada.']].map(r => `<div class="rev"><div style="display:flex;justify-content:space-between"><b style="font-weight:600">${r[0]}</b><span class="xs t3">${r[1]}</span></div><div class="stars-s">★★★★★</div><div class="sm">${r[2]}</div></div>`).join('')}`;
-const about = () => `<div class="sm" style="line-height:21px">${PRO().bio}</div>
-  ${lbl('Comunas donde atiende')}<div class="sm t2">${PRO().com}</div>
-  ${lbl('Verificaciones de Cuidapp')}${row('box:seal-check', `Registro SIS ${PRO().reg}`, `${PRO().t} habilitada`, '', '')}${row('box:identification-card', 'Identidad y antecedentes', 'Revisados', '', '')}`;
-def({ id: 'P12', name: 'Perfil de la profesional', kind: 'page', back: true, next: ['P13', 'P22'],
-  body: () => { const p = PRO(); return `<div style="display:flex;gap:16px;align-items:center">${av(p.i, 'l', true)}<div style="min-width:0"><div class="h-m">${p.n}</div><div class="sm t2">${p.t} · ${p.yrs} años de experiencia</div><div class="mt4">${sis()}</div></div></div>
-  <div class="stats mt16"><div><b class="num">★ ${p.r}</b><span>nota</span></div><div><b class="num">${p.a}</b><span>atenciones</span></div><div><b class="num">${String(p.km).replace('.', ',')} km</b><span>de ${P().c}</span></div></div>
-  <div class="ptabs mt16">${[['serv', 'Servicios'], ['rev', 'Reseñas'], ['about', 'Sobre ella']].map(t => `<button class="${S.ptab === t[0] ? 'on' : ''}" data-act="set" data-arg="ptab=${t[0]}">${t[1]}</button>`).join('')}</div>
-  <div class="mt12">${S.ptab === 'serv' ? `${svcRows(p)}<div class="sec-t">Qué incluye</div>${incOf(p).map(t => `<div class="row" style="min-height:36px;padding:4px 0">${ic('check')}<span class="tx sm" style="font-size:15px">${t}</span></div>`).join('')}` : S.ptab === 'rev' ? reviews() : about()}</div>
-  <div class="mt16">${note('lock-simple', `Su teléfono aparece cuando confirma tu reserva. Antes, pregúntale lo que quieras por el chat de Cuidapp.`)}</div>`; },
-  foot: () => `<div style="display:flex;gap:8px"><button class="btn sec" style="flex:0 0 auto;width:auto;padding:0 18px;height:56px" data-go="P22">${ic('chat-circle')}Preguntar</button><button class="btn" data-go="P13">Agendar · ${R(priceOf(PRO()))}</button></div>` });
+def({ id: 'P36', name: 'Resultados en mapa (opcional)', kind: 'map', back: true, sheetCls: 'lite',
+  map: () => ({ home: P().ll, dots: prosFor().map(p => [ll(p), p.id === S.pro ? '#1D1D1B' : '#1AA7EC']), maxZoom: 15 }),
+  body: () => { const l = prosFor(); return `<div class="shd" style="margin-top:0"><h3>${nPro(l.length)}</h3><button class="lk" data-go="back">Ver lista</button></div><div class="sm t2">${svcN(S.item)} · ${P().c}</div><div class="mcar mt12">${l.map(p => `<div class="mcard ${S.pro === p.id ? 'on' : ''}" data-act="pick" data-arg="${p.id}|" data-go="P12" role="button">${pav(p, 's', true)}<div class="tx"><div class="b-m">${p.n}</div><div class="sm t2">${rate(p)} · ${kmT(p)}</div></div><b class="num">${clp(priceOf(p, S.item))}</b></div>`).join('')}</div>`; } });
 
-const dayCards = () => `<div class="dcards">${DAYS.map((d, i) => { const n = slotsOf(PRO(), i).length; return n ? `<button class="dcard ${S.day === i ? 'on' : ''}" data-act="day" data-arg="${i}"><span class="xs">${d[2] || d[0]}</span><b>${d[1]}</b><span class="xs">${n} ${n === 1 ? 'hora' : 'horas'}</span></button>` : `<div class="dcard off"><span class="xs">${d[2] || d[0]}</span><b>${d[1]}</b><span class="xs">Sin horas</span></div>`; }).join('')}</div>`;
-const slotGrid = () => `<div class="slots3 mt8">${slotsOf(PRO(), S.day).map(t => `<button class="slot ${S.slot === t ? 'on' : ''}" data-act="set" data-arg="slot=${t}">${t}${t >= '21:00' && nightOf(PRO()) ? '<span class="xs" style="display:block;font-weight:500;opacity:.75">noche</span>' : ''}</button>`).join('')}</div>`;
-const slotNotes = () => `${S.slot >= '21:00' && nightOf(PRO()) ? note('moon', `Horario nocturno: ${first()} cobra ${clp(nightOf(PRO()))} desde las 21:00.`) : ''}
-  ${note('calendar-check', `Llega entre ${S.slot} y ${slotEnd(S.slot)}. Cancelación gratis hasta 12 horas antes.`)}`;
-def({ id: 'P13', name: 'Elegir día y hora', kind: 'page', back: true, title: 'Día y hora',
-  body: () => `<div class="procard">${av(PRO().i, 's')}<div><div class="b-m">${PRO().n}</div><div class="sm t2">${CAT[S.item].n} · ${durOf(PRO())} min</div></div></div>
-  <div class="sec-t">Elige el día</div>${dayCards()}
-  <div class="sec-t">Hora de llegada</div>${slotGrid()}
-  <div class="mt16" style="display:flex;flex-direction:column;gap:8px">${slotNotes()}</div>`,
-  foot: () => btn(`Continuar · ${R(price().pro)}`, 'P14') });
+/* ---------- perfil de la profesional ---------- */
+function profileBody(p, mode = 'm') {
+  const d = mode === 'd', pre = mode === 'pre', rv = revsOf(p.id), it = S.item && priceOf(p, S.item) ? S.item : '';
+  const svcList = svcsOf(p).map(k => { const sel = it === k; const inc = incOf(p, k); return `<${pre ? 'div' : 'button'} class="psvc ${sel ? 'on' : ''}" ${pre ? '' : `data-act="svc" data-arg="${k}"`}><span class="si">${ic(CAT[k].ic)}</span><span class="tx"><span class="a">${CAT[k].n}</span><span class="b">${durOf(p, k)} min · ${shortInc(inc[0])}${inc.length > 1 ? ` y ${inc.length - 1} más` : ''}</span>${nightOf(p, k) ? `<span class="b">Desde las 21:00: ${clp(nightOf(p, k))}</span>` : ''}</span><span class="pp num">${clp(priceOf(p, k))}</span></${pre ? 'div' : 'button'}>`; }).join('');
+  const avail = `<div class="avl">${DAYS.map((x, i) => { const n = slotsOf(p, i).length; return `<div class="avd ${n ? '' : 'off'}"><span>${x[2] || x[0]}</span><b>${x[1]}</b><em>${n ? n + (n === 1 ? ' hora' : ' horas') : '—'}</em></div>`; }).join('')}</div>`;
+  const revs = `${scoreBlock(p)}${bars(p)}${crits(p)}<div class="rvl ${d ? 'two' : ''}">${rv.slice(0, d ? 4 : 2).map(r => rvCard(r, false, p.id)).join('')}</div>${pre ? '' : `<button class="btn sec mt16" data-go="P32">Ver las ${p.rv} reseñas</button>`}`;
+  return `<div class="phero">${pav(p, 'xl', true)}<div class="ph-tx"><div class="h-l">${p.n}</div><div class="t2 mt4">${p.t} · ${p.yrs} años de experiencia</div><div class="mt8 rtl">${rate(p)}<span class="sep">·</span><span>${p.a} atenciones</span></div></div></div>
+  <div class="pbadges">${sis()}<span class="badge g">${ic('shield-check', 1)}Antecedentes revisados</span><span class="badge g">${ic('identification-card', 1)}Identidad verificada</span></div>
+  <div class="pstats"><div><b class="num">${p.r} ${star()}</b><span>nota</span></div><div><b class="num">${p.rv}</b><span>reseñas</span></div><div><b class="num">${p.yrs} años</b><span>de experiencia</span></div><div><b>${p.resp}</b><span>en responder</span></div></div>
+  <div class="psec"><h3>Sobre ${p.g === 'm' ? 'él' : 'ella'}</h3><p class="bio">${p.bio}</p><div class="chips mt12">${p.spec.map(t => `<span class="chip dim">${t}</span>`).join('')}</div></div>
+  <div class="psec"><h3>Servicios y precios</h3><div class="sm t2 mb8">Precios fijados por ${first(p)}. Insumos incluidos.</div>${svcList}</div>
+  <div class="psec"><h3>Reseñas</h3>${revs}</div>
+  <div class="psec"><h3>Disponibilidad</h3><div class="sm t2 mb8">Próximos 6 días</div>${avail}${pre ? '' : `<button class="lk mt12" data-go="P13">Ver todas las horas</button>`}</div>
+  <div class="psec"><h3>Comunas donde atiende</h3><div class="chips">${p.com.map(c => `<span class="chip dim">${ic('map-pin')}&nbsp;${c}</span>`).join('')}</div></div>
+  <div class="psec last"><h3>Estudios y certificaciones</h3>${p.edu.map(e => `<div class="edu"><span class="ei">${ic('graduation-cap')}</span><div><div class="b-m">${e[0]}</div><div class="sm t2">${e[1]} · ${e[2]}</div></div></div>`).join('')}<div class="edu"><span class="ei">${ic('seal-check')}</span><div><div class="b-m">Registro Nacional de Prestadores</div><div class="sm t2">Superintendencia de Salud · N° ${p.reg}</div></div></div></div>`;
+}
+const bookBar = () => { const p = PRO(), it = S.item && priceOf(p, S.item) ? S.item : ''; return `<div class="fbar"><div class="fb-l"><b class="num">${it ? clp(priceOf(p, it)) : 'Desde ' + clp(priceOf(p, ''))}</b><span>${it ? CAT[it].n : 'Elige un servicio'}</span></div><button class="btn fbtn" data-act="pick" data-arg="${p.id}|" data-go="P13">Agendar</button></div>`; };
+def({ id: 'P12', name: 'Perfil de la profesional', kind: 'page', back: true, navCls: 'clear',
+  navR: () => `<button class="ib" data-act="share" aria-label="Compartir">${ic('export')}</button>${heart(S.pro, 'ib')}`,
+  body: () => profileBody(PRO()), foot: bookBar });
 
+def({ id: 'P32', name: 'Todas las reseñas', kind: 'page', back: true, title: 'Reseñas', sheets: ['rsort'],
+  sheet: () => `<div class="h-s">Ordenar reseñas</div><div class="mt8">${[['rec', 'Más recientes'], ['alta', 'Mejor nota'], ['baja', 'Peor nota']].map(x => radioRow(x[1], '', S.revSort === x[0], 'rsort', x[0])).join('')}</div>`,
+  body: () => { const p = PRO(); let l = revsOf(p.id); const svcs = [...new Set(l.map(r => r.s))]; if (S.revF !== 'all') l = l.filter(r => r.s === S.revF); if (S.revSort === 'alta') l = l.slice().sort((a, b) => b.r - a.r); if (S.revSort === 'baja') l = l.slice().sort((a, b) => a.r - b.r);
+    return `${mini(p)}<div class="mt16">${scoreBlock(p)}${bars(p)}${crits(p)}</div>
+  <div class="rvbar"><div class="chips nowrap">${chip('Todas', S.revF === 'all', 'set', 'revF=all')}${svcs.map(k => chip(CAT[k].s, S.revF === k, 'set', 'revF=' + k)).join('')}</div></div>
+  <div class="rvhd"><span class="sm t2">${l.length} de ${p.rv} reseñas</span><button class="lk" data-act="set" data-arg="sheet=rsort">${ic('arrows-down-up')} ${{ rec: 'Más recientes', alta: 'Mejor nota', baja: 'Peor nota' }[S.revSort]}</button></div>
+  ${l.map(r => rvCard(r, true, p.id)).join('')}<div class="xs t3 mt16 center">Solo pueden opinar pacientes que tuvieron una atención por Cuidapp.</div>`; },
+  foot: bookBar });
+
+/* ---------- agendar ---------- */
+def({ id: 'P13', name: 'Elegir servicio, día y hora', kind: 'page', back: true, title: 'Agendar', sheets: ['svc'], sheet: svcSheet,
+  body: () => { const p = PRO(), l = slotsOf(p, S.day); return `${mini(p)}
+  <div class="lbl2">Servicio</div><button class="svsel" data-act="set" data-arg="sheet=svc"><span class="si">${ic(CAT[S.item].ic)}</span><span class="tx"><span class="a">${CAT[S.item].n}</span><span class="b">${durOf(p)} min · ${clp(priceOf(p, S.item))}</span></span><span class="lk">Cambiar</span></button>
+  <div class="lbl2">Día</div>${dstrip(p, 'day', 'day')}
+  <div class="lbl2">Hora de llegada · ${DAYS[S.day][3].replace('hoy ', '')}</div>
+  ${groups(l).map(g => `<div class="sgrp"><div class="sg-t">${g[0]}</div><div class="slots3">${g[1].map(t => `<button class="slot ${S.slot === t ? 'on' : ''}" data-act="set" data-arg="slot=${t}">${t}${t >= '21:00' && nightOf(p) ? '<small>noche</small>' : ''}</button>`).join('')}</div></div>`).join('')}
+  <div class="mt16 col8">${S.slot >= '21:00' && nightOf(p) ? note('moon', `Horario nocturno: ${first()} cobra ${clp(nightOf(p))} desde las 21:00.`) : ''}${note('calendar-check', `Llega entre ${S.slot} y ${slotEnd(S.slot)}. Cancelación gratis hasta 12 horas antes.`)}</div>`; },
+  foot: () => `<div class="fbar"><div class="fb-l"><b class="num">${clp(price().pro)}</b><span>${dayLbl(S.day)} · ${S.slot}</span></div><button class="btn fbtn" data-act="set" data-arg="addrNext=P14" data-go="P14">Continuar</button></div>` });
+
+const steps = n => `<div class="steps">${['Hora', 'Detalles', 'Pago'].map((t, i) => `<span class="${i < n ? 'done' : i === n ? 'on' : ''}">${t}</span>`).join('')}</div>`;
 function nextAfterP14() { return S.item === 'mue' ? 'P16' : CAT[S.item].receta ? 'P15' : 'P17'; }
-def({ id: 'P14', name: 'Detalles de la atención', kind: 'page', back: true, title: 'Detalles', next: ['P15', 'P16', 'P17'],
+def({ id: 'P14', name: 'Dirección y detalles', kind: 'page', back: true, title: 'Detalles', next: ['P15', 'P16', 'P17'],
   body: () => {
-    const who = `${lbl('¿Para quién?')}${row('box:user', whoTxt(), S.who === 'mama' ? '78 años · Alergia a penicilina' : S.who === 'papa' ? '80 años · Hipertenso' : '37 años', 'P29', 'Cambiar')}`;
-    const head = `<div class="h-l">${CAT[S.item].n}</div><div class="t2 mt4 sm">Con ${PRO().n} · ${whenTxt()}</div>`;
-    if (S.item === 'mue') return `${head}<div class="t2 mt8 sm">${first()} lleva la muestra al laboratorio aliado el mismo día.</div>
-      ${lbl('Exámenes')}${Object.keys(EXAMS).map(k => checkRow(EXAMS[k][0], S.exams[k], 'tog', 'exams.' + k, clp(EXAMS[k][1]) + ' · precio del laboratorio')).join('')}${who}`;
-    if (S.item === 'tens4') return `${head}${lbl('¿Qué necesita?')}<div class="chips">${[['hig', 'Higiene y baño'], ['mov', 'Movilización'], ['sig', 'Signos vitales'], ['com', 'Compañía']].map(t => chip(t[1], S.tensNeeds[t[0]], 'tog', 'tensNeeds.' + t[0])).join('')}</div>
-      ${lbl('Algo que deba saber')}${field('', 'Usa andador. Diabética, controla glicemia en la mañana.')}${who}`;
-    if (S.item === 'iny') return `${head}${lbl('Medicamento')}${field('pill', 'Neurobionta 5.000 (ampolla)')}${lbl('¿Ya tienes el medicamento?')}<div class="chips">${chip('Sí, lo tengo', S.hasMed, 'set', 'hasMed=1')}${chip('No', !S.hasMed, 'set', 'hasMed=')}</div>
-      ${!S.hasMed ? `<div class="mt12">${note('warning', 'La profesional no lleva medicamentos. Cómpralo antes de la hora de la atención.', 'warn')}</div>` : ''}${who}`;
-    return `${head}${lbl('Cuéntanos qué necesitas')}${field('', S.item === 'son' ? 'Cambio de sonda Foley.' : S.item === 'sig' ? 'Control de presión y glicemia.' : 'Herida en el talón, curación cada 2 días.')}${who}`;
+    const who = `<div class="lbl2">¿Para quién es?</div>${row('box:user', whoTxt(), S.who === 'mama' ? '78 años · Alergia a penicilina' : S.who === 'papa' ? '80 años · Hipertenso' : '37 años', 'P29', '<span class="lk">Cambiar</span>')}`;
+    const addr = `<div class="lbl2">Dirección</div>${row('box:map-pin', P().n, P().full.split(', ').slice(1).join(', '), 'P08', '<span class="lk">Cambiar</span>', '', 'set', 'addrNext=P14')}`;
+    const head = `${steps(1)}<div class="h-l mt16">${CAT[S.item].n}</div><div class="t2 mt4 sm">Con ${PRO().n} · ${whenTxt()}</div>`;
+    let x;
+    if (S.item === 'mue') x = `<div class="lbl2">Exámenes</div>${Object.keys(EXAMS).map(k => checkRow(EXAMS[k][0], S.exams[k], 'tog', 'exams.' + k, clp(EXAMS[k][1]) + ' · precio del laboratorio')).join('')}`;
+    else if (S.item === 'tens4') x = `<div class="lbl2">¿Qué necesita?</div><div class="chips">${[['hig', 'Higiene y baño'], ['mov', 'Movilización'], ['sig', 'Signos vitales'], ['com', 'Compañía']].map(t => chip(t[1], S.tensNeeds[t[0]], 'tog', 'tensNeeds.' + t[0])).join('')}</div><div class="lbl2">${('Algo que deba saber')}</div>${field('', 'Usa andador. Diabética, controla glicemia en la mañana.')}`;
+    else if (S.item === 'iny') x = `<div class="lbl2">Medicamento</div>${field('pill', 'Neurobionta 5.000 (ampolla)')}<div class="lbl2">${('¿Ya tienes el medicamento?')}</div><div class="chips">${chip('Sí, lo tengo', S.hasMed, 'set', 'hasMed=1')}${chip('Todavía no', !S.hasMed, 'set', 'hasMed=')}</div>${!S.hasMed ? `<div class="mt12">${note('warning', 'La profesional no lleva medicamentos. Cómpralo antes de la hora.', 'warn')}</div>` : ''}`;
+    else x = `<div class="lbl2">Cuéntanos qué necesitas</div>${field('', S.item === 'son' ? 'Cambio de sonda Foley.' : S.item === 'sig' ? 'Control de presión y glicemia.' : 'Herida en el talón, curación cada 2 días.')}`;
+    return `${head}${addr}${who}${x}<div class="lbl2">${('Nota para ' + first() + ' (opcional)')}</div>${field('', '', 'Ej.: el timbre no funciona, llamar al llegar')}`;
   },
   foot: () => `<button class="btn" data-go="${nextAfterP14()}">Continuar</button>` });
 
-def({ id: 'P15', name: 'Foto de la receta', kind: 'page', back: true, title: 'Receta médica',
-  body: () => `<div class="h-m">Sube la receta médica</div><div class="t2 mt8 sm">Sin receta no se ponen inyecciones. ${first()} la revisa antes de confirmar.</div>
-  <div class="mt16">${S.receta ? `<div style="display:flex;gap:12px;align-items:flex-start">${receta()}<div>${st('ok', 'Se lee bien', 'check-circle')}<button class="pill mt12" data-act="set" data-arg="receta=">${ic('arrow-counter-clockwise')}Cambiar</button></div></div>`
-    : `<div style="border:2px dashed #CFCFCF;border-radius:12px;height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px"><div style="display:flex;gap:8px"><button class="pill on" data-act="receta">${ic('camera')}Tomar foto</button><button class="pill" data-act="receta">${ic('image')}Elegir de fotos</button></div><div class="t3 sm">Foto completa, derecha y con luz</div></div>`}</div>
-  <div class="sec-t">Revisa que se vea</div>
-  ${['Nombre del paciente', 'Medicamento, dosis y frecuencia', 'Firma y timbre del médico', 'Fecha (vigente, menos de 6 meses)'].map(t => `<div class="row" style="min-height:40px;padding:6px 0">${ic('check')}<span class="tx sm" style="font-size:15px">${t}</span></div>`).join('')}`,
+def({ id: 'P15', name: 'Receta médica', kind: 'page', back: true, title: 'Receta médica',
+  body: () => `${steps(1)}<div class="h-m mt16">Sube la receta médica</div><div class="t2 mt8 sm">Sin receta no se ponen inyecciones. ${first()} la revisa antes de confirmar.</div>
+  <div class="mt16">${S.receta ? `<div class="recok">${receta()}<div>${st('ok', 'Se lee bien', 'check-circle')}<button class="pill mt12" data-act="set" data-arg="receta=">${ic('arrow-counter-clockwise')}Cambiar</button></div></div>`
+    : `<div class="drop"><div class="row8"><button class="pill on" data-act="receta">${ic('camera')}Tomar foto</button><button class="pill" data-act="receta">${ic('image')}Elegir de fotos</button></div><div class="t3 sm">Foto completa, derecha y con luz</div></div>`}</div>
+  <div class="lbl2">Revisa que se vea</div>
+  ${['Nombre del paciente', 'Medicamento, dosis y frecuencia', 'Firma y timbre del médico', 'Fecha (menos de 6 meses)'].map(t => `<div class="chk">${ic('check')}<span>${t}</span></div>`).join('')}`,
   foot: () => abtn('Continuar', '', '', '', 'P17', !S.receta) });
 
 def({ id: 'P16', name: 'Orden médica y preparación', kind: 'page', back: true, title: 'Orden médica',
-  body: () => `<div class="h-m">¿Tienes orden médica?</div><div class="t2 sm mt8">No es obligatoria, pero sirve para Fonasa o tu isapre.</div>
+  body: () => `${steps(1)}<div class="h-m mt16">¿Tienes orden médica?</div><div class="t2 sm mt8">No es obligatoria, pero sirve para Fonasa o tu isapre.</div>
   <div class="mt8">${radioRow('Subir foto de la orden', S.orden === 'si' ? 'Orden de la Dra. Marcela Ortiz · 18/10/2026' : 'Foto o PDF', S.orden === 'si', 'set', 'orden=si', 'file-arrow-up')}
   ${radioRow('No tengo orden', 'Igual te tomamos los exámenes', S.orden === 'no', 'set', 'orden=no', 'file-x')}</div>
   ${S.orden === 'si' ? `<div class="mt8">${orden()}</div>` : ''}
-  <div class="sec-t">Preparación</div>
-  ${row('box:clock-countdown', 'Ayuno de 8 horas', 'Solo puedes tomar agua', '', '')}
-  ${row('box:identification-card', 'Ten a mano el carnet', 'De la persona que se toma el examen', '', '')}
-  ${row('box:envelope-simple', 'Resultados en 24 a 48 horas', 'Llegan a tu correo y a la app', '', '')}`,
+  <div class="lbl2">Preparación</div>
+  ${row('box:clock-countdown', 'Ayuno de 8 horas', 'Solo puedes tomar agua', '', '')}${row('box:identification-card', 'Ten a mano el carnet', 'De la persona que se toma el examen', '', '')}${row('box:envelope-simple', 'Resultados en 24 a 48 horas', 'Llegan a tu correo y a la app', '', '')}`,
   foot: () => abtn('Continuar', '', '', '', 'P17', !S.orden) });
 
-const breakdown = () => { const p = price(); return `${p.L.map(l => kv(l[0], clp(l[1]))).join('')}${kv('Total', clp(p.total), 'tot')}`; };
-def({ id: 'P17', name: 'Revisa y paga', kind: 'page', back: true, title: 'Revisa tu reserva',
-  body: () => `${proCard()}<div class="mt8">
-  ${row('box:' + CAT[S.item].ic, CAT[S.item].n, S.item === 'iny' ? 'Neurobionta 5.000 · receta adjunta' : `${durOf(PRO())} min`, '', '')}
-  ${row('box:clock', whenTxt(), S.when === 'ahora' ? 'Lo antes posible' : 'Agendada', S.when === 'ahora' ? 'P31' : 'P13', 'Cambiar')}
-  ${row('box:map-pin', P().n, P().full.split(', ').slice(1).join(', '), 'P09', 'Cambiar')}
-  ${row('box:user', whoTxt(), S.who === 'mama' ? 'Alergia a penicilina' : '', 'P29', 'Cambiar')}
-  ${row('box:' + (S.pay === 'mp' ? 'wallet' : 'credit-card'), S.pay === 'mp' ? 'Mercado Pago' : 'Visa •••• 4821', 'Pago dentro de la app', 'P18', 'Cambiar')}</div>
-  <div class="sec-t">Desglose</div>${breakdown()}
-  <div class="xs t2 mt4">El precio lo fija ${first()}. Sin cobros extra.</div>
-  <div class="mt12" style="display:flex;flex-direction:column;gap:8px">${note('lock-simple', `No te cobramos todavía. Cuando ${first()} confirme, retenemos ${clp(price().total)} en tu tarjeta y se cobra al terminar la atención.`, 'inf')}
-  ${note('calendar-x', S.when === 'ahora' ? 'Puedes cancelar gratis hasta que salga hacia tu casa.' : 'Cancelación gratis hasta 12 horas antes.')}</div>`,
-  foot: () => `<button class="btn" data-go="P19" data-act="set" data-arg="cancelFrom=P19"><span>Solicitar reserva</span><span class="num" style="opacity:.7">· ${clp(price().total)}</span></button>` });
+const breakdown = () => { const p = price(); return `${p.L.map(l => kv(l[0], clp(l[1]))).join('')}${kv('Cargo por servicio', '$0')}${kv('Total', clp(p.total), 'tot')}`; };
+def({ id: 'P17', name: 'Revisa y paga', kind: 'page', back: true, title: 'Revisa y paga',
+  body: () => `${steps(2)}<div class="rvw mt16"><div class="rvw-h">${pav(PRO(), '', true)}<div><div class="b-m">${CAT[S.item].n}</div><div class="sm t2">con ${PRO().n} · ${rate(PRO(), false)}</div></div></div>
+  <div class="rvw-r">${ic('calendar-blank')}<span>${whenLong()}</span><button class="lk" data-go="P13">Cambiar</button></div>
+  <div class="rvw-r">${ic('map-pin')}<span>${P().full}</span><button class="lk" data-act="set" data-arg="addrNext=P17" data-go="P08">Cambiar</button></div>
+  <div class="rvw-r">${ic('user')}<span>${whoTxt()}</span><button class="lk" data-go="P29">Cambiar</button></div>
+  ${S.item === 'iny' ? `<div class="rvw-r">${ic('file-text')}<span>Receta adjunta · Neurobionta 5.000</span><button class="lk" data-go="P15">Ver</button></div>` : ''}</div>
+  <div class="lbl2">Pago</div>${row('box:' + (S.pay === 'mp' ? 'wallet' : 'credit-card'), S.pay === 'mp' ? 'Mercado Pago' : S.pay === 'deb' ? 'Redcompra •••• 0937' : 'Visa •••• 4821', 'Vía Webpay', 'P18', '<span class="lk">Cambiar</span>')}
+  <div class="lbl2">Desglose</div>${breakdown()}<div class="xs t2 mt4">El precio lo fija ${first()}. Sin cobros extra.</div>
+  <div class="mt16 col8">${note('lock-simple', `No te cobramos todavía. Cuando ${first()} confirme, retenemos ${clp(price().total)} y se cobra al terminar la atención.`, 'inf')}${note('calendar-x', 'Cancelación gratis hasta 12 horas antes.')}</div>`,
+  foot: () => `<div class="fbar"><div class="fb-l"><b class="num">${clp(price().total)}</b><span>Total</span></div><button class="btn fbtn" data-go="P19" data-act="set" data-arg="cancelFrom=P19">Confirmar y pagar</button></div>` });
 
 def({ id: 'P18', name: 'Métodos de pago', kind: 'page', back: true, title: 'Pago',
   body: () => `${radioRow('Visa •••• 4821', 'Crédito · vía Webpay', S.pay === 'visa', 'set', 'pay=visa', 'credit-card')}
@@ -201,88 +316,98 @@ def({ id: 'P18', name: 'Métodos de pago', kind: 'page', back: true, title: 'Pag
   foot: () => btn('Listo', 'back') });
 
 def({ id: 'P19', name: 'Esperando confirmación', kind: 'page', auto: 'P20', autoAct: () => { S.booked = true; },
-  body: () => `<div style="margin-top:24px">${av(PRO().i, 'l', true)}</div><div class="h-l mt16">Le enviamos tu solicitud a ${first()}</div>
-  <div class="t2 mt8">Suele responder en 20 minutos. Tiene hasta 2 horas; si no puede, te avisamos y eliges a otra.</div>
-  <div class="progress bar-anim mt16"><span></span></div>
+  body: () => `<div class="center" style="margin-top:32px">${pav(PRO(), 'xl', true)}</div><div class="h-l mt24 center">Le enviamos tu solicitud a ${first()}</div>
+  <div class="t2 mt8 center">Suele responder en ${PRO().resp}. Si no puede, te avisamos y eliges a otra.</div>
+  <div class="progress bar-anim mt24"><span></span></div>
   <div class="mt16">${row('box:check', 'Solicitud enviada', `${CAT[S.item].n} · ${whenTxt()}`, '', '')}${row('box:hourglass-medium', `${first()} revisa tu solicitud`, S.item === 'iny' ? 'También revisa la receta' : 'Y confirma la hora', '', st('inf', 'En curso'))}${row('box:lock-simple', 'Aún no te cobramos nada', `Retenemos ${clp(price().total)} cuando confirme`, '', '')}</div>`,
-  foot: () => `${btn('Ir al inicio', 'P06', 'sec')}${btn('Cancelar solicitud', 'P30', 'ghost')}`, enter: () => T(() => { S.booked = true; go('P20'); }, 4500) });
+  foot: () => `${btn('Ir a Servicios', 'P06', 'sec')}${btn('Cancelar solicitud', 'P30', 'ghost')}`, enter: () => T(() => { S.booked = true; go('P20'); }, 4500) });
 
-def({ id: 'P20', name: 'Reserva confirmada', kind: 'page', next: ['P21'],
-  body: () => `<div class="okc">${ic('check', 0).replace('ph ', 'ph-bold ')}</div>
-  <div class="h-l mt16">${first()} confirmó tu atención</div><div class="t2 mt8">${whenLong()}</div>
-  <div class="mt16">${proCard(false, true)}</div>
-  <div class="mt12">${row('box:map-pin', P().n, P().full.split(', ').slice(1).join(', '), '', '')}${row('box:' + CAT[S.item].ic, CAT[S.item].n, whoTxt(), '', '')}${row('box:lock-simple', `Retuvimos ${clp(price().total)} en tu ${S.pay === 'mp' ? 'Mercado Pago' : 'Visa •••• 4821'}`, 'Se cobra al terminar la atención', '', '')}</div>
-  <div style="display:flex;gap:8px" class="mt12"><button class="btn sec" data-go="P22">${ic('chat-circle')}Mensaje</button><button class="btn sec" data-act="toast" data-arg="Agregado a tu calendario.">${ic('calendar-plus')}Calendario</button></div>`,
-  foot: () => `${abtn('Ver mis reservas', 'book', '', '', 'P26')}${btn('Ver el día de la atención', 'P21', 'ghost')}` });
+def({ id: 'P20', name: 'Cita confirmada', kind: 'page', next: ['P21'],
+  body: () => `<div class="okc mt24">${ic('check', 0).replace('ph ', 'ph-bold ')}</div>
+  <div class="h-l mt16">¡Listo! ${first()} confirmó tu cita</div><div class="t2 mt8">${whenLong()}</div>
+  <div class="rvw mt24"><div class="rvw-h">${pav(PRO(), '', true)}<div><div class="b-m">${PRO().n}</div><div class="sm t2">${PRO().t} · ${PRO().tel}</div></div></div>
+  <div class="rvw-r">${ic(CAT[S.item].ic)}<span>${CAT[S.item].n} · ${whoTxt()}</span></div><div class="rvw-r">${ic('map-pin')}<span>${P().full}</span></div><div class="rvw-r">${ic('lock-simple')}<span>Retuvimos ${clp(price().total)} · se cobra al terminar</span></div></div>
+  ${acts([['chat-circle', `Escribirle a ${first()}`, '', '', 'P22'], ['calendar-plus', 'Agregar a mi calendario', 'toast', 'Agregado a tu calendario.'], ['share-network', 'Compartir con la familia', 'toast', 'Link copiado. Mándalo por WhatsApp.']])}`,
+  foot: () => `${abtn('Ver mis citas', 'book', '', '', 'P26')}${btn('Ir a Servicios', 'P06', 'ghost')}` });
 
-const trackBody = () => `<div style="display:flex;align-items:baseline;justify-content:space-between"><div class="h-m">Llega en <span id="eta" class="num">${P().min + 3}</span> min</div><span class="sm t2">${S.when === 'ahora' ? 'Hoy' : dayShort(S.day) + ' · ' + S.slot}</span></div>
+const trackBody = () => `<div class="trk-h"><div class="h-m">Va en camino · llega en <span id="eta" class="num">${P().min + 3}</span> min</div></div><div class="sm t2 mt4">${dayShort(S.day)} · ${S.slot} · ${CAT[S.item].n}</div>
   <div class="progress mt12"><span id="etabar" style="width:4%"></span></div>
   <div class="mt16">${proCard(false, true)}</div>
   <div class="note inf mt12">${ic('key')}<div>Tu código es <b class="num" style="font-size:17px;letter-spacing:2px">2749</b>. Dáselo a ${first()} cuando llegue.</div></div>
-  <div style="display:flex;gap:8px" class="mt12"><button class="btn sec" data-go="P22">${ic('chat-circle')}Mensaje</button><button class="btn sec" data-act="toast" data-arg="Llamando a ${first()}…">${ic('phone')}Llamar</button><button class="btn sec" data-act="toast" data-arg="Link copiado. Mándaselo a tu familia por WhatsApp.">${ic('share-network')}Compartir</button></div>
+  <div class="row8 mt12"><button class="btn sec" data-go="P22">${ic('chat-circle')}Mensaje</button><button class="btn sec" data-act="toast" data-arg="Llamando a ${first()}…">${ic('phone')}Llamar</button></div>
   <button class="btn ghost mt8" style="color:var(--danger)" data-act="set" data-arg="cancelFrom=P21" data-go="P30">Cancelar atención</button>`;
 const trackMap = () => ({ home: P().ll, pro: P().route[0], route: P().route, anim: { route: P().route, dur: 16000, tick: k => { const e = $('#eta'); if (e) e.textContent = Math.max(1, Math.round((P().min + 3) * (1 - k))); const b = $('#etabar'); if (b) b.style.width = Math.max(4, k * 100) + '%'; }, end: () => { S.phase = 'llego'; go('P23'); } } });
-def({ id: 'P21', name: 'Día de la atención: en camino', kind: 'map', auto: 'P23', autoAct: () => { S.phase = 'llego'; }, map: trackMap, body: trackBody });
+def({ id: 'P21', name: 'Va en camino (mapa)', kind: 'map', back: true, auto: 'P23', autoAct: () => { S.phase = 'llego'; }, map: trackMap, body: trackBody });
 
-def({ id: 'P22', name: 'Chat con la profesional', kind: 'page', back: true,
-  body: () => `<div class="procard" style="padding:4px 0 12px">${av(PRO().i, 's')}<div><div class="b-m">${PRO().n}</div><div class="sm t2">${PRO().t} · ${S.booked ? whenTxt() : 'responde en ~20 min'}</div></div></div>
-  ${note('shield', S.booked ? 'Por tu seguridad, no compartas datos de tarjetas ni claves.' : 'Paga siempre por la app: así tu reserva queda protegida. Su teléfono aparece al confirmar.')}
+def({ id: 'P22', name: 'Chat con la profesional', kind: 'page', back: true, title: '',
+  body: () => `${mini(PRO(), `${PRO().t} · ${S.booked ? whenTxt() : 'responde en ~' + PRO().resp}`)}
+  <div class="mt12">${note('shield', S.booked ? 'Por tu seguridad, no compartas datos de tarjetas ni claves.' : 'Paga siempre por la app: así tu cita queda protegida.')}</div>
   ${S.booked ? `<div class="ts">${dayShort(S.day)} 07:41</div>
   <div class="bubble they">Hola Daniela, soy ${first()}. Voy en camino, llego a las ${S.slot}.</div>
   <div class="bubble me">Hola, gracias. Es el depto 1204, torre B. El conserje sabe.</div>
   <div class="bubble they">Perfecto. ¿La Neurobionta está en el refri?</div><div class="bubble me">Sí, ahí está.</div>`
     : `<div class="ts">Hoy 20:52</div><div class="bubble me">Hola ${first()}, ¿llevas tú la jeringa y las tórulas?</div>
   <div class="bubble they">Hola Daniela. Sí, llevo todo. Solo ten el medicamento y la receta a mano.</div>`}${S.chat.map(c => `<div class="bubble me">${c}</div>`).join('')}`,
-  foot: () => `<div style="display:flex;gap:8px;align-items:center">${field('', '', 'Escribe un mensaje')}<button class="ib" style="background:var(--primary);color:#fff" data-act="send">${ic('paper-plane-right', 1)}</button></div>` });
+  foot: () => `<div class="row8 ac">${field('', '', 'Escribe un mensaje')}<button class="ib send" data-act="send" aria-label="Enviar">${ic('paper-plane-right', 1)}</button></div>` });
 
 def({ id: 'P23', name: 'Llegó y atención en curso', kind: 'page', auto: 'P24', autoAct: () => { S.phase = 'curso'; },
   body: () => S.phase === 'llego' ? `<div class="mt16">${proCard(true)}</div><div class="h-l mt24">${first()} llegó</div><div class="t2 mt8">Dale este código para confirmar que es ella.</div>
-  <div class="code mt16">${'2749'.split('').map(d => `<span>${d}</span>`).join('')}</div><div class="mt24">${note('identification-card', 'Ella también te mostrará su credencial de Cuidapp con foto.')}</div>`
+  <div class="code mt16">${'2749'.split('').map(d => `<span>${d}</span>`).join('')}</div><div class="mt24">${note('identification-card', 'También te mostrará su credencial de Cuidapp con foto.')}</div>`
     : `<div class="mt16">${proCard(true)}</div><div class="h-l mt24">Atención en curso</div><div class="t2 mt8">Comenzó a las ${S.slot} · ${CAT[S.item].n}</div><div class="progress bar-anim mt16"><span></span></div>
   <div class="mt16">${row('box:check', 'Código confirmado', 'Identidad verificada', '', '')}${S.item === 'iny' ? row('box:file-text', 'Receta revisada', 'Neurobionta 5.000 · 1 ampolla', '', '') : ''}${row('box:hand-heart', 'Atendiendo a ' + whoTxt().split(' (')[0], '', '', '')}</div>`,
   foot: () => S.phase === 'llego' ? abtn('Ya está conmigo', 'inCourse') : btn('Avisar un problema', 'P22', 'sec'),
   enter: () => { if (S.phase === 'curso') T(() => go('P24'), 6000); } });
 
 def({ id: 'P24', name: 'Atención terminada', kind: 'page',
-  body: () => `<div class="okc">${ic('check', 0).replace('ph ', 'ph-bold ')}</div>
-  <div class="h-l mt16">Listo, atención terminada</div><div class="t2 mt8">${S.item === 'iny' ? 'Inyección de Neurobionta aplicada' : CAT[S.item].n} a ${whoTxt().split(' (')[0]}</div>
-  <div class="sec-t">Nota de ${first()}</div><div class="note mt8">${ic('note')}<div>${S.item === 'iny' ? 'Glúteo derecho. Sin reacción. Próxima dosis en 48 h según receta.' : 'Sin novedades. Dejé indicaciones escritas en la mesa del comedor.'}</div></div>
+  body: () => `<div class="okc mt24">${ic('check', 0).replace('ph ', 'ph-bold ')}</div>
+  <div class="h-l mt16">Atención terminada</div><div class="t2 mt8">${S.item === 'iny' ? 'Inyección de Neurobionta aplicada' : CAT[S.item].n} a ${whoTxt().split(' (')[0]}</div>
+  <div class="lbl2">Nota de ${first()}</div><div class="note">${ic('note')}<div>${S.item === 'iny' ? 'Glúteo derecho. Sin reacción. Próxima dosis en 48 h según receta.' : 'Sin novedades. Dejé indicaciones escritas en la mesa del comedor.'}</div></div>
   <div class="mt16">${kv('Cobrado en ' + (S.pay === 'mp' ? 'Mercado Pago' : 'Visa •••• 4821'), clp(price().total))}</div>`,
-  foot: () => `${btn('Calificar a ' + first(), 'P25')}<div style="display:flex;gap:8px"><button class="btn sec" data-act="toast" data-arg="Boleta enviada a daniela.fuentes@gmail.com.">${ic('receipt')}Boleta</button><button class="btn sec" data-act="again" data-go="P13">${ic('repeat')}Agendar otra</button></div>` });
+  foot: () => `${btn('Dejar una reseña a ' + first(), 'P25')}<div class="row8"><button class="btn sec" data-act="toast" data-arg="Boleta enviada a daniela.fuentes@gmail.com.">${ic('receipt')}Boleta</button><button class="btn sec" data-act="again" data-go="P13">${ic('repeat')}Agendar otra</button></div>` });
 
-def({ id: 'P25', name: 'Calificar', kind: 'page', back: 'x',
-  body: () => `<div style="display:flex;justify-content:center;margin-top:8px">${av(PRO().i, 'l', true)}</div><div class="h-m mt16" style="text-align:center">¿Cómo fue tu atención con ${first()}?</div>
-  <div class="stars mt16">${[1, 2, 3, 4, 5].map(n => `<button class="${S.rating >= n ? 'on' : ''}" data-act="rate" data-arg="${n}">${ic('star', 1)}</button>`).join('')}</div>
-  ${S.rating ? `<div class="chips mt24" style="justify-content:center">${['Puntual', 'Amable', 'Cuidadosa', 'Explicó todo', 'Precio justo'].map(t => chip(t, S.tags[t], 'tag', t)).join('')}</div>
-  <div class="sec-t" style="text-align:center">Propina para ${first()}</div><div class="chips mt8" style="justify-content:center">${[0, 1000, 2000, 3000].map(v => chip(v ? clp(v) : 'Sin propina', S.tip === v, 'set', 'tip=' + v)).join('')}</div>
-  <div class="xs t3 mt12" style="text-align:center">Tu nota se publica en su perfil.</div>` : '<div class="t3 sm mt16" style="text-align:center">Toca una estrella</div>'}`,
-  foot: () => abtn('Enviar', 'sent', '', '', 'P26', !S.rating) });
+def({ id: 'P25', name: 'Dejar reseña', kind: 'page', back: 'x', title: 'Tu reseña',
+  body: () => `<div class="center mt8">${pav(PRO(), 'xl', true)}</div><div class="h-m mt16 center">¿Cómo fue tu atención con ${first()}?</div><div class="sm t2 center mt4">${CAT[S.item].n} · ${dayShort(S.day)}</div>
+  <div class="stars mt16">${[1, 2, 3, 4, 5].map(n => `<button class="${S.rating >= n ? 'on' : ''}" data-act="rate" data-arg="${n}" aria-label="${n} estrellas">${ic('star', 1)}</button>`).join('')}</div>
+  ${S.rating ? `<div class="lbl2">¿Qué destacarías?</div><div class="chips">${['Puntual', 'Amable', 'Cuidadosa', 'Explicó todo', 'Precio justo', 'Dejó todo limpio'].map(t => chip(t, S.tags[t], 'tag', t)).join('')}</div>
+  <div class="lbl2">Cuéntale a otras familias</div>${S.rtxt ? `<div class="field ta"><span>Llegó puntual, le explicó todo a mi mamá y dejó las indicaciones por escrito. Muy recomendada.</span></div>` : `<button class="field ta" data-act="rtxt"><span class="ph-t">Escribe tu experiencia (opcional)</span></button>`}
+  <div class="lbl2">Propina para ${first()}</div><div class="chips">${[0, 1000, 2000, 3000].map(v => chip(v ? clp(v) : 'Sin propina', S.tip === v, 'set', 'tip=' + v)).join('')}</div>
+  <div class="xs t3 mt16">Se publica en su perfil con tu nombre y comuna. La propina es 100% para ella.</div>` : '<div class="t3 sm mt16 center">Toca una estrella</div>'}`,
+  foot: () => abtn('Publicar reseña', 'sent', '', '', 'P26', !S.rating) });
 
-const pastRows = () => `${S.hecho ? row('box:' + CAT[S.item].ic, CAT[S.item].n, `${dayShort(S.day)} · ${PRO().n} · ${clp(price().total)}`, 'P27', ic('caret-right'), '', 'set', 'det=past') : ''}
-  ${row('box:test-tube', 'Toma de muestras', '3 oct · Paula Godoy · $35.390', 'P27', ic('caret-right'), '', 'set', 'det=past')}
-  ${row('box:bandaids', 'Curación simple', '12 sep · Camila Rojas · $24.000', 'P27', ic('caret-right'), '', 'set', 'det=past')}`;
-def({ id: 'P26', name: 'Actividad (mis reservas)', kind: 'page', tab: 'actividad',
-  body: () => `<div class="h-xl mt8">Actividad</div><div class="sec-t">Próximas</div>
-  ${!S.hecho ? row('box:calendar-check', `${dayShort(S.day)}, ${S.slot} · ${CAT[S.item].n}`, `${PRO().n} · ${S.booked ? 'Confirmada' : 'Confirmada'}`, 'P27', st('ok', 'Confirmada'), '', 'set', 'det=next') : ''}
-  ${row('box:calendar-blank', 'Vie 30, 08:00 · Inyección intramuscular', 'Camila Rojas · 2ª dosis', 'P27', st('warn', 'Por confirmar'), '', 'set', 'det=next')}
-  <div class="sec-t">Pasadas</div>${pastRows()}
-  <button class="pill mt16" data-act="pick" data-arg="cr|" data-go="P12">${ic('repeat')}Agendar otra vez con Camila</button>` });
+/* ---------- Mis citas ---------- */
+const citaCard = (c) => `<button class="cita" data-act="set" data-arg="det=${c.det}" data-go="P27"><span class="db"><span>${c.dw}</span><b>${c.dn}</b></span><span class="tx"><span class="a">${c.svc}</span><span class="b">${c.time}</span><span class="c">${pav(PRO(c.pro), 'xs')}${PRO(c.pro).n}</span>${c.st ? `<span class="cst">${c.st}</span>` : ''}</span>${ic('caret-right')}</button>`;
+def({ id: 'P26', name: 'Mis citas', kind: 'page', tab: 'citas',
+  body: () => { const next = [], past = [];
+    if (S.booked && !S.hecho) next.push({ det: 'next', dw: DAYS[S.day][0], dn: DAYS[S.day][1], svc: CAT[S.item].n, time: `${S.slot} a ${slotEnd(S.slot)} · ${P().c}`, pro: S.pro, st: st('ok', 'Confirmada') });
+    next.push({ det: 'next', dw: 'Vie', dn: 30, svc: 'Inyección intramuscular · 2ª dosis', time: '08:00 a 08:30 · Ñuñoa', pro: 'cr', st: st('warn', 'Por confirmar') });
+    if (S.hecho) past.push({ det: 'past', dw: DAYS[S.day][0], dn: DAYS[S.day][1], svc: CAT[S.item].n, time: `${clp(price().total)} · Ñuñoa`, pro: S.pro, st: '' });
+    past.push({ det: 'past', dw: 'Oct', dn: 3, svc: 'Toma de muestras', time: '$35.390 · Ñuñoa', pro: 'pg', st: '' }, { det: 'past', dw: 'Sep', dn: 12, svc: 'Curación simple', time: '$24.000 · Ñuñoa', pro: 'cr', st: '' });
+    const l = S.ctab === 'next' ? next : past;
+    return `<h1 class="h-xl mt8">Mis citas</h1><div class="seg mt16"><button class="${S.ctab === 'next' ? 'on' : ''}" data-act="set" data-arg="ctab=next">Próximas</button><button class="${S.ctab === 'past' ? 'on' : ''}" data-act="set" data-arg="ctab=past">Pasadas</button></div>
+  <div class="citas mt16">${l.map(citaCard).join('')}</div>
+  ${S.ctab === 'past' ? `<div class="again mt16"><div><div class="b-m">¿Repetimos con Camila?</div><div class="sm t2">Curación simple · ${clp(priceOf(PRO('cr'), 'cur'))}</div></div><button class="pill on" data-act="pick" data-arg="cr|" data-go="P13">${ic('repeat')}Agendar</button></div>` : `<button class="newb mt16" data-go="P07">${ic('plus')}Agendar otro servicio</button>`}`; } });
 
-def({ id: 'P27', name: 'Detalle de la reserva', kind: 'page', back: true, title: '',
+def({ id: 'P27', name: 'Detalle de la cita', kind: 'page', back: true, title: 'Detalle de la cita', next: ['P21', 'P13'],
   body: () => S.det === 'next' ? `<div class="h-l">${CAT[S.item].n}</div><div class="t2 mt4">${whenLong()}</div><div class="mt8">${st('ok', 'Confirmada', 'check-circle')}</div>
-  <div class="mt16">${proCard(false, true)}</div>
-  <div class="mt8">${row('box:map-pin', P().n, P().c, '', '')}${row('box:user', whoTxt(), '', '', '')}${row('box:lock-simple', `${clp(price().total)} retenido`, 'Se cobra al terminar la atención', '', '')}</div>
-  <div style="display:flex;gap:8px" class="mt12"><button class="btn sec" data-go="P22">${ic('chat-circle')}Mensaje</button><button class="btn sec" data-go="P13">${ic('calendar-blank')}Cambiar hora</button></div>
-  <button class="btn ghost mt8" style="color:var(--danger)" data-act="set" data-arg="cancelFrom=P27" data-go="P30">Cancelar reserva</button>`
+  <div class="rvw mt16"><div class="rvw-h" data-act="pick" data-arg="${S.pro}|" data-go="P12" role="button">${pav(PRO(), '', true)}<div style="flex:1"><div class="b-m">${PRO().n}</div><div class="sm t2">${PRO().t} · ${rate(PRO(), false)}</div></div>${ic('caret-right')}</div>
+  <div class="rvw-r">${ic('map-pin')}<span>${P().full}</span></div><div class="rvw-r">${ic('user')}<span>${whoTxt()}</span></div><div class="rvw-r">${ic('lock-simple')}<span>${clp(price().total)} retenido · se cobra al terminar</span></div></div>
+  ${acts([['chat-circle', `Chat con ${first()}`, '', '', 'P22'], ['navigation-arrow', 'Ver dónde viene (el día de la cita)', '', '', 'P21'], ['calendar-blank', 'Cambiar día u hora', '', '', 'P13'], ['calendar-plus', 'Agregar a mi calendario', 'toast', 'Agregado a tu calendario.']])}
+  <div class="mt16">${note('calendar-x', 'Cancelación gratis hasta 12 horas antes. Después se cobra $5.000 por el traslado.')}</div>
+  <button class="btn ghost mt8" style="color:var(--danger)" data-act="set" data-arg="cancelFrom=P27" data-go="P30">Cancelar cita</button>`
     : `<div class="h-l">Curación simple</div><div class="t2 mt4">12 sep · 19:00 a 19:45 · Av. Irarrázaval 3450, Ñuñoa</div><div class="mt16">${proCard()}</div>
-  <div class="sec-t">Pago</div>${kv('Curación simple · precio de Camila', '$24.000')}${kv('Total · Visa •••• 4821', '$24.000', 'tot')}
-  <div class="sec-t">Nota de la profesional</div><div class="note mt8">${ic('note')}<div>Herida limpia, sin signos de infección. Repetir en 48 h.</div></div>`,
-  foot: () => S.det === 'next' ? btn('Ver el día de la atención', 'P21') : `<div style="display:flex;gap:8px"><button class="btn sec" data-act="toast" data-arg="Boleta enviada a daniela.fuentes@gmail.com.">${ic('receipt')}Boleta</button><button class="btn sec" data-act="toast" data-arg="Te escribimos por WhatsApp en menos de 10 minutos.">${ic('lifebuoy')}Ayuda</button></div>${abtn('Agendar otra vez', 'pick', 'cr|', '', 'P13')}`, next: ['P21', 'P13'] });
+  <div class="lbl2">Pago</div>${kv('Curación simple · precio de Camila', '$24.000')}${kv('Total · Visa •••• 4821', '$24.000', 'tot')}
+  <div class="lbl2">Nota de la profesional</div><div class="note">${ic('note')}<div>Herida limpia, sin signos de infección. Repetir en 48 h.</div></div>`,
+  foot: () => S.det === 'next' ? `<div class="row8"><button class="btn sec" data-go="P22">${ic('chat-circle')}Chat</button><button class="btn" data-go="P21">Va en camino</button></div>` : `<div class="row8"><button class="btn sec" data-act="toast" data-arg="Boleta enviada a daniela.fuentes@gmail.com.">${ic('receipt')}Boleta</button><button class="btn sec" data-act="toast" data-arg="Te escribimos por WhatsApp en menos de 10 minutos.">${ic('lifebuoy')}Ayuda</button></div>${abtn('Agendar otra vez', 'pick', 'cr|', '', 'P13')}` });
+
+def({ id: 'P34', name: 'Favoritos', kind: 'page', tab: 'favoritos',
+  body: () => { const l = PROS.filter(p => S.fav[p.id]); return `<h1 class="h-xl mt8">Favoritos</h1><div class="t2 sm mt4">Tus profesionales de confianza, para volver a agendar en dos toques.</div>
+  ${l.length ? `<div class="rlist mt16">${l.map(p => `<div class="favc" data-act="pick" data-arg="${p.id}|" data-go="P12" role="button">${pav(p, 'l', true)}<div class="tx"><div class="b-m">${p.n}</div><div class="sm t2">${p.t} · ${rate(p)}</div><div class="sm t2">Desde <b class="num">${clp(priceOf(p, ''))}</b> · ${nextOf(p) ? 'Próxima: ' + dayLbl(nextOf(p)[0]) + ' ' + nextOf(p)[1] : 'Sin horas'}</div></div>${heart(p.id)}<button class="pill on fbk" data-act="pick" data-arg="${p.id}|" data-go="P13">Agendar</button></div>`).join('')}</div>`
+    : `<div class="empty mt24">${ic('heart')}<div class="b-m mt8">Aún no tienes favoritas</div><div class="sm t2 mt4">Toca el corazón en un perfil para guardarla aquí.</div>${btn('Buscar profesionales', 'P10', 'sec')}</div>`}`; } });
 
 def({ id: 'P28', name: 'Cuenta', kind: 'page', tab: 'cuenta',
-  body: () => `<div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px"><div><div class="h-l">Daniela Fuentes</div><div class="sm t2 mt4">${st('ok', 'Cuenta verificada', 'seal-check')}</div></div>${av('DF', 'l')}</div>
-  <div class="tiles2 mt16">${[['lifebuoy', 'Ayuda', '', 'toast', 'Te escribimos por WhatsApp en menos de 10 minutos.'], ['credit-card', 'Pagos', 'P18'], ['receipt', 'Actividad', 'P26']].map(t => `<button class="tile" style="height:84px" ${t[2] ? `data-go="${t[2]}"` : `data-act="${t[3]}" data-arg="${t[4]}"`}>${ic(t[0])}<span class="n">${t[1]}</span></button>`).join('')}</div>
-  <div class="mt8">${row('heart', 'Profesionales favoritas', 'Camila Rojas, Paula Godoy', 'P12', ic('caret-right'), '', 'pick', 'cr|')}${row('users', 'Pacientes', 'Tú, Rosa y Luis', 'P29')}${row('shield-check', 'Datos de salud y privacidad', 'Consentimiento y descarga de tus datos', 'P04')}${row('map-pin', 'Direcciones', 'Casa y Mamá', 'P08')}${row('stethoscope', 'Trabaja con Cuidapp', 'Para enfermeras y TENS', 'R01')}${row('sign-out', 'Cerrar sesión', '', 'P01', '')}</div>` });
+  body: () => `<div class="acct mt8"><div><h1 class="h-xl">Daniela</h1><div class="sm t2 mt4">${st('ok', 'Cuenta verificada', 'seal-check')}</div></div>${av('DF', 'l')}</div>
+  <div class="tiles2 mt24">${[['lifebuoy', 'Ayuda', '', 'toast', 'Te escribimos por WhatsApp en menos de 10 minutos.'], ['credit-card', 'Pagos', 'P18'], ['calendar-blank', 'Mis citas', 'P26']].map(t => `<button class="tile" ${t[2] ? `data-go="${t[2]}"` : `data-act="${t[3]}" data-arg="${t[4]}"`}>${ic(t[0])}<span class="n">${t[1]}</span></button>`).join('')}</div>
+  <div class="mt16">${row('users', 'Pacientes', 'Tú, Rosa y Luis', 'P29')}${row('map-pin', 'Direcciones', 'Casa y Mamá', 'P08', ic('caret-right'), '', 'set', 'addrNext=P28')}${row('heart', 'Favoritos', `${Object.values(S.fav).filter(Boolean).length} profesionales`, 'P34')}${row('shield-check', 'Datos de salud y privacidad', 'Consentimiento y descarga de tus datos', 'P04')}${row('stethoscope', 'Trabaja con Cuidapp', 'Para enfermeras y TENS', 'R01')}${row('sign-out', 'Cerrar sesión', '', 'P01', '')}</div>` });
 
 def({ id: 'P29', name: 'Pacientes guardados', kind: 'page', back: true, title: 'Pacientes',
   body: () => `<div class="t2 sm">¿Para quién es la atención?</div><div class="mt8">
@@ -295,44 +420,42 @@ def({ id: 'P29', name: 'Pacientes guardados', kind: 'page', back: true, title: '
 def({ id: 'P30', name: 'Cancelar', kind: 'page', back: true, title: 'Cancelar',
   body: () => `<div class="h-m">¿Por qué cancelas?</div><div class="mt8">${['Ya no la necesito', 'Me equivoqué de hora o dirección', 'Encontré otra hora', 'Otro motivo'].map((t, i) => radioRow(t, '', (S.cr || 0) === i, 'set', 'cr=' + i)).join('')}</div>
   <div class="mt16">${S.cancelFrom === 'P21' ? note('warning', `${first()} ya va en camino. Se cobra $5.000 por el traslado y liberamos el resto.`, 'warn') : S.cancelFrom === 'P19' ? note('check-circle', 'Aún no te cobramos nada. Cancelar no tiene costo.') : note('check-circle', `Faltan más de 12 horas: cancelar es gratis y liberamos los ${clp(price().total)} retenidos.`)}</div>`,
-  foot: () => `${abtn('Cancelar', 'cancel', '', 'danger', 'P06')}${btn('Volver', 'back', 'ghost')}` });
-
-const asapPros = () => PROS.filter(p => p.asap && priceOf(p));
-def({ id: 'P31', name: 'Lo antes posible (secundario)', kind: 'map', back: true, map: () => ({ home: P().ll, dots: [[[P().ll[0] + .006, P().ll[1] - .008]], [[P().ll[0] - .004, P().ll[1] + .009]]], maxZoom: 15 }),
-  body: () => `<div class="h-m">Disponibles ahora</div><div class="t2 sm mt4">Profesionales conectadas cerca de ${P().c} que pueden ir hoy. ${CAT[S.item].n}.</div>
-  <div class="mt12">${asapPros().map(p => `<button class="opt ${S.pro === p.id ? 'sel' : ''}" data-act="asap" data-arg="${p.id}">${av(p.i, '', true)}<span class="tx"><div class="b-m">${p.n}</div><div class="sm t2">${p.t} · ★ ${p.r} · llega en ~${p.asap} min</div></span><span class="pr">${clp(priceOf(p))}</span></button>`).join('')}</div>
-  <div class="mt8">${note('info', 'Solo aparece cuando hay profesionales conectadas cerca. Si no hay, agenda para la primera hora libre.')}</div>`,
-  foot: () => `${btn(`Continuar con ${first()}`, 'P14')}${abtn('Mejor agendo una hora', 'set', 'when=prog', 'ghost', 'P10')}` });
+  foot: () => `${abtn('Cancelar cita', 'cancel', '', 'danger', 'P06')}${btn('Volver', 'back', 'ghost')}` });
 
 /* ===== escritorio paciente ===== */
-def({ id: 'W01', name: 'Agendar (web)', kind: 'map', dtab: 'inicio', map: () => ({ home: P().ll, homeLabel: P().n, dots: nearDots(), zoom: 14 }),
-  body: () => `<div class="h-l">Agenda una atención en tu casa</div><div class="t2 mt4">Elige a tu enfermera o TENS verificada, con su precio y su próxima hora libre.</div>
-  ${lbl('Servicio')}<div class="chips">${['iny', 'cur', 'mue', 'sig', 'tens4'].map(k => chip(CAT[k].s, S.item === k, 'svc', k)).join('')}</div>
-  ${lbl('Dirección')}<button class="field" data-go="P08" style="text-align:left">${ic('map-pin')}<span>${P().full}</span></button>
-  ${lbl('Para')}<button class="field" data-go="P29" style="text-align:left">${ic('user')}<span>${whoTxt()}</span></button>
-  <button class="asap mt16" data-act="asap" data-arg="pg" data-go="P31"><span class="dot"></span><span class="tx"><b>¿La necesitas hoy?</b><span class="sm t2">2 disponibles ahora cerca</span></span>${ic('caret-right')}</button>`,
-  foot: () => btn('Ver profesionales', 'W02') });
+def({ id: 'W01', name: 'Servicios (web)', kind: 'dfree', dtab: 'servicios', sheets: ['wsvc'],
+  sheet: () => `<div class="h-s">¿Qué servicio necesitas?</div><div class="mt8">${Object.keys(CAT).map(k => svcRow(k)).join('')}</div>`,
+  body: () => `<section class="whero"><div class="wh-in"><h1 class="h-xxl">Enfermeras y TENS a domicilio, con precio y reseñas a la vista</h1><p class="t2 lg mt16">Busca el servicio, compara profesionales verificadas en ${P().c} y agenda la hora que te acomode.</p>
+  <div class="wsearch mt32"><button class="ws-f" data-act="set" data-arg="sheet=wsvc"><span class="xs t2">Servicio</span><b>${svcN(S.item)}</b></button><span class="ws-d"></span><button class="ws-f" data-act="set" data-arg="addrNext=W01" data-go="P08"><span class="xs t2">Dirección</span><b>${P().n}, ${P().c}</b></button><button class="btn ws-b" data-go="W02">${ic('magnifying-glass')}Buscar</button></div>
+  <div class="chips mt16">${['iny', 'mue', 'cur', 'sig'].map(k => `<button class="chip" data-act="svc" data-arg="${k}" data-go="W02">${CAT[k].n}</button>`).join('')}</div></div></section>
+  <section class="wsec"><h2 class="h-l">Explora por servicio</h2><div class="wcats mt24">${Object.keys(CAT).map(k => { const [n, mn] = statsOf(k); return `<button class="wcat" data-act="svc" data-arg="${k}" data-go="W02"><span class="ci">${ic(CAT[k].ic)}</span><b>${CAT[k].n}</b><span class="sm t2">${nPro(n)} · desde ${clp(mn)}</span></button>`; }).join('')}<div class="wcat soon"><span class="ci">${ic('hand-heart')}</span><b>Kinesiología y más</b><span class="sm t2">Muy pronto en Cuidapp</span></div></div></section>
+  <section class="wsec"><div class="shd"><h2 class="h-l">Profesionales destacadas cerca de ti</h2><button class="lk" data-act="svc" data-arg="" data-go="W02">Ver todas</button></div><div class="wfeat mt24">${featured().slice(0, 4).map(fcard).join('')}</div></section>
+  <section class="wsec last"><h2 class="h-l">Cómo funciona</h2><div class="wsteps mt24">${[['magnifying-glass', 'Busca el servicio', 'Inyección, curación, exámenes o cuidados TENS.'], ['users-three', 'Compara', 'Precio, qué incluye, reseñas reales y próxima hora libre.'], ['calendar-check', 'Agenda y listo', 'Pagas en la app. Se cobra solo al terminar la atención.']].map((s, i) => `<div class="wst"><span class="n">${i + 1}</span>${ic(s[0])}<b>${s[1]}</b><span class="t2">${s[2]}</span></div>`).join('')}</div></section>` });
 
-def({ id: 'W02', name: 'Profesionales cerca (web)', kind: 'page', dtab: 'inicio', wide: true, back: true, dtitle: '',
-  body: () => { const l = prosFor(); return `<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px"><div><div class="h-l">${CAT[S.item].n} en ${P().c}</div><button class="addr-l mt4" data-go="P08">${ic('map-pin', 1)}<span>${P().full}</span>${ic('caret-down')}</button></div></div>
-  <div class="sortbar mt16">${sortChips()}<span style="flex:1"></span><button class="pill flt" data-go="P11">${ic('sliders-horizontal')}Filtros</button></div>
-  <div class="sm t2 mt12">${l.length} profesionales · precios fijados por cada una</div>
-  <div class="plist mt8">${l.map(p => pcard(p, true)).join('')}</div><div class="xs t3 mt12">Profesionales y precios de ejemplo para el prototipo.</div>`; },
-  aside: () => `<div class="mapbox"><div class="mapwrap" data-map="1"></div></div>${CAT[S.item].receta ? `<div class="mt12">${note('file-text', 'Para inyecciones necesitas foto de la receta médica.')}</div>` : ''}`,
-  map: () => ({ home: P().ll, dots: nearDots(), zoom: 13.5 }) });
+def({ id: 'W02', name: 'Resultados (web)', kind: 'dfree', dtab: 'servicios', sheets: ['sort'], sheet: sortSheet,
+  body: () => { const l = prosFor(), [a, b] = range(l); return `<div class="wres">
+  <aside class="wfil"><div class="h-s">Filtros</div>
+   <div class="wf"><b>Precio</b>${hist()}<div class="chips mt8">${[[0, 'Cualquiera'], [15000, 'Hasta $15.000'], [20000, 'Hasta $20.000']].map(x => chip(x[1], S.fmax === x[0], 'set', 'fmax=' + x[0])).join('')}</div></div>
+   <div class="wf"><b>Disponibilidad</b><div class="chips mt8">${[['all', 'Cualquier día'], ['hoy', 'Disponible hoy'], ['man', 'Hoy o mañana']].map(x => chip(x[1], S.fday === x[0], 'set', 'fday=' + x[0])).join('')}</div></div>
+   <div class="wf"><b>Profesión</b>${checkRow('Enfermera/o', S.f.enf, 'tog', 'f.enf')}${checkRow('TENS', S.f.tens, 'tog', 'f.tens')}</div>
+   <div class="wf"><b>Valoración</b><div class="chips mt8">${[[0, 'Todas'], [4.8, '4,8 o más']].map(x => chip(x[1], S.frat === x[0], 'set', 'frat=' + x[0])).join('')}</div></div>
+   <div class="wf"><b>Comuna</b><div class="chips mt8">${[['', 'Todas'], ['Ñuñoa', 'Ñuñoa'], ['Providencia', 'Providencia'], ['Las Condes', 'Las Condes']].map(x => chip(x[1], S.fcom === x[0], 'set', 'fcom=' + x[0])).join('')}</div></div>
+   <div class="wf last"><b>Género</b><div class="chips mt8">${[['', 'Indistinto'], ['f', 'Mujer'], ['m', 'Hombre']].map(x => chip(x[1], S.fgen === x[0], 'set', 'fgen=' + x[0])).join('')}</div></div>
+   <button class="lk u mt16" data-act="clearF">Limpiar filtros</button></aside>
+  <main class="wlist"><div class="wl-h"><div><h1 class="h-l">${svcN(S.item)} en ${P().c}</h1><div class="t2 mt4">${nPro(l.length)} · desde <b class="num">${clp(a)}</b> hasta <b class="num">${clp(b)}</b></div></div><button class="qc" data-act="set" data-arg="sheet=sort">${ic('arrows-down-up')}${SORTS.find(x => x[0] === S.sort)[1]}${ic('caret-down')}</button></div>
+   ${S.item && CAT[S.item].receta ? `<div class="rnote mt16">${ic('file-text')}<span>Para inyecciones necesitas receta médica. La subes al agendar.</span></div>` : ''}
+   <div class="rlist mt16">${l.map(p => rcard(p, true)).join('')}</div><div class="xs t3 mt16">Profesionales y precios de ejemplo.</div></main>
+  <aside class="wmap"><div class="mapbox"><div class="mapwrap" data-map="1"></div></div></aside></div>`; },
+  map: () => ({ home: P().ll, dots: prosFor().map(p => [ll(p), '#1AA7EC']), zoom: 13.5 }) });
 
-def({ id: 'W03', name: 'Perfil y reserva (web)', kind: 'page', dtab: 'inicio', wide: true, back: true, dtitle: '', asideCls: 'book', next: ['P14', 'P22'],
-  body: () => { const p = PRO(); return `<div style="display:flex;gap:20px;align-items:center">${av(p.i, 'l', true)}<div><div class="h-l">${p.n}</div><div class="t2">${p.t} · ${p.yrs} años de experiencia · ${p.com}</div><div class="mt4">${sis()}</div></div></div>
-  <div class="stats mt16" style="max-width:520px"><div><b class="num">★ ${p.r}</b><span>nota</span></div><div><b class="num">${p.a}</b><span>atenciones</span></div><div><b class="num">${String(p.km).replace('.', ',')} km</b><span>de ${P().c}</span></div></div>
-  <div class="sec-t">Servicios y precios</div><div class="svc2">${svcRows(p, true)}</div>
-  <div class="sec-t">Qué incluye</div><div class="chips mt8">${incOf(p).map(t => `<span class="chip" style="cursor:default">${ic('check')}&nbsp;${t}</span>`).join('')}</div>
-  <div class="two mt16"><div><div class="sec-t" style="margin-top:0">Reseñas</div>${reviews()}</div><div><div class="sec-t" style="margin-top:0">Sobre ella</div>${about()}</div></div>`; },
-  aside: () => `<div class="box"><div style="display:flex;justify-content:space-between;align-items:baseline"><div class="b-m">${CAT[S.item].n}</div><div class="price-s num">${clp(price().pro)}</div></div>
-  <div class="sm t2">${durOf(PRO())} min · precio de ${first()}</div>
-  <div class="b-m mt16">Día</div><div class="mt8">${dayCards()}</div><div class="b-m mt16">Hora de llegada</div>${slotGrid()}
-  <div class="mt12" style="display:flex;flex-direction:column;gap:8px">${slotNotes()}</div>
-  <div class="mt12">${kv('Total', clp(price().total), 'tot')}</div>
-  <div class="mt12">${btn('Continuar', 'P14')}</div><button class="btn ghost mt4" data-go="P22">${ic('chat-circle')}Preguntarle algo</button>
-  <div class="xs t3 mt8" style="text-align:center">No se cobra nada hasta que ${first()} confirme.</div></div>` });
+def({ id: 'W03', name: 'Perfil y agenda (web)', kind: 'dfree', dtab: 'servicios', next: ['P14', 'P22', 'P32'],
+  body: () => { const p = PRO(), it = S.item && priceOf(p, S.item) ? S.item : svcsOf(p)[0], l = slotsOf(p, S.day); return `<div class="wprof"><div class="wp-main"><button class="lk mb16" data-go="back">${ic('caret-left')} Volver a resultados</button>${profileBody(p, 'd')}</div>
+  <aside class="wp-side"><div class="bbox"><div class="bb-h"><div><div class="sm t2">${CAT[it].n}</div><div class="h-m num">${clp(priceOf(p, it, S.slot))}</div></div><div>${heart(p.id)}</div></div>
+   <div class="sm t2">${durOf(p, it)} min · ${shortInc(incOf(p, it)[0])}</div>
+   <div class="lbl2">Día</div>${dstrip(p, 'day', 'day')}
+   <div class="lbl2">Hora de llegada</div><div class="slots3">${l.map(t => `<button class="slot ${S.slot === t ? 'on' : ''}" data-act="set" data-arg="slot=${t}">${t}</button>`).join('')}</div>
+   <div class="mt16">${kv('Total', clp(price().total), 'tot')}</div>
+   <button class="btn mt16" data-act="set" data-arg="addrNext=P14" data-go="P14">Agendar</button><button class="btn ghost mt8" data-go="P22">${ic('chat-circle')}Preguntarle algo</button>
+   <div class="xs t3 mt8 center">No se cobra nada hasta que ${first()} confirme.</div></div></aside></div>`; } });
 
-def({ id: 'W04', name: 'Seguimiento (web)', kind: 'map', dtab: 'inicio', auto: 'P23', autoAct: () => { S.phase = 'llego'; }, map: trackMap, body: trackBody });
+def({ id: 'W04', name: 'Va en camino (web)', kind: 'map', dtab: 'citas', back: true, auto: 'P23', autoAct: () => { S.phase = 'llego'; }, map: trackMap, body: trackBody });
