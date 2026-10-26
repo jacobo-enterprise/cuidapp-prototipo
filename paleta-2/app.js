@@ -275,7 +275,9 @@ const row = (i, a, b = '', go = '', end = ic('caret-right'), cls = '', act = '',
 };
 const ST_I = { ok: 'check-circle', warn: 'clock', inf: 'clock-countdown', bad: 'x-circle' };
 const st = (k, t, i) => { i = i === '' ? '' : (i || ST_I[k]); return `<span class="st ${k}">${i ? ic(i, 1) : ''}${t}</span>`; };
-const av = (ini, cls = '', ver = false) => `<span class="av ${cls}">${ini}${ver ? `<span class="vb">${ic('check', 0).replace('ph ', 'ph-bold ')}</span>` : ''}</span>`;
+const PHOTO = ['CR', 'FA', 'MC', 'PG', 'VM', 'FL', 'DN', 'JS', 'CD', 'IP', 'RS'];
+const avIn = ini => PHOTO.includes(ini) ? `<img class="avp" src="img/pro/${ini.toLowerCase()}.webp" alt="" loading="lazy">` : ini;
+const av = (ini, cls = '', ver = false) => `<span class="av ${cls}${PHOTO.includes(ini) ? ' hasp' : ''}">${avIn(ini)}${ver ? `<span class="vb">${ic('check', 0).replace('ph ', 'ph-bold ')}</span>` : ''}</span>`;
 const kv = (k, v, cls = '') => `<div class="kv ${cls}"><span class="k">${k}</span><span class="num">${v}</span></div>`;
 const note = (i, t, k = '') => `<div class="note ${k}">${ic(i)}<div>${t}</div></div>`;
 const chip = (t, on, act, arg) => `<button class="chip ${on ? 'on' : ''}" data-act="${act}" data-arg="${arg}">${t}</button>`;

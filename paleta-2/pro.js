@@ -78,7 +78,7 @@ def({ id: 'R07', name: 'Cuenta bancaria', kind: 'page', back: true, noNav: true,
 
 def({ id: 'R08', name: 'En revisión', kind: 'page', noNav: true, auto: 'R09', enter: () => T(() => go('R09'), 5000),
   body: () => `<div style="margin-top:40px">${ic('hourglass-medium', 1).replace('<i ', '<i style="font-size:56px;color:#6950F2" ')}</div><div class="h-l mt16">Estamos revisando tus documentos</div>
-  <div class="t2 mt8">Te avisamos por SMS en menos de 48 horas hábiles. Mientras, puedes ir pensando tus precios y horarios.</div><div class="mt24">
+  <div class="t2 mt8">Te avisamos con una notificación push y por correo en menos de 48 horas hábiles. Mientras, puedes ir pensando tus precios y horarios.</div><div class="mt24">
   ${row('box:check', 'Documentos recibidos', 'Hoy 10:42', '', '')}${row('box:magnifying-glass', 'Revisión del registro SIS', 'En curso', '', st('inf', 'Revisando'))}${row('box:video-camera', 'Entrevista corta por videollamada', 'Después de la revisión', '', '')}</div>` });
 
 def({ id: 'R09', name: 'Cuenta aprobada', kind: 'page', noNav: true,

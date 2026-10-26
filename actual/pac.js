@@ -42,7 +42,7 @@ function fixSlot() { const l = slotsOf(PRO(), S.day); if (l.length && !l.include
 /* ---------- piezas ---------- */
 const R = n => `<span class="num">${clp(n)}</span>`;
 const vb = `<span class="vb">${ic('check', 0).replace('ph ', 'ph-bold ')}</span>`;
-const pav = (p, k = '', ver = false) => `<span class="av ${k}" style="background:${p.bg};color:${p.fg}">${p.i}${ver ? vb : ''}</span>`;
+const pav = (p, k = '', ver = false) => `<span class="av ${k}${PHOTO.includes(p.i) ? ' hasp' : ''}" style="background:${p.bg};color:${p.fg}">${avIn(p.i)}${ver ? vb : ''}</span>`;
 const kmT = p => String(p.km).replace('.', ',') + ' km';
 const star = () => '<i class="ph-fill ph-star"></i>';
 const rate = (p, n = true) => `<span class="rt">${star()}<b>${p.r}</b>${n ? `<span>(${p.rv})</span>` : ''}</span>`;
@@ -351,17 +351,17 @@ def({ id: 'P17', name: 'Revisa y paga', kind: 'page', back: true, title: 'Revisa
   <div class="rvw-r">${ic('map-pin')}<span>${P().full}</span><button class="lk" data-act="set" data-arg="addrNext=P17" data-go="P08">Cambiar</button></div>
   <div class="rvw-r">${ic('user')}<span>${whoTxt()}</span><button class="lk" data-go="P29">Cambiar</button></div>
   ${S.item === 'iny' ? `<div class="rvw-r">${ic('file-text')}<span>Receta adjunta · Neurobionta 5.000</span><button class="lk" data-go="P15">Ver</button></div>` : ''}${S.item === 'mue' ? `<div class="rvw-r">${ic('test-tube')}<span>${byOrder() ? 'Orden médica adjunta' : nEx()}</span><button class="lk" data-go="P40">Cambiar</button></div>` : ''}</div>
-  <div class="lbl2">Pago</div>${row('box:' + (S.pay === 'mp' ? 'wallet' : 'credit-card'), S.pay === 'mp' ? 'Mercado Pago' : S.pay === 'deb' ? 'Redcompra •••• 0937' : 'Visa •••• 4821', 'Vía Webpay', 'P18', '<span class="lk">Cambiar</span>')}
+  <div class="lbl2">Pago</div>${row('box:' + (S.pay === 'mp' ? 'wallet' : 'credit-card'), S.pay === 'mp' ? 'Saldo Mercado Pago' : S.pay === 'deb' ? 'Redcompra •••• 0937' : 'Visa •••• 4821', 'Con Mercado Pago', 'P18', '<span class="lk">Cambiar</span>')}
   <div class="lbl2">Desglose</div>${breakdown()}<div class="xs t2 mt4">${S.item === 'mue' ? `${first()} fija la toma. Los exámenes tienen el precio del ${LAB.toLowerCase()}.` : `El precio lo fija ${first()}. Sin cobros extra.`}</div>
   <div class="mt16 col8">${note('lock-simple', `No te cobramos todavía. Cuando ${first()} confirme, retenemos ${clp(price().total)} y se cobra al terminar la atención.`, 'inf')}${note('calendar-x', 'Cancelación gratis hasta 12 horas antes.')}</div>`,
   foot: () => `<div class="fbar"><div class="fb-l"><b class="num">${clp(price().total)}</b><span>Total</span></div><button class="btn fbtn" data-go="P19" data-act="set" data-arg="cancelFrom=P19">Confirmar y pagar</button></div>` });
 
 def({ id: 'P18', name: 'Métodos de pago', kind: 'page', back: true, title: 'Pago',
-  body: () => `${radioRow('Visa •••• 4821', 'Crédito · vía Webpay', S.pay === 'visa', 'set', 'pay=visa', 'credit-card')}
-  ${radioRow('Redcompra •••• 0937', 'Débito · vía Webpay', S.pay === 'deb', 'set', 'pay=deb', 'credit-card')}
-  ${radioRow('Mercado Pago', 'daniela.fuentes@gmail.com', S.pay === 'mp', 'set', 'pay=mp', 'wallet')}
-  ${row('box:plus', 'Agregar tarjeta', 'Débito o crédito', '', ic('caret-right'), '', 'toast', 'Se abre Webpay para agregar tu tarjeta.')}
-  <div class="mt16">${note('shield-check', 'Cuidapp no guarda los números de tu tarjeta. Los procesa Transbank.')}</div>`,
+  body: () => `${radioRow('Visa •••• 4821', 'Tarjeta de crédito', S.pay === 'visa', 'set', 'pay=visa', 'credit-card')}
+  ${radioRow('Redcompra •••• 0937', 'Tarjeta de débito', S.pay === 'deb', 'set', 'pay=deb', 'credit-card')}
+  ${radioRow('Saldo Mercado Pago', 'Disponible $52.300 · daniela.fuentes@gmail.com', S.pay === 'mp', 'set', 'pay=mp', 'wallet')}
+  ${row('box:plus', 'Agregar tarjeta', 'Débito o crédito', '', ic('caret-right'), '', 'toast', 'Se abre el checkout de Mercado Pago para agregar tu tarjeta.')}
+  <div class="mt16">${note('shield-check', 'Pagas con Mercado Pago: tarjetas de crédito, débito o saldo Mercado Pago. Cuidapp no guarda los números de tu tarjeta.')}</div>`,
   foot: () => btn('Listo', 'back') });
 
 def({ id: 'P19', name: 'Esperando confirmación', kind: 'page', auto: 'P20', autoAct: () => { S.booked = true; },
@@ -375,7 +375,8 @@ def({ id: 'P20', name: 'Cita confirmada', kind: 'page', next: ['P21'],
   body: () => `<div class="okc mt24">${ic('check', 0).replace('ph ', 'ph-bold ')}</div>
   <div class="h-l mt16">¡Listo! ${first()} confirmó tu cita</div><div class="t2 mt8">${whenLong()}</div>
   <div class="rvw mt24"><div class="rvw-h">${pav(PRO(), '', true)}<div><div class="b-m">${PRO().n}</div><div class="sm t2">${PRO().t} · ${PRO().tel}</div></div></div>
-  <div class="rvw-r">${ic(CAT[S.item].ic)}<span>${CAT[S.item].n} · ${whoTxt()}</span></div><div class="rvw-r">${ic('map-pin')}<span>${P().full}</span></div><div class="rvw-r">${ic('lock-simple')}<span>Retuvimos ${clp(price().total)} · se cobra al terminar</span></div></div>
+  <div class="rvw-r">${ic(CAT[S.item].ic)}<span>${CAT[S.item].n} · ${whoTxt()}</span></div><div class="rvw-r">${ic('map-pin')}<span>${P().full}</span></div><div class="rvw-r">${ic('lock-simple')}<span>Retuvimos ${clp(price().total)} en Mercado Pago · se cobra al terminar</span></div></div>
+  <div class="mt12">${note('envelope-simple', 'Te enviamos el comprobante por correo. El día antes te recordamos la cita con una notificación push.')}</div>
   ${acts([['chat-circle', `Escribirle a ${first()}`, '', '', 'P22'], ['calendar-plus', 'Agregar a mi calendario', 'toast', 'Agregado a tu calendario.'], ['share-network', 'Compartir con la familia', 'toast', 'Link copiado. Mándalo por WhatsApp.']])}`,
   foot: () => `${abtn('Ver mis citas', 'book', '', '', 'P26')}${btn('Ir a Servicios', 'P06', 'ghost')}` });
 
@@ -411,8 +412,8 @@ def({ id: 'P24', name: 'Atención terminada', kind: 'page',
   body: () => `<div class="okc mt24">${ic('check', 0).replace('ph ', 'ph-bold ')}</div>
   <div class="h-l mt16">Atención terminada</div><div class="t2 mt8">${S.item === 'iny' ? 'Inyección de Neurobionta aplicada' : CAT[S.item].n} a ${whoTxt().split(' (')[0]}</div>
   <div class="lbl2">Nota de ${first()}</div><div class="note">${ic('note')}<div>${S.item === 'iny' ? 'Glúteo derecho. Sin reacción. Próxima dosis en 48 h según receta.' : 'Sin novedades. Dejé indicaciones escritas en la mesa del comedor.'}</div></div>
-  <div class="mt16">${kv('Cobrado en ' + (S.pay === 'mp' ? 'Mercado Pago' : 'Visa •••• 4821'), clp(price().total))}</div>`,
-  foot: () => `${btn('Dejar una reseña a ' + first(), 'P25')}<div class="row8"><button class="btn sec" data-act="toast" data-arg="Boleta enviada a daniela.fuentes@gmail.com.">${ic('receipt')}Boleta</button><button class="btn sec" data-act="again" data-go="P13">${ic('repeat')}Agendar otra</button></div>` });
+  <div class="mt16">${kv('Cobrado con Mercado Pago · ' + (S.pay === 'mp' ? 'saldo' : S.pay === 'deb' ? 'Redcompra •••• 0937' : 'Visa •••• 4821'), clp(price().total))}</div><div class="mt12">${note('envelope-simple', 'Te enviamos el comprobante por correo a daniela.fuentes@gmail.com.')}</div>`,
+  foot: () => `${btn('Dejar una reseña a ' + first(), 'P25')}<div class="row8"><button class="btn sec" data-act="toast" data-arg="Te enviamos la boleta por correo a daniela.fuentes@gmail.com.">${ic('receipt')}Boleta</button><button class="btn sec" data-act="again" data-go="P13">${ic('repeat')}Agendar otra</button></div>` });
 
 def({ id: 'P25', name: 'Dejar reseña', kind: 'page', back: 'x', title: 'Tu reseña',
   body: () => `<div class="center mt8">${pav(PRO(), 'xl', true)}</div><div class="h-m mt16 center">¿Cómo fue tu atención con ${first()}?</div><div class="sm t2 center mt4">${CAT[S.item].n} · ${dayShort(S.day)}</div>
@@ -450,7 +451,7 @@ def({ id: 'P27', name: 'Detalle de la cita', kind: 'page', back: true, title: 'D
     : `<div class="h-l">Curación simple</div><div class="t2 mt4">12 sep · 19:00 a 19:45 · Av. Irarrázaval 3450, Ñuñoa</div><div class="mt16">${proCard()}</div>
   <div class="lbl2">Pago</div>${kv('Curación simple · precio de Camila', '$24.000')}${kv('Total · Visa •••• 4821', '$24.000', 'tot')}
   <div class="lbl2">Nota de la profesional</div><div class="note">${ic('note')}<div>Herida limpia, sin signos de infección. Repetir en 48 h.</div></div>`,
-  foot: () => S.det === 'next' ? `<div class="row8"><button class="btn sec" data-go="P22">${ic('chat-circle')}Chat</button><button class="btn" data-go="P21">Va en camino</button></div>` : `<div class="row8"><button class="btn sec" data-act="toast" data-arg="Boleta enviada a daniela.fuentes@gmail.com.">${ic('receipt')}Boleta</button><button class="btn sec" data-act="toast" data-arg="Te escribimos por WhatsApp en menos de 10 minutos.">${ic('lifebuoy')}Ayuda</button></div>${abtn('Agendar otra vez', 'pick', 'cr|', '', 'P13')}` });
+  foot: () => S.det === 'next' ? `<div class="row8"><button class="btn sec" data-go="P22">${ic('chat-circle')}Chat</button><button class="btn" data-go="P21">Va en camino</button></div>` : `<div class="row8"><button class="btn sec" data-act="toast" data-arg="Te enviamos la boleta por correo a daniela.fuentes@gmail.com.">${ic('receipt')}Boleta</button><button class="btn sec" data-act="toast" data-arg="Te escribimos por WhatsApp en menos de 10 minutos.">${ic('lifebuoy')}Ayuda</button></div>${abtn('Agendar otra vez', 'pick', 'cr|', '', 'P13')}` });
 
 def({ id: 'P42', name: 'Resultados de exámenes', kind: 'page', back: true, title: 'Resultados',
   body: () => `<div class="pdf"><div class="pdf-h"><div><b>${LAB}</b><div class="xs t2">Informe de resultados · 4 oct 2026</div></div>${ic('file-pdf', 1)}</div>

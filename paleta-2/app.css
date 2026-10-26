@@ -820,3 +820,8 @@ table .ri.box{flex:none;min-width:40px}
 .pslim.lav{background:var(--lav-soft)}.pslim.lav .pcta{color:var(--lav-text);box-shadow:inset 0 0 0 1px #DCDCFB;letter-spacing:.4px}
 .pdots{margin-top:8px;gap:4px}.pdots i{width:5px;height:5px;border-radius:3px}.pdots i.on{width:14px}
 .wprow .pslim{width:auto;height:80px}
+
+/* ===== fotos de profesionales ===== */
+.av.hasp{background:#E9E8EE!important}
+.av .avp{width:100%;height:100%;border-radius:inherit;object-fit:cover;display:block}
+.av.hasp .vb{z-index:1}

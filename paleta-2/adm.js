@@ -10,7 +10,7 @@ const CANDS = [
 Object.assign(ACT, {
   cand: i => { S.cand = +i; S.sis = 0; },
   sis: () => { S.sis = 1; setTimeout(() => { S.sis = 2; if (cur === 'A03') render(); }, 1400); },
-  aprob: () => { S.aprob.push(S.cand); toast(`${CANDS[S.cand][0].split(' ')[0]} aprobada. Le avisamos por SMS.`); },
+  aprob: () => { S.aprob.push(S.cand); toast(`${CANDS[S.cand][0].split(' ')[0]} aprobada. Le avisamos por notificación push y correo.`); },
   rech: () => { S.rech.push(S.cand); toast(`Rechazo enviado a ${CANDS[S.cand][0].split(' ')[0]}.`); },
   corr: () => { toast(`Pedimos a ${CANDS[S.cand][0].split(' ')[0]} una foto nueva del título.`); },
   admTab: t => { S.admTab = t; },
