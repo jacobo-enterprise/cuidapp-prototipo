@@ -103,7 +103,7 @@ def({ id: 'P50', name: 'Fichas de salud', kind: 'page', back: true, title: 'Fich
   <div class="mt16">${note('lock-simple', 'Tus fichas son privadas. Cada vez que una profesional la abre, queda registrado en «Quién vio la ficha».')}</div>` });
 
 def({ id: 'P51', name: 'Ficha de salud', kind: 'page', back: true, title: '', next: ['P52', 'P53', 'P54', 'P55', 'P56'],
-  body: () => { const f = FM(), m = S.fm === 'mama'; return `${famHead(f)}<div class="mt16">${pinAl(f)}</div>
+  body: () => { const f = FM(), m = S.fm === 'mama'; return `${famHead(f)}<div class="mt16">${pinAl(f)}</div>${S.pv[S.fm] ? `<div class="mt8">${row('box:shield-check', 'Previsión de salud', pvTxt(S.fm) + ' · RUT ' + RUTS[S.fm], 'P64', '<span class="lk">Cambiar</span>', '', 'pvFor', S.fm)}</div>` : ''}
   ${m ? `<button class="lastn mt12" data-go="P58">${av('CR', 's')}<span class="tx"><span class="xs t2">Última nota · hoy 08:41</span><span class="a">Camila dejó el resumen de la visita</span><span class="b">Herida 3,2 × 2,1 cm, mejor que el 24 oct</span></span>${ic('caret-right')}</button>` : ''}
   <div class="lbl2">Diagnósticos</div><div class="chips">${f.dx.map(x => `<span class="chip">${x}</span>`).join('')}</div>
   <div class="lbl2">Medicamentos que toma</div>${medList(f.meds)}

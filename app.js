@@ -13,11 +13,15 @@ const S0 = () => ({
   item: 'iny', addr: 'mama', who: 'mama', when: 'prog', pro: 'cr', day: 1, slot: '08:00', sort: 'rel', ptab: 'serv', det: 'next',
   f: { enf: true, tens: true, cuid: true }, fmax: 0, fday: 'all', frat: 0, fgen: '', fcom: '',
   fav: { cr: true, pg: true }, q: '', typed: false, sheet: '', ctab: 'next', revF: 'all', revSort: 'rec', resp: { cr4: 'Gracias, Francisco. Ese día me pilló un taco en Grecia, por eso te avisé. ¡Nos vemos en el próximo control!' }, replyTo: 'cr1', rtxt: false, rcrit: {}, pday: 1, svcFrom: '',
-  hasMed: true, receta: false, orden: '', mmode: 'cat', exq: '', kinAv: false, medAv: false, promo: 'kin', exams: { hemo: true, lip: true, gli: true }, tensNeeds: { hig: true, mov: true, sig: true, com: false },
+  hasMed: true, receta: false, orden: '', mmode: 'cat', exq: '', kinAv: false, medAv: false, promo: 'kin', exams: { hemo: true, lip: true, gli: true }, needOrd: false, ord: '', ordSel: null, ordFrom: false, help: '', exPage: 0, exLim: 20, scope: '', aexq: '', aexPage: 0, aord: 0, aordSel: {}, aordDone: [], pv: { mama: { t: 'fonasa', tr: 'B', is: '' }, papa: { t: 'isapre', tr: '', is: 'Colmena' }, yo: { t: 'isapre', tr: '', is: 'Banmédica' } }, isaOpen: false, rbDocs: false, tensNeeds: { hig: true, mov: true, sig: true, com: false },
   pay: 'visa', prev: 'fonasa', consent: false, rating: 0, tags: {}, tip: 0, chat: [], phase: 'llego', cancelFrom: 'P27', booked: false, hecho: false, cr: 0,
   docs: { carnet: false, selfie: false, titulo: false, antec: false, banco: false }, prof: 'enf',
   online: false, code: '', chk: { id: false, rec: false, ale: false }, earn: 186405, done: 9, pRating: 0, pTags: {}, paid: false,
   my: {
+    vneu: { on: true, p: 18000, night: 0, nOn: false, dur: 30, inc: { ins: true, pre: true, res: true, edu: false } },
+    vb12: { on: true, p: 18000, night: 0, nOn: false, dur: 30, inc: { ins: true, pre: true, res: true, edu: false } },
+    vd: { on: true, p: 18000, night: 0, nOn: false, dur: 30, inc: { ins: true, pre: true, res: true, edu: false } },
+    vfe: { on: true, p: 52000, night: 0, nOn: false, dur: 90, inc: { ins: true, pre: true, res: true, edu: true } },
     iny: { on: true, p: 18000, night: 22000, nOn: true, dur: 30, inc: { ins: true, pre: true, res: true, edu: false } },
     cur: { on: true, p: 24000, night: 0, nOn: false, dur: 45, inc: { ins: true, pre: false, res: true, edu: true } },
     cura: { on: false, p: 34000, night: 0, nOn: false, dur: 60, inc: { ins: true, pre: false, res: true, edu: true } },
@@ -53,7 +57,7 @@ const S0 = () => ({
   week: { lun: true, mar: true, mie: true, jue: true, vie: true, sab: true, dom: false }, gap: 30, antic: 2,
   blocked: { 30: true }, req: { r1: 'new', r2: 'new' }, aday: 1, spec: { am: true, pd: true, ped: false, pal: false },
   sis: 0, aprob: [], rech: [], admTab: 'rev', cand: 0, aedit: 'iny', comm: 15,
-  mins: { iny: 12000, inysc: 12000, inyev: 26000, via: 44000, recs: 22000, suero: 36000, vac: 12000, insu: 14000, past: 18000, cur: 15000, cura: 24000, esc: 26000, pun: 16000, dren: 22000, mue: 5000, ecg: 25000, holt: 68000, valo: 24000, cuid: 32000, acomp: 23000, bano: 18000, cogn: 16000, tens8: 37000, pos: 38000, sonali: 26000, son: 25000, ost: 26000, traq: 30000, oxi: 18000, pack: 250000, alta: 30000, noche: 40000, hdia: 27000, hnoc: 32000, h24: 52000, ncasa: 34000, pal: 40000, fin: 36000, sig: 12000, diab: 20000, edu: 12000, rcp: 48000 }, aRec: true,
+  mins: { vneu: 12000, vb12: 12000, vd: 12000, vc: 30000, vfe: 38000, vsue: 38000, vmg: 30000, vmed: 18000, iny: 12000, inysc: 12000, inyev: 26000, via: 44000, recs: 22000, suero: 36000, vac: 12000, insu: 14000, past: 18000, cur: 15000, cura: 24000, esc: 26000, pun: 16000, dren: 22000, mue: 5000, ecg: 25000, holt: 68000, valo: 24000, cuid: 32000, acomp: 23000, bano: 18000, cogn: 16000, tens8: 37000, pos: 38000, sonali: 26000, son: 25000, ost: 26000, traq: 30000, oxi: 18000, pack: 250000, alta: 30000, noche: 40000, hdia: 27000, hnoc: 32000, h24: 52000, ncasa: 34000, pal: 40000, fin: 36000, sig: 12000, diab: 20000, edu: 12000, rcp: 48000 }, aRec: true,
 });
 let S = S0();
 let view = localStorage.getItem('cv') || 'm';
@@ -108,7 +112,7 @@ const CAT = {
   pun: { n: 'Herida operatoria y retiro de puntos', s: 'Herida operatoria', g: 'cur', d: 'Curación de la herida, retiro de puntos o corchetes y educación', ic: 'bandaids', who: ['enf'], dur: 30, dt: '30 min', ind: 'Sí (cirujano)', base: 22000 },
   dren: { n: 'Manejo de drenajes', s: 'Drenajes', g: 'cur', i: 'cura', d: 'Medición del débito, curación del sitio y registro', ic: 'first-aid', who: ['enf'], dur: 45, dt: '30–45 min', ind: 'Sí', base: 28000 },
   // 3. Exámenes a domicilio
-  mue: { n: 'Toma de muestras a domicilio', s: 'Toma de muestras', g: 'mue', d: 'Sangre u orina. Exámenes con precio del laboratorio aliado', ic: 'test-tube', who: ['enf', 'tens'], dur: 20, dt: '15–20 min', ind: 'Orden médica', lab: true, base: 6490 },
+  mue: { n: 'Toma de muestras a domicilio', s: 'Toma de muestras', g: 'mue', d: 'Sangre u orina. Más de 650 exámenes del laboratorio aliado, sin orden médica', ic: 'test-tube', who: ['enf', 'tens'], dur: 20, dt: '15–20 min', ind: 'No', lab: true, base: 6490 },
   ecg: { n: 'Electrocardiograma a domicilio', s: 'Electrocardiograma', g: 'mue', i: 'sig', d: 'Registro e informe por cardiólogo', ic: 'heartbeat', who: ['enf'], dur: 30, dt: '30 min', ind: 'Sí', soon: true, base: 31990 },
   holt: { n: 'Holter de presión o de ritmo', s: 'Holter', g: 'mue', i: 'cron', d: 'Instalación del equipo, retiro e informe', ic: 'heartbeat', who: ['enf'], dur: 30, dt: '24 h', ind: 'Sí', soon: true, base: 84990 },
   // 4. Adulto mayor
@@ -137,6 +141,15 @@ const CAT = {
   // 8. Cuidados paliativos
   pal: { n: 'Visita de enfermería paliativa', s: 'Visita paliativa', g: 'pal', d: 'Control del dolor y síntomas, apoyo a la familia. Coordinada con el equipo tratante', ic: 'heart', who: ['enf'], dur: 60, dt: '60 min', ind: 'Sí (equipo tratante)', base: 50000 },
   fin: { n: 'Acompañamiento de final de vida', s: 'Final de vida', g: 'pal', d: 'Confort, higiene, posición y compañía, de día o de noche', ic: 'heart', who: ['tens', 'cuid'], dur: 720, dt: '12 o 24 h', ind: 'No', turno: true, tp: { 12: 45000, 24: 85000 }, base: 45000 },
+  // 1b. Vitaminas y sueros (la enfermera administra lo que la paciente trae con receta)
+  vneu: { n: 'Neurobionta o complejo B', s: 'Neurobionta / complejo B', g: 'vit', i: 'vit', d: 'Inyección intramuscular. Trae tu ampolla con receta', ic: 'syringe', who: ['enf', 'tens'], dur: 30, dt: '20–30 min', ind: 'Sí', receta: true, base: 14990 },
+  vb12: { n: 'Vitamina B12 inyectable', s: 'Vitamina B12', g: 'vit', i: 'vit', d: 'Intramuscular. Trae tu ampolla con receta', ic: 'syringe', who: ['enf', 'tens'], dur: 30, dt: '20–30 min', ind: 'Sí', receta: true, base: 14990 },
+  vd: { n: 'Vitamina D en ampolla', s: 'Vitamina D', g: 'vit', i: 'vit', d: 'Intramuscular, por ejemplo 600.000 UI. Trae tu ampolla con receta', ic: 'syringe', who: ['enf', 'tens'], dur: 30, dt: '20–30 min', ind: 'Sí', receta: true, base: 15990 },
+  vc: { n: 'Vitamina C endovenosa', s: 'Vitamina C EV', g: 'vit', i: 'vit', d: 'Vía venosa, goteo controlado y retiro. Trae el medicamento con receta', ic: 'drop', who: ['enf'], dur: 60, dt: '45–60 min', ind: 'Sí', receta: true, base: 39990 },
+  vfe: { n: 'Hierro endovenoso', s: 'Hierro EV', g: 'vit', i: 'vit', d: 'Goteo lento con control de reacción durante y después. Trae el medicamento con receta', ic: 'drop', who: ['enf'], dur: 90, dt: '60–90 min', ind: 'Sí', receta: true, base: 49990 },
+  vsue: { n: 'Sueroterapia con vitaminas', s: 'Suero con vitaminas', g: 'vit', i: 'vit', d: 'Hidratación EV con las vitaminas indicadas por tu médico', ic: 'drop', who: ['enf'], dur: 90, dt: '60–90 min', ind: 'Sí', receta: true, base: 49990 },
+  vmg: { n: 'Magnesio endovenoso', s: 'Magnesio EV', g: 'vit', i: 'vit', d: 'Vía venosa y control de presión. Trae el medicamento con receta', ic: 'drop', who: ['enf'], dur: 60, dt: '45–60 min', ind: 'Sí', receta: true, base: 39990 },
+  vmed: { n: 'Vitaminas con medicamento incluido', s: 'Con medicamento incluido', g: 'vit', i: 'vit', d: 'Junto a una farmacia aliada: te llevamos la ampolla con tu receta', ic: 'pill', who: ['enf'], dur: 30, dt: '30 min', ind: 'Sí', receta: true, soon: true, base: 24990 },
   // Ver todas · control de crónicos
   sig: { n: 'Control de signos vitales', s: 'Signos vitales', g: 'cron', d: 'Presión, glicemia, temperatura y saturación, con registro', ic: 'heartbeat', who: ['enf', 'tens'], dur: 30, dt: '20–30 min', ind: 'No', base: 15000 },
   diab: { n: 'Programa de diabetes', s: 'Programa diabetes', g: 'cron', d: 'Visitas periódicas: glicemia, insulina, pie y educación', ic: 'calendar-check', who: ['enf'], dur: 45, dt: '45 min por visita', ind: 'Recomendada', base: 25000 },
@@ -147,17 +160,18 @@ const CAT = {
 /* categorías (lo que ve la paciente primero); cada una agrupa servicios concretos */
 const GRP = {
   iny: { n: 'Inyecciones y medicamentos', c: 'Inyecciones', d: 'Intramuscular, endovenosa, sueros, vacunas, insulina y pastillero', l: ['iny', 'inysc', 'inyev', 'via', 'recs', 'suero', 'vac', 'insu', 'past'] },
+  vit: { n: 'Vitaminas y sueros', c: 'Vitaminas', d: 'Neurobionta, B12, vitamina D y C, hierro y magnesio. Trae tu ampolla con receta', l: ['vneu', 'vb12', 'vd', 'vc', 'vfe', 'vsue', 'vmg', 'vmed'] },
+  mue: { n: 'Exámenes de laboratorio', c: 'Exámenes de laboratorio', d: 'Más de 650 exámenes con el laboratorio aliado. Sin orden médica: el laboratorio la gestiona', lab: true, l: ['mue', 'ecg', 'holt'] },
   cur: { n: 'Curaciones y heridas', c: 'Curaciones', d: 'Simple, avanzada, escaras, herida operatoria y drenajes', l: ['cur', 'cura', 'esc', 'pun', 'dren'] },
-  mue: { n: 'Exámenes a domicilio', c: 'Exámenes', d: 'Toma de muestras con precios del laboratorio aliado', l: ['mue', 'ecg', 'holt'] },
   am: { n: 'Adulto mayor', c: 'Adulto mayor', d: 'Cuidadoras por turno, acompañamiento, valoración y baño asistido', l: ['valo', 'cuid', 'acomp', 'bano', 'cogn'] },
   pd: { n: 'Postrados y dependencia', c: 'Postrados', d: 'Turnos TENS, sondas, ostomías, oxígeno y prevención de escaras', l: ['tens8', 'pos', 'sonali', 'son', 'ost', 'traq', 'oxi', 'pack'] },
-  post: { n: 'Post-operatorio y alta', c: 'Post-operatorio', d: 'Para volver a casa tranquilos después de la clínica', l: ['alta', 'pun', 'noche'] },
+  post: { n: 'Post-operatorio y alta', c: 'Post-operatorio', d: 'Para volver a casa tranquilos después de la clínica', l: ['alta', 'pun', 'noche'], x: true },
   turn: { n: 'Turnos y acompañamiento', c: 'Turnos', d: 'De día, de noche o 24 horas, en casa o en el hospital', l: ['hdia', 'hnoc', 'h24', 'ncasa', 'cuid'] },
-  pal: { n: 'Cuidados paliativos', c: 'Paliativos', d: 'Confort y compañía, coordinados con el equipo tratante', l: ['pal', 'fin'] },
+  pal: { n: 'Cuidados paliativos', c: 'Paliativos', d: 'Confort y compañía, coordinados con el equipo tratante', l: ['pal', 'fin'], x: true },
   cron: { n: 'Control de crónicos', c: 'Crónicos', d: 'Signos vitales y programa de diabetes', l: ['sig', 'diab'], x: true },
   edu: { n: 'Educación a la familia', c: 'Educación', d: 'Aprende a cuidar en casa', l: ['edu', 'rcp'], x: true },
 };
-const GK = Object.keys(GRP).filter(k => !GRP[k].x);   // grilla de inicio: 8 categorías
+const GK = Object.keys(GRP).filter(k => !GRP[k].x);   // grilla de inicio: 7 categorías + «Ver todas»
 const GX = Object.keys(GRP).filter(k => GRP[k].x);    // solo en «Ver todas»
 const GALL = Object.keys(GRP);
 const IC3 = { am: 'tens4', pal: 'sig' };              // íconos reutilizados
@@ -169,19 +183,19 @@ const SUR = { dom: 0.5, fest: 1.0, noche: 0.25 };
 const FEST = { '31-10': 'Día de las Iglesias Evangélicas', '1-11': 'Todos los Santos', '8-12': 'Inmaculada Concepción' };
 /* iconos 3D de servicios (img/iconos-3d); el resto de la interfaz usa Phosphor */
 const i3k = k => CAT[k] ? (CAT[k].i || IC3[CAT[k].g] || CAT[k].g) : (IC3[k] || k);
-const i3 = (k, c = '') => `<img class="i3d ${c}" src="img/iconos-3d/${i3k(k)}.webp?v=20261026e" alt="" draggable="false">`;
+const i3 = (k, c = '') => `<img class="i3d ${c}" src="img/iconos-3d/${i3k(k)}.webp?v=20261026f" alt="" draggable="false">`;
 const INC = { ins: 'Insumos: jeringa, aguja, tórulas y guantes', pre: 'Control de presión antes y después', res: 'Retiro de residuos clínicos', edu: 'Indicaciones escritas para la familia' };
 /* catálogo del laboratorio aliado: precios fijos, no los pone la profesional */
 const LAB = 'Laboratorio aliado';
-const EXAMS = {
-  hemo: ['Hemograma', 6500, 'Tubo lila', 0], lip: ['Perfil lipídico', 8900, 'Tubo rojo', 1], gli: ['Glicemia', 3900, 'Tubo gris', 1], bioq: ['Perfil bioquímico', 12900, 'Tubo rojo', 1],
-  ori: ['Orina completa', 4500, 'Frasco estéril', 0], uro: ['Urocultivo', 7900, 'Frasco estéril', 0], tsh: ['TSH', 9900, 'Tubo rojo', 0], t4: ['T4 libre', 9500, 'Tubo rojo', 0],
-  hba: ['Hemoglobina glicosilada', 8500, 'Tubo lila', 0], cre: ['Creatinina', 3500, 'Tubo rojo', 0], vitd: ['Vitamina D', 18900, 'Tubo rojo', 0], pcr: ['Proteína C reactiva', 6900, 'Tubo rojo', 0],
-};
+/* catálogo completo (examenes.js, desde el Excel del laboratorio): [nombre, precio, tubo, ayuno, tipo de precio c|p, código, código Fonasa, muestra, plazo, nombre completo] */
+const EXAMS = {};
+EXDB.forEach(r => { EXAMS[r[0]] = [r[1], r[2], r[7] || r[6] || 'Según indicación', r[9], r[3], r[4], r[5], r[6], r[8], r[10] || r[1]]; });
+const QRES = {};   // listas de resultados que se actualizan al escribir (lab.js)
+const EXPOP = ['hemo', 'lip', 'gli', 'bioq', 'ori', 'uro', 'tsh', 't4', 'hba', 'cre', 'vitd', 'pcr'];
 const examKeys = () => Object.keys(EXAMS).filter(k => S.exams[k]);
 const examList = () => examKeys().map(k => EXAMS[k]);
 const examSum = () => examList().reduce((a, e) => a + e[1], 0);
-const byOrder = () => S.mmode === 'orden';
+const byOrder = () => S.mmode === 'orden' && S.ord !== 'ok';
 const fasting = () => !byOrder() && examKeys().some(k => EXAMS[k][3]) || byOrder();
 const tubes = () => [...new Set(examList().map(e => e[2]))];
 const DAYS = [['Lun', 26, 'Hoy', 'hoy lun 26 oct'], ['Mar', 27, 'Mañana', 'mar 27 oct'], ['Mié', 28, '', 'mié 28 oct'], ['Jue', 29, '', 'jue 29 oct'], ['Vie', 30, '', 'vie 30 oct'], ['Sáb', 31, '', 'sáb 31 oct']];
@@ -262,6 +276,7 @@ const PROS = [
     f: 1.05, gs: ['am', 'turn', 'pd', 'post'], p: {}, night: {}, xinc: 'Bitácora del turno para la familia',
     sl: [[], ['09:00', '15:00', '20:00'], ['09:00', '20:00'], ['08:00', '20:00'], ['20:00'], ['09:00', '12:00']] },
 ];
+PROS.forEach(p => { if (p.gs.includes('iny')) p.gs.push('vit'); });
 const comStr = p => p.com.length > 1 ? p.com.slice(0, -1).join(', ') + ' y ' + p.com[p.com.length - 1] : p.com[0];
 /* reseñas de ejemplo (r: estrellas) */
 const REVIEWS = {
@@ -418,7 +433,7 @@ const row = (i, a, b = '', go = '', end = ic('caret-right'), cls = '', act = '',
 const ST_I = { ok: 'check-circle', warn: 'clock', inf: 'clock-countdown', bad: 'x-circle' };
 const st = (k, t, i) => { i = i === '' ? '' : (i || ST_I[k]); return `<span class="st ${k}">${i ? ic(i, 1) : ''}${t}</span>`; };
 const PHOTO = ['CR', 'FA', 'MC', 'PG', 'VM', 'FL', 'DN', 'JS', 'CD', 'IP', 'RS', 'XV', 'MP'];
-const V = '?v=20261026e';
+const V = '?v=20261026f';
 const slug = n => n.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\./g, '').trim().replace(/\s+/g, '-');
 const PACPH = { DF: 'daniela-fuentes', RM: 'rosa-m', LF: 'luis-fuentes' };
 const phSrc = ini => PHOTO.includes(ini) ? `img/pro/${ini.toLowerCase()}.webp${V}` : PACPH[ini] ? `img/pac/${PACPH[ini]}.webp${V}` : '';
@@ -513,7 +528,7 @@ function frameD0(s) {
 }
 function sideA(on) {
   const n = 6 - S.aprob.length - S.rech.length;
-  const it = [['A02', 'identification-card', 'Verificación', 'ver', n], ['A04', 'calendar-check', 'Reservas de hoy', 'hoy'], ['A06', 'users-three', 'Profesionales', 'pro'], ['A05', 'list-checks', 'Catálogo y comisión', 'tar']];
+  const it = [['A02', 'identification-card', 'Verificación', 'ver', n], ['A04', 'calendar-check', 'Reservas de hoy', 'hoy'], ['A06', 'users-three', 'Profesionales', 'pro'], ['A09', 'file-text', 'Órdenes por revisar', 'ord', 3 - S.aordDone.length], ['A05', 'list-checks', 'Catálogo y comisión', 'tar'], ['A08', 'test-tube', 'Catálogo de exámenes', 'lab']];
   return `<div class="side">${logoImg('horizontal-nm', 28)}${it.map(t => `<button class="${t[3] === on ? 'on' : ''}" data-go="${t[0]}">${ic(t[1], t[3] === on)}${t[2]}${t[4] ? `<span class="cnt num">${t[4]}</span>` : ''}</button>`).join('')}<div class="who">Operaciones<br>operaciones@cuidapp.cl</div><button data-go="A01">${ic('sign-out')}Salir</button></div>`;
 }
 
@@ -642,16 +657,16 @@ function linksOf(id) {
   (s.next || []).forEach(x => out.add(x));
   if (s.auto && typeof s.auto === 'string') out.add(s.auto);
   if (s.tab) (roleOf(id) === 'pro' ? tabsR : tabsP).forEach(t => out.add(t[3]));
-  if (s.kind === 'adm' && s.side !== 'none') ['A02', 'A04', 'A06', 'A05', 'A01'].forEach(x => out.add(x));
+  if (s.kind === 'adm' && s.side !== 'none') ['A02', 'A04', 'A06', 'A05', 'A09', 'A08', 'A01'].forEach(x => out.add(x));
   S = JSON.parse(saved);
   out.delete(id);
   return [...out].filter(x => SC[x]);
 }
 window.__links = linksOf;
 const LANES = [
-  ['pac', 'Paciente', [['P01', 'P02', 'P03', 'P04', 'P05'], ['P06', 'P07', 'P08', 'P09'], ['P10', 'P11', 'P36', 'P34'], ['P12', 'P32', 'P33', 'P22'], ['P13', 'P14', 'P15', 'P16'], ['P17', 'P18', 'P19', 'P20'], ['P26', 'P27', 'P30', 'P28', 'P29'], ['P21', 'P23', 'P24', 'P25'], ['P50', 'P51', 'P52', 'P53'], ['P54', 'P55', 'P56', 'P57', 'P58', 'P59'], ['W01', 'W02', 'W03', 'W04']]],
+  ['pac', 'Paciente', [['P01', 'P02', 'P03', 'P04', 'P05'], ['P06', 'P07', 'P08', 'P09'], ['P10', 'P11', 'P36', 'P34'], ['P12', 'P32', 'P33', 'P22'], ['P13', 'P14', 'P15', 'P16'], ['P17', 'P18', 'P19', 'P20'], ['P26', 'P27', 'P30', 'P28', 'P29'], ['P21', 'P23', 'P24', 'P25'], ['P50', 'P51', 'P52', 'P53'], ['P54', 'P55', 'P56', 'P57', 'P58', 'P59'], ['P40', 'P60', 'P61', 'P62', 'P63'], ['P16', 'P64', 'P65'], ['W01', 'W02', 'W03', 'W04']]],
   ['pro', 'Profesional', [['R01', 'R02', 'R03'], ['R04', 'R05', 'R06', 'R07'], ['R08', 'R09', 'R10', 'R26'], ['R11', 'R12', 'R13', 'R14', 'R15'], ['R16', 'R17', 'R18'], ['R19', 'R20', 'R21', 'R22'], ['R23', 'R24', 'R25'], ['R27', 'R28', 'R29'], ['R37', 'R38', 'R31', 'R32'], ['R40', 'R41', 'R33', 'R34'], ['R35', 'R39', 'R36']]],
-  ['adm', 'Admin', [['A01', 'A02', 'A03'], ['A04', 'A05', 'A07'], ['A06']]],
+  ['adm', 'Admin', [['A01', 'A02', 'A03'], ['A04', 'A05', 'A07'], ['A06', 'A08'], ['A09', 'A10']]],
 ];
 function openFlow() {
   const NW = 196, NH = 54, CG = 70, RG = 16, X0 = 40, pos = {};
