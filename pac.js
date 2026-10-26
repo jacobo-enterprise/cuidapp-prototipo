@@ -1,6 +1,6 @@
 /* ===== Paciente · marketplace de servicios de enfermería ===== */
 Object.assign(ACT, {
-  set: a => { const i = a.indexOf('='); const k = a.slice(0, i), v = a.slice(i + 1); S[k] = isNaN(+v) || v === '' ? v : +v; },
+  set: a => { const i = a.indexOf('='); const k = a.slice(0, i), v = a.slice(i + 1); S[k] = k === 'code' || isNaN(+v) || v === '' ? v : +v; }, /* code: siempre texto (se compara con '2749') */
   tog: a => { const [o, k] = a.split('.'); if (k === undefined) S[o] = !S[o]; else S[o][k] = !S[o][k]; },
   svc: a => { S.item = a; S.when = 'prog'; S.sheet = ''; if (a) S.grp = CAT[a].g; fixSlot(); },
   grp: k => { S.grp = k; S.item = GRP[k].l.find(x => !CAT[x].soon); S.when = 'prog'; S.sheet = ''; fixSlot(); },

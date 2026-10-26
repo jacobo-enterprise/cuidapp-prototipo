@@ -4,7 +4,7 @@ Object.assign(ACT, {
   proGo: () => { S.proSt = 'camino'; toast('Listo. Le avisamos a Daniela que vas en camino.'); },
   gmaps: () => { window.open(GMAPS, '_blank', 'noopener'); },
   online: () => { S.online = !S.online; toast(S.online ? 'Listo. Te mostramos a pacientes que piden “lo antes posible” cerca.' : 'Ya no recibes pedidos para hoy. Tu agenda sigue igual.'); },
-  key: d => { if (d === '<') S.code = S.code.slice(0, -1); else if (S.code.length < 4) S.code += d; },
+  key: d => { S.code = String(S.code); if (d === '<') S.code = S.code.slice(0, -1); else if (S.code.length < 4) S.code += d; },
   chk: k => { S.chk[k] = !S.chk[k]; },
   earn: () => { if (!S.paid) { S.earn += net(S.my.iny.p); S.done += 1; S.paid = true; } toast(`Ganaste ${clp(net(S.my.iny.p))}. Se deposita el martes.`); },
   prate: n => { S.pRating = +n; },
@@ -188,10 +188,10 @@ def({ id: 'R18', name: 'Detalle de la visita', kind: 'page', back: true, title: 
 
 def({ id: 'R20', name: 'Código y checklist', kind: 'page', back: true, title: 'Inicia la atención',
   body: () => `<div class="h-m">Pide el código a la paciente</div><div class="code mt16">${[0, 1, 2, 3].map(i => `<span class="${i === S.code.length ? 'f' : ''}">${S.code[i] || ''}</span>`).join('')}</div>
-  ${S.code.length === 4 ? `<div class="mt8">${S.code === '2749' ? st('ok', 'Código correcto', 'check-circle') : st('bad', 'No coincide. Pídelo otra vez.', 'x-circle')}</div>` : ''}
-  ${S.code === '2749' ? `<div class="sec-t">Antes de inyectar</div>${checkRow('Mostré mi credencial de Cuidapp', S.chk.id, 'chk', 'id')}${checkRow('Revisé la receta y el medicamento', S.chk.rec, 'chk', 'rec')}${checkRow('Pregunté por alergias (penicilina)', S.chk.ale, 'chk', 'ale')}`
+  ${String(S.code).length === 4 ? `<div class="mt8">${String(S.code) === '2749' ? st('ok', 'Código correcto', 'check-circle') : st('bad', 'No coincide. Pídelo otra vez.', 'x-circle')}</div>` : ''}
+  ${String(S.code) === '2749' ? `<div class="sec-t">Antes de inyectar</div>${checkRow('Mostré mi credencial de Cuidapp', S.chk.id, 'chk', 'id')}${checkRow('Revisé la receta y el medicamento', S.chk.rec, 'chk', 'rec')}${checkRow('Pregunté por alergias (penicilina)', S.chk.ale, 'chk', 'ale')}`
     : `<div class="keys mt16">${[1, 2, 3, 4, 5, 6, 7, 8, 9, '', 0, '<'].map(k => k === '' ? '<span></span>' : `<button data-act="key" data-arg="${k}">${k === '<' ? ic('backspace') : k}</button>`).join('')}</div><button class="link sm mt12" data-act="set" data-arg="code=2749">Rellenar 2749</button>`}`,
-  foot: () => abtn('Iniciar atención', '', '', '', 'R21', !(S.code === '2749' && S.chk.id && S.chk.rec && S.chk.ale)), auto: 'R21', autoAct: () => { S.code = '2749'; S.chk = { id: true, rec: true, ale: true }; } });
+  foot: () => abtn('Iniciar atención', '', '', '', 'R21', !(String(S.code) === '2749' && S.chk.id && S.chk.rec && S.chk.ale)), auto: 'R21', autoAct: () => { S.code = '2749'; S.chk = { id: true, rec: true, ale: true }; } });
 
 def({ id: 'R21', name: 'Cerrar atención', kind: 'page', title: 'Atención en curso',
   body: () => `<div class="t2">Comenzó 08:02 · Rosa Muñoz</div><div class="h-l mt8 num">00:12:40</div>
@@ -232,13 +232,13 @@ def({ id: 'R25', name: 'Perfil profesional', kind: 'page', tab: 'perfil',
   <div class="mt16">${row('storefront', 'Ver mi perfil público', 'Como lo ven las pacientes', 'R29', ic('caret-right'), '', 'pick', 'cr|')}${row('star', 'Mis reseñas', `★ 4,9 · ${REVIEWS.cr.filter(r => !S.resp[r.id]).length} sin responder`, 'R27')}${row('user-circle', 'Foto y presentación', '', 'R26')}${row('megaphone', 'Destacar mi perfil', S.dest.cr ? 'Activo · apareces primero' : `Aparece primero · ${clp(S.pz.pdest)} al mes`, 'R44', S.dest.cr ? st('ok', 'Destacado') : ic('caret-right'))}${row('currency-circle-dollar', 'Servicios y precios', `${mySvcs().filter(k => S.my[k].on).length} servicios`, 'R11')}${row('map-pin-area', 'Comunas', comTxt().join(', '), 'R13')}${row('calendar-blank', 'Horario semanal', 'Lun a sáb', 'R14')}
   ${row('identification-card', 'Documentos', 'Todos vigentes', 'R03', st('ok', 'Verificada', 'seal-check'))}${row('bank', 'Cuenta para pagos', 'BancoEstado CuentaRUT', 'R07')}${row('first-aid-kit', 'Pedir una atención para mí', 'Ir a la app de pacientes', 'P06')}${row('sign-out', 'Cerrar sesión', '', 'R01', '')}</div>` });
 
-/* ===== Destacado (pagado por la profesional; precio PROPUESTO en S.pz.pdest) ===== */
+/* ===== Destacado (pagado por la profesional; precio en S.pz.pdest) ===== */
 def({ id: 'R44', name: 'Destacar mi perfil', kind: 'page', back: true, title: 'Destacar mi perfil', next: ['R25'],
   body: () => { const p = PRO('cr');
     return `<div class="sm t2">Apareces primero en los resultados de tus comunas, con la etiqueta «Destacado». Tu precio y tus reseñas no cambian.</div>
     <div class="lbl2">Así te ven las pacientes</div><div class="dprev">${pav(p, '', true)}<div class="tx"><b>${p.n} <span class="dtag">Destacado</span></b><span class="xs t2">${p.t} · ${p.yrs} años de experiencia</span><span class="xs">${rate(p)}</span></div></div>
     <div class="lbl2">Qué incluye</div>${row('box:sort-ascending', 'Primero en la búsqueda', 'En Ñuñoa, Providencia, La Reina y Santiago', '', '')}${row('box:seal-check', 'Etiqueta «Destacado»', 'En tu tarjeta y en tu perfil público', '', '')}${row('box:calendar-x', 'Sin permanencia', 'Lo desactivas cuando quieras', '', '')}
-    <div class="msc mt16 dpz"><div class="tx"><b>Destacado</b><span class="xs t2">Mensual · se cobra con Mercado Pago</span></div><div class="pkp"><b class="num">${clp(S.pz.pdest)}</b><span class="xs t2">al mes</span><span class="ptag p mt4">Precio propuesto</span></div></div>
+    <div class="msc mt16 dpz"><div class="tx"><b>Destacado</b><span class="xs t2">Mensual · se cobra con Mercado Pago</span></div><div class="pkp"><b class="num">${clp(S.pz.pdest)}</b><span class="xs t2">al mes</span></div></div>
     <div class="mt12">${note('info', 'Destacar no reemplaza la verificación: solo aparecen profesionales con documentos al día.')}</div>`; },
   foot: () => S.dest.cr ? abtn('Desactivar Destacado', 'pDest', '', 'sec', 'R25') : abtn(`Activar por ${clp(S.pz.pdest)} al mes`, 'pDest', '', '', 'R25') });
 
