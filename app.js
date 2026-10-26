@@ -214,7 +214,7 @@ const SUR = { get dom() { return rcPct(PRO(), 'dom') / 100; }, get fest() { retu
 const FEST = { '31-10': 'Día de las Iglesias Evangélicas', '1-11': 'Todos los Santos', '8-12': 'Inmaculada Concepción' };
 /* iconos 3D de servicios (img/iconos-3d); el resto de la interfaz usa Phosphor */
 const i3k = k => CAT[k] ? (CAT[k].i || IC3[CAT[k].g] || CAT[k].g) : (IC3[k] || k);
-const i3 = (k, c = '') => `<img class="i3d ${c}" src="img/iconos-3d/${i3k(k)}.webp?v=20261026k" alt="" draggable="false">`;
+const i3 = (k, c = '') => `<img class="i3d ${c}" src="img/iconos-3d/${i3k(k)}.webp?v=20261026l" alt="" draggable="false">`;
 const INC = { ins: 'Insumos: jeringa, aguja, tórulas y guantes', pre: 'Control de presión antes y después', res: 'Retiro de residuos clínicos', edu: 'Indicaciones escritas para la familia' };
 /* catálogo del laboratorio: precios fijos, no los pone la profesional */
 const LAB = 'Laboratorio';
@@ -466,7 +466,7 @@ const row = (i, a, b = '', go = '', end = ic('caret-right'), cls = '', act = '',
 const ST_I = { ok: 'check-circle', warn: 'clock', inf: 'clock-countdown', bad: 'x-circle' };
 const st = (k, t, i) => { i = i === '' ? '' : (i || ST_I[k]); return `<span class="st ${k}">${i ? ic(i, 1) : ''}${t}</span>`; };
 const PHOTO = ['CR', 'FA', 'MC', 'PG', 'VM', 'FL', 'DN', 'JS', 'CD', 'IP', 'RS', 'XV', 'MP'];
-const V = '?v=20261026k';
+const V = '?v=20261026l';
 const slug = n => n.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\./g, '').trim().replace(/\s+/g, '-');
 const PACPH = { DF: 'daniela-fuentes', RM: 'rosa-m', LF: 'luis-fuentes', MIb: 'isabel-montt', RVa: 'rodrigo-vial', CHe: 'valeria-cortes', FAr: 'francisco-lagos', JCa: 'soledad-rios' };
 const phSrc = ini => PHOTO.includes(ini) ? `img/pro/${ini.toLowerCase()}.webp${V}` : PACPH[ini] ? `img/pac/${PACPH[ini]}.webp${V}` : '';

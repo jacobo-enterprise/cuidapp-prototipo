@@ -147,15 +147,16 @@ def({ id: 'R15', name: 'Bloquear días', kind: 'page', back: true, title: 'Bloqu
   <div class="mt16">${note('info', 'Las reservas ya confirmadas en esos días no se cancelan solas. Si necesitas cancelar una, avísale a la paciente por el chat.')}</div>`,
   foot: () => btn('Listo', 'back') });
 
+const avlPill = () => `<button class="avl mt16 ${S.online ? 'on' : ''}" data-act="online" role="switch" aria-checked="${S.online}" aria-label="Disponible hoy"><span class="avl-d"></span><span class="avl-t"><b>${S.online ? 'Disponible' : 'No disponible'}</b><span>${S.online ? 'Apareces en «Disponible hoy»' : 'Actívalo para recibir pedidos de hoy'}</span></span><span class="tog ${S.online ? 'on' : ''}" aria-hidden="true"></span></button>`;
 const reqRow = (r, i, a, b, p, go = 'R17') => S.req[r] === 'new' ? row('box:' + i, a, b, go, money(p)) : '';
 def({ id: 'R16', name: 'Inicio profesional', kind: 'page', tab: 'inicio', next: ['R17'],
   body: () => { const pend = Object.values(S.req).filter(v => v === 'new').length; return `<div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px"><div><div class="h-l">Hola, Camila</div><div class="sm t2 mt4">★ 4,9 · ${S.done} atenciones esta semana</div></div><button class="weekchip2" data-go="R23"><span class="num">${clp(S.earn)}</span><span class="xs t2">esta semana</span></button></div>
+  ${avlPill()}
   <div class="sec-t">Solicitudes por responder ${pend ? `<span class="cnt num">${pend}</span>` : ''}</div>
   ${pend ? `${reqRow('r1', 'syringe', 'Mar 27 · 08:00 · Inyección', 'Ñuñoa · Rosa M., 78 años · responde en 1 h 42 min', S.my.iny.p)}${reqRow('r2', 'test-tube', 'Mié 28 · 08:00 · Toma de muestras', 'Providencia · Andrea P. · 4 exámenes · responde en 1 h 10 min', S.my.mue.p, 'R30')}` : `<div class="t2 sm mt8">No tienes solicitudes pendientes.</div>`}
   <div class="sec-t">Hoy</div>
   ${row('box:bandaids', '19:00 · Curación simple', 'Providencia · Jorge T. · confirmada', 'R18', money(S.my.cur.p))}
   ${row('box:heartbeat', '20:30 · Signos vitales', 'Ñuñoa · Carmen V. · confirmada', 'R18', money(S.my.sig.p))}
-  <div class="asap2 mt16"><span class="tx"><b>Aparecer en «Disponible hoy»</b><span class="sm t2">Opcional. Sales primero cuando una paciente filtra por atención hoy.</span></span><button class="tog ${S.online ? 'on' : ''}" data-act="online"></button></div>
   <div class="mt12">${row('box:storefront', 'Mi perfil público', '4 servicios · desde ' + clp(Math.min(...mySvcs().filter(k => S.my[k].on).map(k => S.my[k].p))) + ' · 4 comunas', 'R10')}</div>`; } });
 
 def({ id: 'R17', name: 'Solicitud de reserva', kind: 'page', back: true, title: 'Nueva solicitud', auto: 'R18', autoAct: () => { S.req.r1 = 'ok'; },
