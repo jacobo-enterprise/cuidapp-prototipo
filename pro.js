@@ -23,7 +23,8 @@ Object.assign(ACT, {
 const docsOk = () => Object.values(S.docs).every(Boolean);
 const docRow = (k, i, a, b, go, act) => row('box:' + i, a, S.docs[k] ? b : 'Pendiente', go, S.docs[k] ? st('ok', 'Listo', 'check-circle') : ic('caret-right'), '', act || '', act ? k : '');
 const money = n => `<span class="num" style="color:var(--text);font-weight:600">${clp(n)}</span>`;
-const mySvcs = () => Object.keys(S.my).filter(k => CAT[k].who.includes(S.prof));
+const mySvcs = () => Object.keys(CAT).filter(k => S.my[k] && CAT[k].who.includes(S.prof));
+const TUBE = { 'Tubo lila': '#A78BFA', 'Tubo rojo': '#E5484D', 'Tubo gris': '#9AA4B2', 'Frasco estéril': '#F5C542' };
 const COMUNAS = [['Oriente', [['prov', 'Providencia'], ['nun', 'Ñuñoa'], ['lr', 'La Reina'], ['lc', 'Las Condes'], ['vit', 'Vitacura'], ['pen', 'Peñalolén']]], ['Centro y sur', [['stgo', 'Santiago'], ['mac', 'Macul'], ['sjo', 'San Joaquín'], ['flo', 'La Florida']]]];
 const comTxt = () => COMUNAS.flatMap(g => g[1]).filter(c => S.com[c[0]]).map(c => c[1]);
 const WEEK = [['lun', 'Lunes', '08:00 a 12:00 · 18:00 a 22:00'], ['mar', 'Martes', '08:00 a 12:00 · 18:00 a 22:00'], ['mie', 'Miércoles', '08:00 a 12:00 · 18:00 a 22:00'], ['jue', 'Jueves', '09:00 a 13:00 · 19:00 a 22:00'], ['vie', 'Viernes', '08:00 a 12:00 · 17:00 a 20:00'], ['sab', 'Sábado', '10:00 a 14:00'], ['dom', 'Domingo', '10:00 a 13:00']];
@@ -106,19 +107,20 @@ def({ id: 'R26', name: 'Foto y presentación', kind: 'page', back: true, title: 
 
 def({ id: 'R11', name: 'Servicios y precios', kind: 'page', back: true, title: 'Servicios y precios',
   body: () => `<div class="t2 sm">Cuidapp define los servicios. Tú eliges cuáles haces, cuánto cobras y qué incluyes.</div><div class="mt8">
-  ${mySvcs().map(k => { const m = S.my[k]; return `<div class="svcrow"><span class="si">${i3(k)}</span><button class="tog ${m.on ? 'on' : ''}" data-act="svcOn" data-arg="${k}"></button>
-  <button class="tx" data-act="edit" data-arg="${k}" data-go="R12"><div class="a">${CAT[k].n}</div><div class="b">${m.on ? `${m.dur} min · mínimo ${clp(S.mins[k])}${m.nOn ? ` · noche ${clp(m.night)}` : ''}` : 'No lo ofreces'}</div></button>
-  <button class="end" data-act="edit" data-arg="${k}" data-go="R12">${m.on ? money(m.p) : ''}${ic('caret-right')}</button></div>`; }).join('')}</div>
+  ${GK.filter(g => GRP[g].l.some(k => mySvcs().includes(k))).map(g => `<div class="lbl2">${GRP[g].n}</div>${GRP[g].l.filter(k => mySvcs().includes(k)).map(k => { const m = S.my[k]; return `<div class="svcrow"><span class="si">${i3(k)}</span><button class="tog ${m.on ? 'on' : ''}" data-act="svcOn" data-arg="${k}"></button>
+  <button class="tx" data-act="edit" data-arg="${k}" data-go="R12"><div class="a">${CAT[k].n}</div><div class="b">${!m.on ? 'No lo ofreces' : k === 'mue' ? 'Tu tarifa de toma · exámenes los cobra el laboratorio' : `${m.dur} min · mínimo ${clp(S.mins[k])}${m.nOn ? ` · noche ${clp(m.night)}` : ''}`}</div></button>
+  <button class="end" data-act="edit" data-arg="${k}" data-go="R12">${m.on ? money(m.p) : ''}${ic('caret-right')}</button></div>`; }).join('')}`).join('')}</div>
   <div class="mt16">${note('info', `Cuidapp cobra ${S.comm}% de cada atención. El resto es tuyo y se deposita los martes.`)}</div>`,
   foot: () => abtn('Guardar', 'done', 'serv', '', 'back') });
 
 def({ id: 'R12', name: 'Editar servicio y precio', kind: 'page', back: true, title: '',
   body: () => { const k = S.edit, m = S.my[k], min = S.mins[k]; return `<div class="i3hero">${i3(k)}</div><div class="h-l">${CAT[k].n}</div><div class="t2 sm mt4">${CAT[k].d}</div>
-  ${lbl('Tu precio')}<div class="pricein"><button class="ib sbtn" data-act="pr" data-arg="-">${ic('minus')}</button><div class="v num">${clp(m.p)}</div><button class="ib sbtn" data-act="pr" data-arg="+">${ic('plus')}</button></div>
+  ${k === 'mue' ? `<div class="mt16">${note('info', 'Los exámenes tienen precio fijo del laboratorio aliado y se cobran aparte. Tú solo defines lo que cobras por ir a tomar la muestra.')}</div>` : ''}
+  ${lbl(k === 'mue' ? 'Tu tarifa de toma a domicilio' : 'Tu precio')}<div class="pricein"><button class="ib sbtn" data-act="pr" data-arg="-">${ic('minus')}</button><div class="v num">${clp(m.p)}</div><button class="ib sbtn" data-act="pr" data-arg="+">${ic('plus')}</button></div>
   <div class="pmeta"><span>Mínimo Cuidapp <b class="num">${clp(min)}</b></span><span>Promedio en Ñuñoa <b class="num">$19.500</b></span></div>
   <div class="mt8">${kv(`Tú recibes (Cuidapp cobra ${S.comm}%)`, `<b style="color:var(--text)">${clp(net(m.p))}</b>`)}</div>
   ${lbl('Duración de la atención')}<div class="chips">${[20, 30, 45, 60].map(v => chip(v + ' min', m.dur === v, 'dur', v)).join('')}</div>
-  ${lbl('Qué incluye')}${Object.keys(INC).map(x => checkRow(INC[x], m.inc[x], 'inc', x)).join('')}
+  ${lbl('Qué incluye')}${Object.keys(INC).map(x => checkRow(k === 'mue' && x === 'ins' ? 'Tubos, aguja, ligadura y traslado de la muestra al laboratorio' : INC[x], m.inc[x], 'inc', x)).join('')}
   ${field('', '', 'Agrega algo más (opcional)')}
   <button class="row" data-act="nOn"><span class="tx"><div class="a">Precio distinto de noche y feriados</div><div class="b">Desde las 21:00, domingos y feriados</div></span><span class="tog ${m.nOn ? 'on' : ''}"></span></button>
   ${m.nOn ? `<div class="pricein sm2"><button class="ib sbtn" data-act="npr" data-arg="-">${ic('minus')}</button><div class="v num">${clp(m.night)}</div><button class="ib sbtn" data-act="npr" data-arg="+">${ic('plus')}</button></div>` : ''}`; },
@@ -146,11 +148,11 @@ def({ id: 'R15', name: 'Bloquear días', kind: 'page', back: true, title: 'Bloqu
   <div class="mt16">${note('info', 'Las reservas ya confirmadas en esos días no se cancelan solas. Si necesitas cancelar una, avísale a la paciente por el chat.')}</div>`,
   foot: () => btn('Listo', 'back') });
 
-const reqRow = (r, i, a, b, p) => S.req[r] === 'new' ? row('box:' + i, a, b, 'R17', money(p)) : '';
+const reqRow = (r, i, a, b, p, go = 'R17') => S.req[r] === 'new' ? row('box:' + i, a, b, go, money(p)) : '';
 def({ id: 'R16', name: 'Inicio profesional', kind: 'page', tab: 'inicio', next: ['R17'],
   body: () => { const pend = Object.values(S.req).filter(v => v === 'new').length; return `<div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px"><div><div class="h-l">Hola, Camila</div><div class="sm t2 mt4">★ 4,9 · ${S.done} atenciones esta semana</div></div><button class="weekchip2" data-go="R23"><span class="num">${clp(S.earn)}</span><span class="xs t2">esta semana</span></button></div>
   <div class="sec-t">Solicitudes por responder ${pend ? `<span class="cnt num">${pend}</span>` : ''}</div>
-  ${pend ? `${reqRow('r1', 'syringe', 'Mar 27 · 08:00 · Inyección', 'Ñuñoa · Rosa M., 78 años · responde en 1 h 42 min', S.my.iny.p)}${reqRow('r2', 'test-tube', 'Mié 28 · 08:00 · Toma de muestras', 'Providencia · Andrea P. · responde en 1 h 10 min', S.my.mue.p)}` : `<div class="t2 sm mt8">No tienes solicitudes pendientes.</div>`}
+  ${pend ? `${reqRow('r1', 'syringe', 'Mar 27 · 08:00 · Inyección', 'Ñuñoa · Rosa M., 78 años · responde en 1 h 42 min', S.my.iny.p)}${reqRow('r2', 'test-tube', 'Mié 28 · 08:00 · Toma de muestras', 'Providencia · Andrea P. · 4 exámenes · responde en 1 h 10 min', S.my.mue.p, 'R30')}` : `<div class="t2 sm mt8">No tienes solicitudes pendientes.</div>`}
   <div class="sec-t">Hoy</div>
   ${row('box:bandaids', '19:00 · Curación simple', 'Providencia · Jorge T. · confirmada', 'R18', money(S.my.cur.p))}
   ${row('box:heartbeat', '20:30 · Signos vitales', 'Ñuñoa · Carmen V. · confirmada', 'R18', money(S.my.sig.p))}
@@ -243,3 +245,17 @@ ACT.pubResp = () => { const r = REVIEWS.cr.find(x => x.id === S.replyTo); S.resp
 def({ id: 'R29', name: 'Vista previa del perfil público', kind: 'page', back: true, title: 'Vista previa',
   body: () => `<div class="pvb">${ic('eye')}<span>Así te ven las pacientes cuando buscan un servicio.</span></div>${profileBody(PRO('cr'), 'pre')}`,
   foot: () => `<div class="row8"><button class="btn sec" data-go="R26">Editar presentación</button><button class="btn sec" data-go="R11">Editar precios</button></div>` });
+
+/* ---------- solicitud de toma de muestras: exámenes y tubos ---------- */
+const R30EX = ['hemo', 'bioq', 'tsh', 'ori'];
+def({ id: 'R30', name: 'Solicitud de toma de muestras', kind: 'page', back: true, title: 'Nueva solicitud',
+  body: () => { const ex = R30EX.map(k => EXAMS[k]); const tb = [...new Set(ex.map(e => e[2]))];
+    return `<div class="sm t2">Agendada para</div><div class="h-l">Miércoles 28 oct · 08:00</div><div class="t2 sm mt4">Responde antes de 1 h 10 min o se libera la solicitud.</div>
+  <div class="pbox mt16"><div><div class="sm t2">Tu tarifa de toma</div><div class="price num">${clp(S.my.mue.p)}</div></div><div style="text-align:right"><div class="sm t2">Recibes</div><div class="h-m num">${clp(net(S.my.mue.p))}</div></div></div>
+  <div class="xs t2 mt8">Los exámenes los cobra el ${LAB.toLowerCase()} a la paciente. No pasan por tu pago.</div>
+  <div class="lbl2">Exámenes · ${LAB}</div>${ex.map(e => `<div class="kv"><span class="k">${e[0]}</span><span class="t2 sm">${e[2]}</span></div>`).join('')}
+  <div class="lbl2">Lleva</div><div class="tubes">${tb.map(t => `<span class="tube"><span class="dot" style="background:${TUBE[t]}"></span>${t} × ${ex.filter(e => e[2] === t).length}</span>`).join('')}</div>
+  <div class="mt16">${row('box:clock-countdown', 'Paciente en ayuno de 8 horas', 'Perfil bioquímico', '', '')}
+  ${row('box:map-pin', 'Providencia · 2,4 km de tu casa', 'La dirección exacta aparece al aceptar', '', '')}
+  ${row('box:flask', 'Entrega en Laboratorio aliado · Providencia', 'Antes de las 12:00, en la caja refrigerada', '', '')}</div>`; },
+  foot: () => `${abtn('Aceptar solicitud', 'req', 'r2:ok', '', 'R16')}<button class="btn danger" data-act="req" data-arg="r2:no" data-go="R16">Rechazar</button>` });

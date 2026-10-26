@@ -13,7 +13,7 @@ const S0 = () => ({
   item: 'iny', addr: 'mama', who: 'mama', when: 'prog', pro: 'cr', day: 1, slot: '08:00', sort: 'rel', ptab: 'serv', det: 'next',
   f: { enf: true, tens: true }, fmax: 0, fday: 'all', frat: 0, fgen: '', fcom: '',
   fav: { cr: true, pg: true }, q: '', typed: false, sheet: '', ctab: 'next', revF: 'all', revSort: 'rec', resp: { cr4: 'Gracias, Francisco. Ese día me pilló un taco en Grecia, por eso te avisé. ¡Nos vemos en el próximo control!' }, replyTo: 'cr1', rtxt: false, rcrit: {}, pday: 1, svcFrom: '',
-  hasMed: true, receta: false, orden: '', exams: { hemo: true, lip: true, gli: false }, tensNeeds: { hig: true, mov: true, sig: true, com: false },
+  hasMed: true, receta: false, orden: '', mmode: 'cat', exq: '', exams: { hemo: true, lip: true, gli: true }, tensNeeds: { hig: true, mov: true, sig: true, com: false },
   pay: 'visa', prev: 'fonasa', consent: false, rating: 0, tags: {}, tip: 0, chat: [], phase: 'llego', cancelFrom: 'P27', booked: false, hecho: false, cr: 0,
   docs: { carnet: false, selfie: false, titulo: false, antec: false, banco: false }, prof: 'enf',
   online: false, code: '', chk: { id: false, rec: false, ale: false }, earn: 186405, done: 9, pRating: 0, pTags: {}, paid: false,
@@ -24,13 +24,18 @@ const S0 = () => ({
     mue: { on: true, p: 15000, night: 0, nOn: false, dur: 20, inc: { ins: true, pre: false, res: true, edu: false } },
     sig: { on: true, p: 12000, night: 0, nOn: false, dur: 30, inc: { ins: false, pre: true, res: false, edu: true } },
     son: { on: false, p: 28000, night: 0, nOn: false, dur: 45, inc: { ins: true, pre: false, res: true, edu: true } },
+    inysc: { on: true, p: 16000, night: 0, nOn: false, dur: 20, inc: { ins: true, pre: false, res: true, edu: true } },
+    inyev: { on: false, p: 26000, night: 0, nOn: false, dur: 45, inc: { ins: true, pre: true, res: true, edu: false } },
+    pie: { on: false, p: 32000, night: 0, nOn: false, dur: 60, inc: { ins: true, pre: false, res: true, edu: true } },
+    pun: { on: true, p: 18000, night: 0, nOn: false, dur: 30, inc: { ins: true, pre: false, res: true, edu: true } },
+    suero: { on: false, p: 30000, night: 0, nOn: false, dur: 60, inc: { ins: true, pre: true, res: true, edu: false } },
   },
   edit: 'iny', setup: { pres: true, serv: false, com: false, hor: false },
   com: { prov: true, nun: true, lr: true, lc: false, vit: false, pen: false, stgo: true, mac: false, flo: false, sjo: false },
   week: { lun: true, mar: true, mie: true, jue: true, vie: true, sab: true, dom: false }, gap: 30, antic: 2,
   blocked: { 30: true }, req: { r1: 'new', r2: 'new' }, aday: 1, spec: { am: true, pd: true, ped: false, pal: false },
   sis: 0, aprob: [], rech: [], admTab: 'rev', cand: 0, aedit: 'iny', comm: 15,
-  mins: { iny: 12000, cur: 15000, cura: 25000, mue: 12000, sig: 10000, son: 25000, tens4: 24000 }, aRec: true,
+  mins: { iny: 12000, inysc: 10000, inyev: 18000, cur: 15000, cura: 25000, pie: 25000, pun: 12000, mue: 10000, sig: 10000, son: 25000, suero: 22000, tens4: 24000, tens8: 40000 }, aRec: true,
 });
 let S = S0();
 let view = localStorage.getItem('cv') || 'm';
@@ -65,19 +70,47 @@ const P = () => PLACE[S.addr];
 
 /* ---------- catálogo de Cuidapp (lo define Cuidapp; el precio lo pone cada profesional) ---------- */
 const CAT = {
-  iny: { n: 'Inyección intramuscular', s: 'Inyecciones', d: 'Neurobionta y otras, con receta', ic: 'syringe', who: ['enf', 'tens'], dur: 30, receta: true },
-  cur: { n: 'Curación simple', s: 'Curaciones', d: 'Heridas, puntos y quemaduras leves', ic: 'bandaids', who: ['enf'], dur: 45 },
-  cura: { n: 'Curación avanzada', s: 'Curación avanzada', d: 'Pie diabético, escaras y úlceras', ic: 'first-aid', who: ['enf'], dur: 60 },
-  mue: { n: 'Toma de muestras', s: 'Toma de muestras', d: 'Con nuestro laboratorio aliado', ic: 'test-tube', who: ['enf', 'tens'], dur: 20, lab: true },
-  sig: { n: 'Control de signos vitales', s: 'Signos vitales', d: 'Presión, glicemia y saturación', ic: 'heartbeat', who: ['enf', 'tens'], dur: 30 },
-  son: { n: 'Instalación o cambio de sonda', s: 'Sondas', d: 'Sonda Foley o nasogástrica', ic: 'first-aid-kit', who: ['enf'], dur: 45 },
-  tens4: { n: 'Cuidados TENS · 4 horas', s: 'Cuidados TENS', d: 'Higiene, movilización y compañía', ic: 'hand-heart', who: ['tens'], dur: 240 },
+  iny: { n: 'Inyección intramuscular', s: 'Intramuscular', g: 'iny', d: 'Neurobionta, vitamina B12 y otras, con receta', ic: 'syringe', who: ['enf', 'tens'], dur: 30, receta: true },
+  inysc: { n: 'Inyección subcutánea', s: 'Subcutánea', g: 'iny', d: 'Insulina, heparina y vacunas indicadas, con receta', ic: 'syringe', who: ['enf', 'tens'], dur: 20, receta: true },
+  inyev: { n: 'Inyección endovenosa', s: 'Endovenosa', g: 'iny', d: 'Medicamento por la vena, con receta', ic: 'syringe', who: ['enf'], dur: 45, receta: true },
+  cur: { n: 'Curación simple', s: 'Simple', g: 'cur', d: 'Heridas, puntos y quemaduras leves', ic: 'bandaids', who: ['enf'], dur: 45 },
+  cura: { n: 'Curación avanzada', s: 'Avanzada', g: 'cur', i: 'cura', d: 'Escaras, úlceras y heridas que no cierran', ic: 'first-aid', who: ['enf'], dur: 60 },
+  pie: { n: 'Curación de pie diabético', s: 'Pie diabético', g: 'cur', i: 'cura', d: 'Con evaluación y fotos de control', ic: 'first-aid', who: ['enf'], dur: 60 },
+  pun: { n: 'Retiro de puntos', s: 'Retiro de puntos', g: 'cur', d: 'Puntos o corchetes después de una cirugía', ic: 'bandaids', who: ['enf'], dur: 30 },
+  mue: { n: 'Toma de muestras a domicilio', s: 'Toma de muestras', g: 'mue', d: 'Exámenes con precio del laboratorio aliado', ic: 'test-tube', who: ['enf', 'tens'], dur: 20, lab: true },
+  sig: { n: 'Control de signos vitales', s: 'Signos vitales', g: 'sig', d: 'Presión, glicemia, temperatura y saturación', ic: 'heartbeat', who: ['enf', 'tens'], dur: 30 },
+  son: { n: 'Instalación o cambio de sonda', s: 'Sondas', g: 'son', d: 'Sonda Foley o nasogástrica', ic: 'first-aid-kit', who: ['enf'], dur: 45 },
+  suero: { n: 'Instalación de suero', s: 'Suero', g: 'son', d: 'Hidratación o medicamento por goteo, con receta', ic: 'drop', who: ['enf'], dur: 60, receta: true },
+  tens4: { n: 'Cuidados TENS · 4 horas', s: '4 horas', g: 'tens4', d: 'Higiene, movilización, remedios y compañía', ic: 'hand-heart', who: ['tens'], dur: 240 },
+  tens8: { n: 'Cuidados TENS · 8 horas', s: '8 horas', g: 'tens4', d: 'Turno de día o de noche', ic: 'hand-heart', who: ['tens'], dur: 480 },
 };
+/* categorías (lo que ve la paciente primero); cada una agrupa servicios concretos */
+const GRP = {
+  iny: { n: 'Inyecciones', c: 'Inyecciones', d: 'Intramuscular, subcutánea y endovenosa', l: ['iny', 'inysc', 'inyev'] },
+  cur: { n: 'Curaciones y heridas', c: 'Curaciones y heridas', d: 'Simple, avanzada, pie diabético y retiro de puntos', l: ['cur', 'cura', 'pie', 'pun'] },
+  mue: { n: 'Exámenes y toma de muestras', c: 'Exámenes', d: 'Precios del laboratorio aliado + toma a domicilio', l: ['mue'] },
+  sig: { n: 'Signos vitales', c: 'Signos vitales', d: 'Presión, glicemia, temperatura y saturación', l: ['sig'] },
+  son: { n: 'Sondas y sueros', c: 'Sondas y sueros', d: 'Sonda Foley, nasogástrica y suero', l: ['son', 'suero'] },
+  tens4: { n: 'Cuidados TENS (por horas)', c: 'Cuidados TENS', d: 'Turnos de 4 u 8 horas', l: ['tens4', 'tens8'] },
+};
+const GK = Object.keys(GRP);
 /* iconos 3D de servicios (img/iconos-3d); el resto de la interfaz usa Phosphor */
-const i3 = (k, c = '') => `<img class="i3d ${c}" src="img/iconos-3d/${k}.webp" alt="" draggable="false">`;
+const i3k = k => CAT[k] ? (CAT[k].i || CAT[k].g) : k;
+const i3 = (k, c = '') => `<img class="i3d ${c}" src="img/iconos-3d/${i3k(k)}.webp" alt="" draggable="false">`;
 const INC = { ins: 'Insumos: jeringa, aguja, tórulas y guantes', pre: 'Control de presión antes y después', res: 'Retiro de residuos clínicos', edu: 'Indicaciones escritas para la familia' };
-const EXAMS = { hemo: ['Hemograma', 6500], lip: ['Perfil lipídico', 8900], gli: ['Glicemia', 3900] };
-const examList = () => Object.keys(EXAMS).filter(k => S.exams[k]).map(k => EXAMS[k]);
+/* catálogo del laboratorio aliado: precios fijos, no los pone la profesional */
+const LAB = 'Laboratorio aliado';
+const EXAMS = {
+  hemo: ['Hemograma', 6500, 'Tubo lila', 0], lip: ['Perfil lipídico', 8900, 'Tubo rojo', 1], gli: ['Glicemia', 3900, 'Tubo gris', 1], bioq: ['Perfil bioquímico', 12900, 'Tubo rojo', 1],
+  ori: ['Orina completa', 4500, 'Frasco estéril', 0], uro: ['Urocultivo', 7900, 'Frasco estéril', 0], tsh: ['TSH', 9900, 'Tubo rojo', 0], t4: ['T4 libre', 9500, 'Tubo rojo', 0],
+  hba: ['Hemoglobina glicosilada', 8500, 'Tubo lila', 0], cre: ['Creatinina', 3500, 'Tubo rojo', 0], vitd: ['Vitamina D', 18900, 'Tubo rojo', 0], pcr: ['Proteína C reactiva', 6900, 'Tubo rojo', 0],
+};
+const examKeys = () => Object.keys(EXAMS).filter(k => S.exams[k]);
+const examList = () => examKeys().map(k => EXAMS[k]);
+const examSum = () => examList().reduce((a, e) => a + e[1], 0);
+const byOrder = () => S.mmode === 'orden';
+const fasting = () => !byOrder() && examKeys().some(k => EXAMS[k][3]) || byOrder();
+const tubes = () => [...new Set(examList().map(e => e[2]))];
 const DAYS = [['Lun', 26, 'Hoy', 'hoy lun 26 oct'], ['Mar', 27, 'Mañana', 'mar 27 oct'], ['Mié', 28, '', 'mié 28 oct'], ['Jue', 29, '', 'jue 29 oct'], ['Vie', 30, '', 'vie 30 oct'], ['Sáb', 31, '', 'sáb 31 oct']];
 const dayShort = i => DAYS[i][2] || `${DAYS[i][0]} ${DAYS[i][1]}`;
 
@@ -184,10 +217,12 @@ const REVIEWS = {
 };
 const PRO = (id = S.pro) => PROS.find(p => p.id === id);
 const proName = () => PRO();
+const DERIV = { inysc: ['iny', -2000], inyev: ['iny', 8000, 'enf'], pie: ['cura', 2000], pun: ['cur', -6000], suero: ['son', -2000], tens8: ['tens4', 22000] };
+const derived = (pr, k) => { const d = DERIV[k]; if (!d || !pr.p[d[0]] || (d[2] && pr.k !== d[2])) return 0; return pr.p[d[0]] + d[1]; };
 // precio de una profesional para un servicio. Camila (la cuenta profesional del prototipo) usa lo que ella edita.
 function priceOf(pr, item = S.item, slot) {
   if (!item) { const l = Object.keys(CAT).map(k => priceOf(pr, k)).filter(Boolean); return l.length ? Math.min(...l) : 0; }
-  let base = pr.p[item], nt = pr.night[item];
+  let base = pr.p[item] || derived(pr, item), nt = pr.night[item];
   if (pr.id === 'cr') { const m = S.my[item]; base = m && m.on ? m.p : undefined; nt = m && m.nOn ? m.night : 0; }
   if (!base) return 0;
   return slot && slot >= '21:00' && nt ? nt : base;
@@ -218,8 +253,8 @@ function price() {
   const pr = PRO(), L = [];
   const p = priceOf(pr, S.item, S.when === 'prog' ? S.slot : '');
   const isN = S.when === 'prog' && S.slot >= '21:00' && nightOf(pr);
+  if (S.item === 'mue') { L.push([`Toma a domicilio · ${first(pr)}`, p]); if (!byOrder()) L.push([`Exámenes (laboratorio) · ${examList().length}`, examSum()]); return { L, total: L.reduce((a, b) => a + b[1], 0), pro: p, lab: byOrder() ? 0 : examSum(), pend: byOrder() }; }
   L.push([`${CAT[S.item].n}${isN ? ' · horario nocturno' : ''}`, p]);
-  if (S.item === 'mue') examList().forEach(e => L.push([e[0] + ' (laboratorio aliado)', e[1]]));
   return { L, total: L.reduce((a, b) => a + b[1], 0), pro: p };
 }
 const slotEnd = t => { const [h, m] = t.split(':').map(Number); const x = h * 60 + m + 30; return String(Math.floor(x / 60)).padStart(2, '0') + ':' + String(x % 60).padStart(2, '0'); };
