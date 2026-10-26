@@ -24,6 +24,11 @@ b.classList.add('on');gsap.fromTo(b,{yPercent:45,opacity:0,filter:'blur(8px)'},{
 gsap.utils.toArray('.rv').forEach(function(el){gsap.fromTo(el,{opacity:0,y:24},{opacity:1,y:0,duration:.9,ease:'expo.out',scrollTrigger:{trigger:el,start:'top 90%',once:true}})});
 // tray objects pop in one by one
 gsap.fromTo('.tc img',{opacity:0,scale:.5,y:20},{opacity:1,scale:1,y:0,duration:.6,ease:'back.out(1.8)',stagger:{each:.035,from:'center'},scrollTrigger:{trigger:'.tray',start:'top 85%',once:true}});
+// pop-out: a real piece of the screen lifts out of the phone, leaving its space
+gsap.utils.toArray('.pop').forEach(function(p){var d=p.classList.contains('pop-r')?1:-1,h=p.parentNode.querySelector('.hole');
+gsap.timeline({scrollTrigger:{trigger:p.closest('.row'),start:'top 45%',once:true}})
+.fromTo(p,{x:0,y:0,scale:1,boxShadow:'0 0 0 0 rgba(42,31,102,0), 0 0 0 0 rgba(17,17,17,0)'},{x:118*d,y:-6,scale:1.1,boxShadow:'0 26px 50px -16px rgba(42,31,102,.32), 0 0 0 1px rgba(17,17,17,.05)',duration:1.1,ease:'expo.inOut',delay:.6})
+.fromTo(h,{opacity:0},{opacity:1,duration:.5},'<.2');});
 // rows: phone rises, cards break out, objects float
 gsap.utils.toArray('.row').forEach(function(r){var ph=r.querySelector('.phn'),bo=r.querySelectorAll('.bo'),em=r.querySelectorAll('.emo');
 var t=gsap.timeline({scrollTrigger:{trigger:r,start:'top 72%',once:true}});
