@@ -106,9 +106,9 @@ def({ id: 'R26', name: 'Foto y presentación', kind: 'page', back: true, title: 
   foot: () => abtn('Guardar', 'done', 'pres', '', 'back') });
 
 def({ id: 'R11', name: 'Servicios y precios', kind: 'page', back: true, title: 'Servicios y precios',
-  body: () => `<div class="t2 sm">Cuidapp define los servicios. Tú eliges cuáles haces, cuánto cobras y qué incluyes.</div><div class="mt8">
+  body: () => `<div class="t2 sm">Cuidapp define los servicios. Tú eliges cuáles haces, cuánto cobras y qué incluyes. Cuidapp cobra ${S.comm}% de comisión.</div><div class="mt12">${row('box:moon', 'Recargos', rcOf(PROS[0]).filter(r => r.on && r.v > 0).map(r => r.n + ' ' + rcVal(r)).join(' · '), 'R43')}</div><div class="mt8">
   ${GALL.filter(g => GRP[g].l.some(k => mySvcs().includes(k))).map(g => `<div class="lbl2">${GRP[g].n}</div>${GRP[g].l.filter(k => mySvcs().includes(k)).map(k => { const m = S.my[k]; return `<div class="svcrow"><span class="si">${i3(k)}</span><button class="tog ${m.on ? 'on' : ''}" data-act="svcOn" data-arg="${k}"></button>
-  <button class="tx" data-act="edit" data-arg="${k}" data-go="R12"><div class="a">${CAT[k].n}</div><div class="b">${!m.on ? 'No lo ofreces' : k === 'mue' ? 'Tu tarifa de toma · exámenes los cobra el laboratorio' : `${m.dur} min · mínimo ${clp(S.mins[k])}${m.nOn ? ` · noche ${clp(m.night)}` : ''}`}</div></button>
+  <button class="tx" data-act="edit" data-arg="${k}" data-go="R12"><div class="a">${CAT[k].n}</div><div class="b">${!m.on ? 'No lo ofreces' : k === 'mue' ? 'Tu tarifa de toma · exámenes los cobra el laboratorio' : `${m.dur} min · mínimo ${clp(S.mins[k])}`}</div></button>
   <button class="end" data-act="edit" data-arg="${k}" data-go="R12">${m.on ? money(m.p) : ''}${ic('caret-right')}</button></div>`; }).join('')}`).join('')}</div>
   <div class="mt16">${note('info', `Cuidapp cobra ${S.comm}% de cada atención. El resto es tuyo y se deposita los martes.`)}</div>`,
   foot: () => abtn('Guardar', 'done', 'serv', '', 'back') });
@@ -118,12 +118,11 @@ def({ id: 'R12', name: 'Editar servicio y precio', kind: 'page', back: true, tit
   ${k === 'mue' ? `<div class="mt16">${note('info', 'Los exámenes tienen precio fijo del laboratorio y se cobran aparte. Tú solo defines lo que cobras por ir a tomar la muestra.')}</div>` : ''}
   ${lbl(k === 'mue' ? 'Tu tarifa de toma a domicilio' : 'Tu precio')}<div class="pricein"><button class="ib sbtn" data-act="pr" data-arg="-">${ic('minus')}</button><div class="v num">${clp(m.p)}</div><button class="ib sbtn" data-act="pr" data-arg="+">${ic('plus')}</button></div>
   <div class="pmeta"><span>Mínimo Cuidapp <b class="num">${clp(min)}</b></span><span>Promedio en Ñuñoa <b class="num">$19.500</b></span></div>
-  <div class="mt8">${kv(`Tú recibes (Cuidapp cobra ${S.comm}%)`, `<b style="color:var(--text)">${clp(net(m.p))}</b>`)}</div>
+  <div class="mt8">${commTxt(m.p)}</div><div class="mt12">${row('box:moon', 'Recargos', rcOf(PROS[0]).filter(r => r.on && r.v > 0).map(r => r.n + ' ' + rcVal(r)).join(' · ') || 'Sin recargos', 'R43')}</div><div class="xs t3 mt4">La comisión también aplica sobre los recargos.</div>
   ${lbl('Duración de la atención')}<div class="chips">${[20, 30, 45, 60].map(v => chip(v + ' min', m.dur === v, 'dur', v)).join('')}</div>
   ${lbl('Qué incluye')}${Object.keys(INC).map(x => checkRow(k === 'mue' && x === 'ins' ? 'Tubos, aguja, ligadura y traslado de la muestra al laboratorio' : INC[x], m.inc[x], 'inc', x)).join('')}
   ${field('', '', 'Agrega algo más (opcional)')}
-  <button class="row" data-act="nOn"><span class="tx"><div class="a">Precio distinto de noche y feriados</div><div class="b">Desde las 21:00, domingos y feriados</div></span><span class="tog ${m.nOn ? 'on' : ''}"></span></button>
-  ${m.nOn ? `<div class="pricein sm2"><button class="ib sbtn" data-act="npr" data-arg="-">${ic('minus')}</button><div class="v num">${clp(m.night)}</div><button class="ib sbtn" data-act="npr" data-arg="+">${ic('plus')}</button></div>` : ''}`; },
+`; },
   foot: () => btn('Guardar servicio', 'back') });
 
 def({ id: 'R13', name: 'Comunas donde atiendes', kind: 'page', back: true, title: 'Comunas',
@@ -161,7 +160,7 @@ def({ id: 'R16', name: 'Inicio profesional', kind: 'page', tab: 'inicio', next: 
 
 def({ id: 'R17', name: 'Solicitud de reserva', kind: 'page', back: true, title: 'Nueva solicitud', auto: 'R18', autoAct: () => { S.req.r1 = 'ok'; },
   body: () => `<div class="sm t2">Agendada para</div><div class="h-l">Martes 27 oct · 08:00</div><div class="t2 sm mt4">Responde antes de 1 h 42 min o se libera la solicitud.</div>
-  <div class="pbox mt16"><div><div class="sm t2">Tu precio</div><div class="price num">${clp(S.my.iny.p)}</div></div><div style="text-align:right"><div class="sm t2">Recibes</div><div class="h-m num">${clp(net(S.my.iny.p))}</div></div></div>
+  <div class="pbox mt16"><div><div class="sm t2">Tu precio</div><div class="price num">${clp(S.my.iny.p)}</div></div><div style="text-align:right"><div class="sm t2">Recibes</div><div class="h-m num">${clp(net(S.my.iny.p))}</div></div></div><div class="mt8">${commTxt(S.my.iny.p)}</div>
   <div class="mt8">${row('box:syringe', 'Inyección intramuscular', 'Neurobionta 5.000 · tiene el medicamento', '', '')}
   ${row('box:file-text', 'Receta adjunta', 'Dr. Andrés Valenzuela · 20/10/2026', '', st('ok', 'Se lee bien'))}
   ${row('box:map-pin', 'Ñuñoa · 1,8 km de tu casa', 'La dirección exacta aparece al aceptar', '', '')}
@@ -212,7 +211,7 @@ def({ id: 'R23', name: 'Ganancias', kind: 'page', tab: 'ganancias',
   body: () => { const d = [['M', 36000], ['M', 18000], ['J', 41400], ['V', 20000], ['S', 36600], ['D', 0], ['L', Math.max(0, S.earn - 152000)]]; const mx = 60000; const gross = Math.round(S.earn / (1 - S.comm / 100));
     return `<div class="sm t2 mt8">Semana del 20 al 26 oct</div><div class="price mt4" style="font-size:40px;line-height:46px">${clp(S.earn)}</div><div class="t2 sm mt4">${S.done} atenciones · para ti, ya descontada la comisión</div>
   <div class="bars mt24">${d.map((x, i) => `<div class="${i === 6 ? 'on' : ''}"><span style="height:${Math.max(4, x[1] / mx * 100)}%"></span>${x[0]}</div>`).join('')}</div>
-  <div class="mt16">${kv('Cobrado a pacientes', clp(gross))}${kv(`Comisión Cuidapp (${S.comm}%)`, '−' + clp(gross - S.earn))}${kv('Para ti', clp(S.earn), 'tot')}</div>
+  <div class="mt16">${kv('Cobrado a pacientes', clp(gross))}${kv(`Comisión Cuidapp (${S.comm}%, incluye recargos)`, '−' + clp(gross - S.earn))}${kv('Para ti', clp(S.earn), 'tot')}</div>
   <div class="sec-t">Hoy</div>${S.paid ? row('box:syringe', 'Inyección · Ñuñoa', '08:14 · Rosa M.', '', money(net(S.my.iny.p))) : ''}
   ${row('box:bandaids', 'Curación · Providencia', '19:45 · Jorge T.', '', money(net(S.my.cur.p)))}
   <div class="mt16">${note('bank', 'Próximo depósito: martes 27 oct a BancoEstado CuentaRUT ••••3442.')}</div>`; } });
@@ -253,8 +252,8 @@ const R30EX = ['hemo', 'bioq', 'tsh', 'ori'];
 def({ id: 'R30', name: 'Solicitud de toma de muestras', kind: 'page', back: true, title: 'Nueva solicitud',
   body: () => { const ex = R30EX.map(k => EXAMS[k]); const tb = [...new Set(ex.map(e => e[2]))];
     return `<div class="sm t2">Agendada para</div><div class="h-l">Miércoles 28 oct · 08:00</div><div class="t2 sm mt4">Responde antes de 1 h 10 min o se libera la solicitud.</div>
-  <div class="pbox mt16"><div><div class="sm t2">Tu tarifa de toma</div><div class="price num">${clp(S.my.mue.p)}</div></div><div style="text-align:right"><div class="sm t2">Recibes</div><div class="h-m num">${clp(net(S.my.mue.p))}</div></div></div>
-  <div class="xs t2 mt8">Los exámenes los cobra el laboratorio a la paciente. No pasan por tu pago.</div>
+  <div class="pbox mt16"><div><div class="sm t2">Tu tarifa de toma</div><div class="price num">${clp(S.my.mue.p)}</div></div><div style="text-align:right"><div class="sm t2">Recibes</div><div class="h-m num">${clp(net(S.my.mue.p))}</div></div></div><div class="mt8">${commTxt(S.my.mue.p)}</div>
+  <div class="xs t2 mt8">Los exámenes los cobra Cuidapp a la paciente y no pasan por tu pago. Tú tomas la muestra y la entregas en el laboratorio.</div>
   <div class="lbl2">Exámenes</div>${ex.map(e => `<div class="kv"><span class="k">${e[0]}</span><span class="t2 sm">${e[2]}</span></div>`).join('')}
   <div class="lbl2">Lleva</div><div class="tubes">${tb.map(t => `<span class="tube"><span class="dot" style="background:${TUBE[t]}"></span>${t} × ${ex.filter(e => e[2] === t).length}</span>`).join('')}</div>
   <div class="mt16">${row('box:clock-countdown', 'Paciente en ayuno de 8 horas', 'Perfil bioquímico', '', '')}

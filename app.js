@@ -13,7 +13,7 @@ const S0 = () => ({
   item: 'iny', addr: 'mama', who: 'mama', when: 'prog', pro: 'cr', day: 1, slot: '08:00', sort: 'rel', ptab: 'serv', det: 'next',
   f: { enf: true, tens: true, cuid: true }, fmax: 0, fday: 'all', frat: 0, fgen: '', fcom: '',
   fav: { cr: true, pg: true }, q: '', typed: false, sheet: '', ctab: 'next', revF: 'all', revSort: 'rec', resp: { cr4: 'Gracias, Francisco. Ese día me pilló un taco en Grecia, por eso te avisé. ¡Nos vemos en el próximo control!' }, replyTo: 'cr1', rtxt: false, rcrit: {}, pday: 1, svcFrom: '',
-  hasMed: true, receta: false, orden: '', mmode: 'cat', exq: '', kinAv: false, medAv: false, promo: 'kin', exams: {}, needOrd: false, ord: '', ordSel: null, ordFrom: false, help: '', exPage: 0, exLim: 20, scope: '', aexq: '', aexPage: 0, aord: 0, aordSel: {}, aordDone: [], pv: { mama: { t: 'fonasa', tr: 'B', is: '' }, papa: { t: 'isapre', tr: '', is: 'Colmena' }, yo: { t: 'isapre', tr: '', is: 'Banmédica' } }, isaOpen: false, blog: 'b12', blogF: '', rbDocs: false, tensNeeds: { hig: true, mov: true, sig: true, com: false },
+  hasMed: true, receta: false, orden: '', mmode: 'cat', exq: '', kinAv: false, medAv: false, promo: 'kin', exams: {}, needOrd: false, ord: '', ordSel: null, ordFrom: false, help: '', exPage: 0, exLim: 20, scope: '', aexq: '', aexPage: 0, aord: 0, aordSel: {}, aordDone: [], pv: { mama: { t: 'fonasa', tr: 'B', is: '' }, papa: { t: 'isapre', tr: '', is: 'Colmena' }, yo: { t: 'isapre', tr: '', is: 'Banmédica' } }, isaOpen: false, blog: 'b12', blogF: '', bm: 'hba', bF: 'all', bSis: '', crit: false, incVis: false, shr: { cr: false, pg: true, lf: false }, shrLink: false, resShared: false, eduRes: false, pk: 'gen', pkOpen: '', ctl: { 0: true, 1: true, 2: false, 3: true }, lk: { w: 'yo', is: '', c1: false, c2: false, car: false, bank: false }, isa: {}, rbAuto: false, rbSel: 'r2', rbList: null, profAv: {}, labId: 'la', lbMode: 'dom', lbSuc: 0, lbEx: [], lbDay: '', lbHr: '', lbSort: '', lbDone: false, cq: { age: '', r: null, dep: 0, is: '' }, ase: 'mi', aseSent: {}, qa: { is: ['Colmena', 'Banmédica', 'Consalud'], plan: 'pro', paid: false }, lead: 0, leadSt: {}, mue: { up: false, rot: true, ord: true, fri: true, done: false }, aLab: 'la', mkG: 10, mkL: { bl: { g: 10, ex: { vitd: 12 } } }, aImp: false, aImpDone: {}, aPer: 'oct2', liqPaid: {}, rc: RC0(), rcMax: 100, rcEd: '', rbDocs: false, tensNeeds: { hig: true, mov: true, sig: true, com: false },
   pay: 'visa', prev: 'fonasa', consent: false, rating: 0, tags: {}, tip: 0, chat: [], phase: 'llego', cancelFrom: 'P27', booked: false, hecho: false, cr: 0,
   docs: { carnet: false, selfie: false, titulo: false, antec: false, banco: false }, prof: 'enf',
   online: false, code: '', chk: { id: false, rec: false, ale: false }, earn: 186405, done: 9, pRating: 0, pTags: {}, paid: false,
@@ -68,9 +68,9 @@ if (NATIVE) view = 'm';
 const SC = {};           // pantallas
 const ACT = {};          // acciones
 const def = s => (SC[s.id] = s);
-const roleOf = id => id[0] === 'R' ? 'pro' : id[0] === 'A' ? 'adm' : 'pac';
-const START = { pac: 'P06', pro: 'R01', adm: 'A01' };
-const ROLE_N = { pac: 'Paciente', pro: 'Profesional', adm: 'Admin' };
+const roleOf = id => id[0] === 'R' ? 'pro' : id[0] === 'A' ? 'adm' : id[0] === 'Q' ? 'ase' : 'pac';
+const START = { pac: 'P06', pro: 'R01', adm: 'A01', ase: 'Q01' };
+const ROLE_N = { pac: 'Paciente', pro: 'Profesional', adm: 'Admin', ase: 'Asesor' };
 // equivalencias entre iPhone y escritorio
 const TO_D = { P06: 'W01', P10: 'W02', P12: 'W03', P13: 'W03', P21: 'W04' };
 const TO_M = { W01: 'P06', W02: 'P10', W03: 'P12', W04: 'P21' };
@@ -149,7 +149,7 @@ const CAT = {
   vfe: { n: 'Hierro endovenoso', s: 'Hierro EV', g: 'vit', i: 'vit', d: 'Goteo lento con control de reacción durante y después. Trae el medicamento con receta', ic: 'drop', who: ['enf'], dur: 90, dt: '60–90 min', ind: 'Sí', receta: true, base: 49990 },
   vsue: { n: 'Sueroterapia con vitaminas', s: 'Suero con vitaminas', g: 'vit', i: 'vit', d: 'Hidratación EV con las vitaminas indicadas por tu médico', ic: 'drop', who: ['enf'], dur: 90, dt: '60–90 min', ind: 'Sí', receta: true, base: 49990 },
   vmg: { n: 'Magnesio endovenoso', s: 'Magnesio EV', g: 'vit', i: 'vit', d: 'Vía venosa y control de presión. Trae el medicamento con receta', ic: 'drop', who: ['enf'], dur: 60, dt: '45–60 min', ind: 'Sí', receta: true, base: 39990 },
-  vmed: { n: 'Vitaminas con medicamento incluido', s: 'Con medicamento incluido', g: 'vit', i: 'vit', d: 'Junto a una farmacia aliada: te llevamos la ampolla con tu receta', ic: 'pill', who: ['enf'], dur: 30, dt: '30 min', ind: 'Sí', receta: true, soon: true, base: 24990 },
+  vmed: { n: 'Vitaminas con medicamento incluido', s: 'Con medicamento incluido', g: 'vit', i: 'vit', d: 'Te llevamos la ampolla con tu receta', ic: 'pill', who: ['enf'], dur: 30, dt: '30 min', ind: 'Sí', receta: true, soon: true, base: 24990 },
   // Ver todas · control de crónicos
   sig: { n: 'Control de signos vitales', s: 'Signos vitales', g: 'cron', d: 'Presión, glicemia, temperatura y saturación, con registro', ic: 'heartbeat', who: ['enf', 'tens'], dur: 30, dt: '20–30 min', ind: 'No', base: 15000 },
   diab: { n: 'Programa de diabetes', s: 'Programa diabetes', g: 'cron', d: 'Visitas periódicas: glicemia, insulina, pie y educación', ic: 'calendar-check', who: ['enf'], dur: 45, dt: '45 min por visita', ind: 'Recomendada', base: 25000 },
@@ -178,12 +178,37 @@ const IC3 = { am: 'tens4', pal: 'sig' };              // íconos reutilizados
 const WHO = { enf: 'Enfermera', tens: 'TENS', cuid: 'Cuidadora' };
 const whoB = k => `<span class="wb">${CAT[k].who.map(w => WHO[w]).join(' · ')}</span>`;
 const indB = k => CAT[k].ind && CAT[k].ind !== 'No' ? `<span class="ib2">${ic('file-text')}Ind. médica${CAT[k].ind !== 'Sí' ? ': ' + CAT[k].ind.replace(/^Sí \((.*)\)$/, '$1').toLowerCase() : ''}</span>` : '';
-/* turnos: recargos (estudio de mercado) */
-const SUR = { dom: 0.5, fest: 1.0, noche: 0.25 };
+/* recargos: los define cada profesional (reglas por horario, día y urgencia). Admin fija un tope. */
+function RC0() { return [
+  { id: 'noc', t: 'hora', n: 'Nocturno', a: '20:00', b: '08:00', k: '%', v: 25, on: true },
+  { id: 'sab', t: 'dia', n: 'Sábado', d: 'sab', k: '%', v: 0, on: false },
+  { id: 'dom', t: 'dia', n: 'Domingo', d: 'dom', k: '%', v: 50, on: true },
+  { id: 'fes', t: 'dia', n: 'Festivos', d: 'fest', k: '%', v: 100, on: true },
+  { id: 'urg', t: 'urg', n: 'Urgencia (mismo día)', k: '$', v: 5000, on: false }]; }
+const RB_FEE = 3500; /* gestión de reembolso automático, por solicitud */
+const rcOf = pr => pr.id === 'cr' ? S.rc : (pr.rc || (pr.rc = RC0().map(r => pr.rcx && pr.rcx[r.id] ? { ...r, ...pr.rcx[r.id] } : r)));
+const inWin = (t, a, b) => a <= b ? t >= a && t < b : t >= a || t < b;
+const dayOf = i => new Date(2026, 9, 26 + i);
+const rcPct = (pr, id) => { const r = rcOf(pr).find(x => x.id === id); return r && r.on && r.k === '%' ? Math.min(r.v, S.rcMax) : 0; };
+const rcAmt = (r, base) => r.k === '%' ? Math.round(base * Math.min(r.v, S.rcMax) / 100 / 100) * 100 : Math.min(r.v, Math.round(base * S.rcMax / 100));
+const rcVal = r => r.k === '%' ? `+${r.v}%` : `+${clp(r.v)}`;
+function rcHits(pr, di, t, urg) {
+  const d = dayOf(di), wd = WD[d.getDay()], fe = !!festOf(d), on = rcOf(pr).filter(r => r.on && r.v > 0);
+  const hr = on.filter(r => r.t === 'hora' && t && inWin(t, r.a, r.b));
+  const dy = on.filter(r => r.t === 'dia' && (r.d === 'fest' ? fe : r.d === wd)); const dmax = dy.sort((a, b) => b.v - a.v).slice(0, 1);
+  const ug = urg ? on.filter(r => r.t === 'urg') : [];
+  return [...hr, ...dmax, ...ug];
+}
+function rcLines(pr, base, di, t, urg) {
+  const cap = Math.round(base * S.rcMax / 100); let acc = 0;
+  return rcHits(pr, di, t, urg).map(r => { const a = Math.min(rcAmt(r, base), cap - acc); acc += a; return [`Recargo ${r.n.toLowerCase().replace(' (mismo día)', '')} ${rcVal(r)}`, a]; }).filter(x => x[1] > 0);
+}
+const rcTag = (pr, di, t) => { const h = rcHits(pr, di, t, false); return h.length ? `<small>${h.map(rcVal).join(' ')}</small>` : ''; };
+const SUR = { get dom() { return rcPct(PRO(), 'dom') / 100; }, get fest() { return rcPct(PRO(), 'fes') / 100; }, get noche() { return rcPct(PRO(), 'noc') / 100; } };
 const FEST = { '31-10': 'Día de las Iglesias Evangélicas', '1-11': 'Todos los Santos', '8-12': 'Inmaculada Concepción' };
 /* iconos 3D de servicios (img/iconos-3d); el resto de la interfaz usa Phosphor */
 const i3k = k => CAT[k] ? (CAT[k].i || IC3[CAT[k].g] || CAT[k].g) : (IC3[k] || k);
-const i3 = (k, c = '') => `<img class="i3d ${c}" src="img/iconos-3d/${i3k(k)}.webp?v=20261026g" alt="" draggable="false">`;
+const i3 = (k, c = '') => `<img class="i3d ${c}" src="img/iconos-3d/${i3k(k)}.webp?v=20261026i" alt="" draggable="false">`;
 const INC = { ins: 'Insumos: jeringa, aguja, tórulas y guantes', pre: 'Control de presión antes y después', res: 'Retiro de residuos clínicos', edu: 'Indicaciones escritas para la familia' };
 /* catálogo del laboratorio: precios fijos, no los pone la profesional */
 const LAB = 'Laboratorio';
@@ -335,7 +360,7 @@ const minH = k => Math.min(...Object.keys(CAT[k].tp).map(Number));
 // ¿la profesional ofrece el servicio? Lo define su profesión y las categorías donde atiende.
 const offers = (pr, k) => !!CAT[k] && !CAT[k].soon && CAT[k].who.includes(pr.k) && (!!pr.p[k] || pr.gs.includes(CAT[k].g));
 // precio por turno de h horas (día o noche). Recargo nocturno solo si el servicio no es ya de noche.
-const shiftUnit = (pr, k, h = minH(k), jor = 'dia') => { const c = CAT[k]; if (!c.tp || !c.tp[h]) return 0; const b = pr.p[k] && h === minH(k) ? pr.p[k] : r500(c.tp[h] * pr.f); return r500(b * (jor === 'noche' && !c.jor ? 1 + SUR.noche : 1)); };
+const shiftUnit = (pr, k, h = minH(k), jor = 'dia') => { const c = CAT[k]; if (!c.tp || !c.tp[h]) return 0; const b = pr.p[k] && h === minH(k) ? pr.p[k] : r500(c.tp[h] * pr.f); return r500(b * (jor === 'noche' && !c.jor ? 1 + rcPct(pr, 'noc') / 100 : 1)); };
 // precio de una profesional para un servicio. Camila (la cuenta profesional del prototipo) usa lo que ella edita.
 function priceOf(pr, item = S.item, slot) {
   if (!item) { const l = Object.keys(CAT).filter(k => !CAT[k].plan && !CAT[k].turno).map(k => priceOf(pr, k)).filter(Boolean); return l.length ? Math.min(...l) : 0; }
@@ -346,9 +371,9 @@ function priceOf(pr, item = S.item, slot) {
   else if (CAT[item].turno) base = shiftUnit(pr, item);
   else base = pr.p[item] || r500(CAT[item].base * pr.f);
   if (!base) return 0;
-  return slot && slot >= '21:00' && nt ? nt : base;
+  return base;
 }
-const nightOf = (pr, item = S.item) => pr.id === 'cr' ? (S.my[item] && S.my[item].nOn ? S.my[item].night : 0) : (pr.night[item] || 0);
+const nightOf = () => 0; /* reemplazado por recargos (rcHits) */
 const durOf = (pr, item = S.item) => !item ? 0 : pr.id === 'cr' && S.my[item] ? S.my[item].dur : CAT[item].dur;
 const svcsOf = pr => Object.keys(CAT).filter(k => priceOf(pr, k));
 function incOf(pr, item = S.item) {
@@ -373,11 +398,12 @@ function prosFor(item = S.item) {
 function price() {
   const pr = PRO(), L = [];
   if (isT()) { const c = shiftCalc(pr); return { L: c.L, total: c.total, pro: c.unit, shift: c }; }
-  const p = priceOf(pr, S.item, S.when === 'prog' ? S.slot : '');
-  const isN = S.when === 'prog' && S.slot >= '21:00' && nightOf(pr);
-  if (S.item === 'mue') { L.push([`Toma a domicilio · ${first(pr)}`, p]); if (!byOrder()) L.push([`Exámenes (laboratorio) · ${examList().length}`, examSum()]); if (!byOrder() && examSum() >= 30000) L.push(['Toma gratis · exámenes sobre $30.000', -p]); return { L, total: L.reduce((a, b) => a + b[1], 0), pro: p, lab: byOrder() ? 0 : examSum(), pend: byOrder() }; }
-  L.push([`${CAT[S.item].n}${isN ? ' · horario nocturno' : ''}`, p]);
-  return { L, total: L.reduce((a, b) => a + b[1], 0), pro: p };
+  const p = priceOf(pr, S.item);
+  const rc = rcLines(pr, p, S.when === 'prog' ? S.day : 0, S.when === 'prog' ? S.slot : '', S.when !== 'prog'), rs = rc.reduce((a, b) => a + b[1], 0);
+  const fee = typeof isaOf === 'function' && isaOf(S.who) && S.rbAuto ? [['Gestión de reembolso', RB_FEE]] : [];
+  if (S.item === 'mue') { L.push([`Toma a domicilio · ${first(pr)}`, p], ...rc); if (!byOrder()) L.push([`Exámenes (laboratorio) · ${examList().length}`, examSum()]); if (!byOrder() && examSum() >= 30000) L.push(['Toma gratis · exámenes sobre $30.000', -p]); L.push(...fee); return { L, total: L.reduce((a, b) => a + b[1], 0), pro: p + rs, lab: byOrder() ? 0 : examSum(), pend: byOrder() }; }
+  L.push([CAT[S.item].n, p], ...rc, ...fee);
+  return { L, total: L.reduce((a, b) => a + b[1], 0), pro: p + rs, rc: rs };
 }
 /* ---------- turnos (cuidadoras y TENS) ---------- */
 const SH0 = new Date(2026, 9, 27);   // mar 27 oct: primer día que se puede iniciar un turno
@@ -399,8 +425,8 @@ function shiftCalc(pr = PRO(), k = S.item) {
   const h = shH(k), jor = shJor(k), unit = shiftUnit(pr, k, h, jor === 'noche' ? 'noche' : 'dia'), ds = shiftDates();
   const nF = ds.filter(x => x.f).length, nD = ds.filter(x => !x.f && x.dom).length;
   const L = [[`${ds.length} turno${ds.length === 1 ? '' : 's'} de ${h} h${jor === 'noche' ? ' de noche' : jor === 'dia' && h < 24 ? ' de día' : ''} × ${clp(unit)}`, unit * ds.length]];
-  if (nD) L.push([`Recargo domingo +50% · ${nD} turno${nD === 1 ? '' : 's'}`, Math.round(unit * SUR.dom * nD)]);
-  if (nF) L.push([`Recargo festivo +100% · ${nF} turno${nF === 1 ? '' : 's'}`, Math.round(unit * SUR.fest * nF)]);
+  if (nD) L.push([`Recargo domingo +${rcPct(pr, 'dom')}% · ${nD} turno${nD === 1 ? '' : 's'}`, Math.round(unit * rcPct(pr, 'dom') / 100 * nD)]);
+  if (nF) L.push([`Recargo festivo +${rcPct(pr, 'fes')}% · ${nF} turno${nF === 1 ? '' : 's'}`, Math.round(unit * rcPct(pr, 'fes') / 100 * nF)]);
   return { h, jor, unit, ds, nF, nD, L, total: L.reduce((a, b) => a + b[1], 0) };
 }
 const repTxt = () => { const l = Object.keys(WDN).filter(k => S.sh.rep[k]).map(k => WDN[k].toLowerCase()); return l.length ? (l.length > 1 ? l.slice(0, -1).join(', ') + ' y ' + l[l.length - 1] : l[0]) : 'un solo turno'; };
@@ -420,6 +446,7 @@ const FAM = { mama: { n: 'Rosa Muñoz Pérez', c: 'Rosa', r: 'mamá', i: 'RM', e
 const FM = () => FAM[S.fm] || FAM.mama;
 const first = (p = PRO()) => p.n.split(' ')[0];
 const net = p => Math.round(p * (100 - S.comm) / 100);
+const commTxt = p => `<div class="comm"><span>Cobras <b class="num">${clp(p)}</b></span><span>Comisión Cuidapp ${S.comm}%</span><span>Recibes <b class="num">${clp(net(p))}</b></span></div>`;
 
 /* ---------- componentes ---------- */
 const btn = (t, go, k = '', extra = '') => `<button class="btn ${k}" ${go ? `data-go="${go}"` : ''} ${extra}>${t}</button>`;
@@ -433,9 +460,9 @@ const row = (i, a, b = '', go = '', end = ic('caret-right'), cls = '', act = '',
 const ST_I = { ok: 'check-circle', warn: 'clock', inf: 'clock-countdown', bad: 'x-circle' };
 const st = (k, t, i) => { i = i === '' ? '' : (i || ST_I[k]); return `<span class="st ${k}">${i ? ic(i, 1) : ''}${t}</span>`; };
 const PHOTO = ['CR', 'FA', 'MC', 'PG', 'VM', 'FL', 'DN', 'JS', 'CD', 'IP', 'RS', 'XV', 'MP'];
-const V = '?v=20261026g';
+const V = '?v=20261026i';
 const slug = n => n.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\./g, '').trim().replace(/\s+/g, '-');
-const PACPH = { DF: 'daniela-fuentes', RM: 'rosa-m', LF: 'luis-fuentes' };
+const PACPH = { DF: 'daniela-fuentes', RM: 'rosa-m', LF: 'luis-fuentes', MIb: 'isabel-montt', RVa: 'rodrigo-vial', CHe: 'valeria-cortes', FAr: 'francisco-lagos', JCa: 'soledad-rios' };
 const phSrc = ini => PHOTO.includes(ini) ? `img/pro/${ini.toLowerCase()}.webp${V}` : PACPH[ini] ? `img/pac/${PACPH[ini]}.webp${V}` : '';
 const avIn = ini => phSrc(ini) ? `<img class="avp" src="${phSrc(ini)}" alt="" loading="lazy">` : ini;
 const av = (ini, cls = '', ver = false) => `<span class="av ${cls}${phSrc(ini) ? ' hasp' : ''}">${avIn(ini)}${ver ? `<span class="vb">${ic('check', 0).replace('ph ', 'ph-bold ')}</span>` : ''}</span>`;
@@ -528,7 +555,7 @@ function frameD0(s) {
 }
 function sideA(on) {
   const n = 6 - S.aprob.length - S.rech.length;
-  const it = [['A02', 'identification-card', 'Verificación', 'ver', n], ['A04', 'calendar-check', 'Reservas de hoy', 'hoy'], ['A06', 'users-three', 'Profesionales', 'pro'], ['A09', 'file-text', 'Órdenes por revisar', 'ord', 3 - S.aordDone.length], ['A05', 'list-checks', 'Catálogo y comisión', 'tar'], ['A08', 'test-tube', 'Catálogo de exámenes', 'lab']];
+  const it = [['A02', 'identification-card', 'Verificación', 'ver', n], ['A04', 'calendar-check', 'Reservas de hoy', 'hoy'], ['A06', 'users-three', 'Profesionales', 'pro'], ['A09', 'file-text', 'Órdenes por revisar', 'ord', 3 - S.aordDone.length], ['A05', 'list-checks', 'Catálogo y comisión', 'tar'], ['A08', 'test-tube', 'Catálogo de exámenes', 'lab'], ['A11', 'flask', 'Laboratorios', 'labs'], ['A13', 'receipt', 'Liquidaciones', 'liq']];
   return `<div class="side">${logoImg('horizontal-nm', 28)}${it.map(t => `<button class="${t[3] === on ? 'on' : ''}" data-go="${t[0]}">${ic(t[1], t[3] === on)}${t[2]}${t[4] ? `<span class="cnt num">${t[4]}</span>` : ''}</button>`).join('')}<div class="who">Operaciones<br>operaciones@cuidapp.cl</div><button data-go="A01">${ic('sign-out')}Salir</button></div>`;
 }
 
@@ -625,7 +652,7 @@ function updateBar() {
 }
 function bar() {
   $('#tb').innerHTML = `${logoImg('horizontal-nm', 26, '').replace('<img', '<img class="lg"')}
-  <div class="seg">${['pac', 'pro', 'adm'].map(r => `<button data-role="${r}">${ROLE_N[r]}</button>`).join('')}</div>
+  <div class="seg">${['pac', 'pro', 'adm', 'ase'].map(r => `<button data-role="${r}">${ROLE_N[r]}</button>`).join('')}</div>
   <div class="seg vseg"><button data-view="m">${'iPhone'}</button><button data-view="d">Escritorio</button></div>
   <span class="sel" id="sel"></span><span class="sp"></span>
   <button class="lnk" id="adv" style="background:var(--accent);color:#fff">${ic('fast-forward', 1)}<span class="tl">Avanzar</span></button>
@@ -664,9 +691,10 @@ function linksOf(id) {
 }
 window.__links = linksOf;
 const LANES = [
-  ['pac', 'Paciente', [['P01', 'P02', 'P03', 'P04', 'P05'], ['P06', 'P07', 'P08', 'P09'], ['P10', 'P11', 'P36', 'P34'], ['P12', 'P32', 'P33', 'P22'], ['P13', 'P14', 'P15', 'P16'], ['P17', 'P18', 'P19', 'P20'], ['P26', 'P27', 'P30', 'P28', 'P29'], ['P21', 'P23', 'P24', 'P25'], ['P50', 'P51', 'P52', 'P53'], ['P54', 'P55', 'P56', 'P57', 'P58', 'P59'], ['P40', 'P60', 'P61', 'P62', 'P63'], ['P16', 'P64', 'P65'], ['P66', 'P67'], ['W01', 'W02', 'W03', 'W04']]],
-  ['pro', 'Profesional', [['R01', 'R02', 'R03'], ['R04', 'R05', 'R06', 'R07'], ['R08', 'R09', 'R10', 'R26'], ['R11', 'R12', 'R13', 'R14', 'R15'], ['R16', 'R17', 'R18'], ['R19', 'R20', 'R21', 'R22'], ['R23', 'R24', 'R25'], ['R27', 'R28', 'R29'], ['R37', 'R38', 'R31', 'R32'], ['R40', 'R41', 'R33', 'R34'], ['R35', 'R39', 'R36']]],
-  ['adm', 'Admin', [['A01', 'A02', 'A03'], ['A04', 'A05', 'A07'], ['A06', 'A08'], ['A09', 'A10']]],
+  ['pac', 'Paciente', [['P01', 'P02', 'P03', 'P04', 'P05'], ['P06', 'P07', 'P08', 'P09'], ['P10', 'P11', 'P36', 'P34'], ['P12', 'P32', 'P33', 'P22'], ['P13', 'P14', 'P15', 'P16'], ['P17', 'P18', 'P19', 'P20'], ['P26', 'P27', 'P30', 'P28', 'P29'], ['P21', 'P23', 'P24', 'P25'], ['P50', 'P51', 'P52', 'P53'], ['P54', 'P55', 'P56', 'P57', 'P58', 'P59'], ['P40', 'P60', 'P61', 'P62', 'P63'], ['P16', 'P64', 'P65'], ['P66', 'P67'], ['P70', 'P71', 'P72', 'P73'], ['P74', 'P75', 'P76', 'P77'], ['P78', 'P79', 'P80', 'P81', 'P82'], ['P83', 'P84', 'P85', 'P86', 'P87', 'P88'], ['P89', 'P90', 'P91', 'P92'], ['W01', 'W02', 'W03', 'W04']]],
+  ['pro', 'Profesional', [['R01', 'R02', 'R03'], ['R04', 'R05', 'R06', 'R07'], ['R08', 'R09', 'R10', 'R26'], ['R11', 'R12', 'R13', 'R14', 'R15'], ['R16', 'R17', 'R18'], ['R19', 'R20', 'R21', 'R22'], ['R23', 'R24', 'R25'], ['R27', 'R28', 'R29'], ['R37', 'R38', 'R31', 'R32'], ['R40', 'R41', 'R33', 'R34'], ['R35', 'R39', 'R36', 'R42', 'R43']]],
+  ['adm', 'Admin', [['A01', 'A02', 'A03'], ['A04', 'A05', 'A07'], ['A06', 'A08'], ['A09', 'A10'], ['A11', 'A12', 'A13']]],
+  ['ase', 'Asesor de Isapre', [['Q01', 'Q02', 'Q03', 'Q04']]],
 ];
 function openFlow() {
   const NW = 196, NH = 54, CG = 70, RG = 16, X0 = 40, pos = {};
@@ -731,7 +759,7 @@ window.__audit = function () {
     }
   }
   // alcanzables desde los inicios
-  const seen = new Set(), q = ['P06', 'P01', 'R01', 'A01'];
+  const seen = new Set(), q = ['P06', 'P01', 'R01', 'A01', 'Q01'];
   while (q.length) { const x = q.shift(); if (seen.has(x)) continue; seen.add(x); linksOf(x).forEach(y => { q.push(y); if (TO_D[y]) q.push(TO_D[y]); if (TO_M[y]) q.push(TO_M[y]); }); }
   ids.forEach(id => { if (!seen.has(id)) bad.push('pantalla suelta (no se llega): ' + id); });
   return { pantallas: ids.length, problemas: bad, fotos: [...AVSRC] };

@@ -109,6 +109,7 @@ def({ id: 'P51', name: 'Ficha de salud', kind: 'page', back: true, title: '', ne
   <div class="lbl2">Medicamentos que toma</div>${medList(f.meds)}
   <div class="lbl2">Dispositivos y ayudas</div><div class="chips">${f.dev.length ? f.dev.map(x => `<span class="chip">${x}</span>`).join('') : '<span class="sm t2">Ninguno</span>'}</div>
   <div class="lbl2">Escalas</div><div class="scls">${scale('Barthel', f.barthel, 100, barTxt(f.barthel), m ? 'hoy, Camila' : '21 oct')}${scale('Braden', f.braden, 23, bradTxt(f.braden), m ? 'hoy, Camila' : '21 oct')}</div>
+  <div class="lbl2">Exámenes</div>${m ? `${row('box:chart-line-up', 'Resultados y biomarcadores', '24 oct · 4 valores para revisar', 'P70', st('warn', '4 para revisar', 'arrows-down-up'))}${row('box:bell-ringing', 'Controles', 'Próximo: hemoglobina glicosilada · 24 ene', 'P77')}` : row('box:chart-line-up', 'Resultados y biomarcadores', 'Aún no hay exámenes', 'P74', '<span class="lk">Ver chequeos</span>')}
   <div class="lbl2">Historial</div>
   ${row('box:list', 'Línea de tiempo', m ? '9 registros desde el 4 oct' : 'Visitas, remedios y documentos', 'P52')}
   ${m ? row('box:bandaids', 'Evolución de la herida', 'Úlcera venosa · −51% de área en 11 días', 'P53') : ''}
@@ -184,6 +185,7 @@ def({ id: 'R37', name: 'Resumen antes de la visita', kind: 'page', back: true, t
   <div class="lbl2">Diagnósticos</div><div class="chips">${FAM.mama.dx.map(x => `<span class="chip">${x}</span>`).join('')}</div>
   <div class="lbl2">Medicamentos</div>${medList(FAM.mama.meds, { c: 1 })}
   <div class="lbl2">Funcionalidad</div><div class="scls">${scale('Barthel', 75, 100, barTxt(75), '24 oct')}${scale('Braden', 17, 23, bradTxt(17), '24 oct')}</div>
+  <div class="lbl2">Exámenes recientes</div>${S.shr.cr ? `<div class="note">${ic('chart-line-up')}<div>Hemoglobina glicosilada 7,8 % (sobre el rango del laboratorio) · 24 oct<br>Vitamina D 18 ng/mL (bajo el rango del laboratorio) · 24 oct</div></div>` : '<div class="sm t2">Daniela no compartió exámenes contigo.</div>'}
   <div class="lbl2">Última nota · 24 oct · Camila (tú)</div><div class="note">${ic('note')}<div>Úlcera venosa 3,5 × 2,3 cm, lecho 75% granulatorio, exudado escaso. Espuma con borde. Revisar glicemia: 151 mg/dL.</div></div>
   <div class="lbl2">Dispositivos</div><div class="chips">${FAM.mama.dev.map(x => `<span class="chip">${x}</span>`).join('')}</div>
   <div class="mt16">${note('clock', 'Ves este resumen desde 24 horas antes de la cita. El historial completo solo si Daniela lo autoriza.')}</div>`,
@@ -199,7 +201,7 @@ def({ id: 'R38', name: 'Historial de la paciente', kind: 'page', back: true, tit
 /* ---------- profesional: nota de la visita ---------- */
 const nStep = n => `<div class="nsteps">${['Visita', 'Procedimientos', 'Indicaciones', 'Firma'].map((t, i) => `<span class="${i < n ? 'done' : i === n ? 'on' : ''}">${t}</span>`).join('')}</div>`;
 def({ id: 'R31', name: 'Nota de la visita', kind: 'page', back: true, title: 'Nota de la visita', next: ['R32', 'R33', 'R34', 'R36', 'R35'],
-  body: () => `${nStep(0)}<button class="dictar mt16" data-act="dictStart" data-arg="all" data-go="R40"><span class="dm">${ic('microphone', 1)}</span><span class="tx"><b>Dictar nota</b><span>Cuéntala con tu voz. La ordenamos y tú la revisas.</span></span>${ic('caret-right')}</button>
+  body: () => `${nStep(0)}${row('box:test-tube', 'Entregar muestra en laboratorio', S.mue.done ? 'Entregada · LabAndes Clínico' : 'Toma de hoy · LabAndes Clínico · hasta 12:00', 'R42', S.mue.done ? st('ok', 'Entregada') : st('warn', 'Pendiente'))}<button class="dictar mt16" data-act="dictStart" data-arg="all" data-go="R40"><span class="dm">${ic('microphone', 1)}</span><span class="tx"><b>Dictar nota</b><span>Cuéntala con tu voz. La ordenamos y tú la revisas.</span></span>${ic('caret-right')}</button>
   ${S.vz && S.vz.done ? `<div class="mt8">${st('ok', 'Nota completada desde tu dictado', 'microphone')}</div>` : ''}<div class="nmeta mt16">${kv('Llegada', S.note.hin + ' · con el código de Daniela')}${kv('Salida', S.note.hout + ' · al terminar')}</div>
   <div class="lbl2 lmic">Resumen para la familia<button class="micb" data-act="dictStart" data-arg="res" data-go="R40" aria-label="Dictar">${ic('microphone')}</button></div><div class="field area"><span>Rosa está más animada. La herida se ve más chica y limpia. Inyección sin problemas.</span></div><div class="xs t2 mt4">Escríbelo simple: es lo primero que lee Daniela.</div>
   <div class="lbl2 lmic">Signos vitales<button class="micb" data-act="dictStart" data-arg="sv" data-go="R40" aria-label="Dictar">${ic('microphone')}</button></div>${vitGrid(false)}<button class="lk sm mt8" data-act="toast" data-arg="Signos vitales actualizados.">${ic('pencil-simple')}Editar</button>
@@ -208,6 +210,7 @@ def({ id: 'R31', name: 'Nota de la visita', kind: 'page', back: true, title: 'No
   ${row('box:pill', 'Medicamentos · 5 correctos', 'Neurobionta 5.000 IM', 'R33', st('ok', 'Completa'))}
   ${row('box:moon', 'Bitácora de turno', 'Para turnos de TENS y cuidadoras', 'R36')}
   ${row('box:plus', 'Otra plantilla', 'Sonda, ostomía, paliativos, valoración', '', ic('caret-right'), '', 'toast', 'Plantillas: sonda Foley, ostomía, traqueostomía, paliativos y valoración geriátrica.')}
+  ${S.shr.cr ? `<div class="lbl2">Resultados de exámenes</div>${checkRow('Educación entregada sobre el resultado', S.eduRes, 'tog', 'eduRes', 'Explicaste qué mide y que lo converse con su médico. Sin interpretar.')}` : ''}
   <div class="lbl2">Escalas</div><div class="scls">${scale('Barthel', 75, 100, barTxt(75), 'sin cambios')}${scale('Braden', 17, 23, bradTxt(17), 'sin cambios')}</div>`,
   foot: () => btn('Siguiente: indicaciones', 'R34') });
 

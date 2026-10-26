@@ -32,7 +32,7 @@ QRES.exres = () => {
     return `${sel.length ? `<div class="lbl2">Elegidos</div><div class="exl">${sel.map(k => exRow(k)).join('')}</div>` : ''}<div class="lbl2">Más pedidos</div><div class="exl">${EXPOP.map(k => exRow(k)).join('')}</div>
     <div class="xs t3 mt12">${Object.keys(EXAMS).length} exámenes en el catálogo. Busca por nombre, parte del nombre o código Fonasa.</div>`; }
   const r = exFind(q), selK = examKeys();
-  const selBar = selK.length ? `<div class="exsel mt12"><div class="xs t2">Elegidos · ${selK.length} · <b class="num">${clp(examSum())}</b></div><div class="chips mt8">${selK.map(k => `<button class="chip on" data-act="ex" data-arg="${k}">${EXAMS[k][0]} · ${clp(EXAMS[k][1])} ${ic('x')}</button>`).join('')}</div></div>` : '';
+  const selBar = selK.length ? `<div class="exsel mt12"><div class="xs t2">Elegidos · ${selK.length} · <b class="num">${clp(examSum())}</b></div><div class="chips mt8">${selK.map(k => `<button class="chip on" data-act="ex" data-arg="${k}">${EXAMS[k][0]} · ${clp(EXAMS[k][1])} ${ic('x')}</button>`).join('')}</div><button class="lk sm mt8" data-act="lbFrom" data-go="P88">${ic('flask')}Ver en qué laboratorios · por precio o distancia</button></div>` : '';
   if (!r.length) return selBar + `<div class="empty mt16">${ic('magnifying-glass')}<div class="b-m mt8">No encontramos «${q.replace(/</g, '')}»</div><div class="sm t2 mt4">Prueba con otra palabra o sube la foto de tu orden y lo buscamos por ti.</div>${btn('Subir foto de mi orden', 'P60', 'sec', 'data-act="mmode" data-arg="orden"')}</div>`;
   const lim = S.exLim || 20;
   return `${selBar}<div class="xs t2 mt12">${r.length} resultado${r.length > 1 ? 's' : ''}</div><div class="exl">${r.slice(0, lim).map(k => exRow(k, q)).join('')}</div>${r.length > lim ? `<button class="btn sec mt12" data-act="exMore">Ver ${Math.min(20, r.length - lim)} más</button>` : ''}`;
@@ -98,7 +98,9 @@ def({ id: 'P40', name: 'Exámenes de laboratorio', kind: 'page', back: true, tit
       return `${head}<div class="mt16">${note('sparkle', 'Sube una foto de tu orden y nuestro equipo marca los exámenes por ti. Tú confirmas los precios antes de pagar.', 'ok')}</div>${stt ? `<div class="mt16">${stt}</div>` : `<div class="lbl2">Cómo funciona</div>${[['camera', 'Sacas una foto a la orden', 'Papel o PDF, la de cualquier médico'], ['magnifying-glass', 'La revisamos en menos de 30 min', 'En horario hábil, con el catálogo del laboratorio'], ['check-circle', 'Confirmas los exámenes y el precio', 'Puedes editar antes de pagar']].map(t => row('box:' + t[0], t[1], t[2], '', '')).join('')}`}`;
     }
     return `${head}<div class="mt16">${note('check-circle', 'No necesitas orden: nosotros la gestionamos por ti.', 'ok')}</div>
-    <div class="mt16">${qin('exq', 'exres', 'Busca: hemograma, vitamina D, 0301045…', 'exLim')}</div><div id="exres">${QRES.exres()}</div>
+    <div class="mt12">${row('box:package', 'Chequeos armados', `${PACKS.length} packs · desde ${clp(Math.min(...PACKS.map(pkTot)))} con toma`, 'P74')}</div>
+    ${labsNear()}
+    <div class="lbl2">Buscar exámenes</div><div>${qin('exq', 'exres', 'Busca: hemograma, vitamina D, 0301045…', 'exLim')}</div><div id="exres">${QRES.exres()}</div>
     <div class="lbl2">Orden médica</div>${checkRow('Necesito orden médica', S.needOrd, 'tog', 'needOrd', 'La gestionamos con un médico · precio por confirmar')}
     <div class="xs t3 mt8">Precio Cuidapp: precio convenido con el laboratorio. Precio particular: valor de lista cuando no hay precio Cuidapp.</div>`;
   },
@@ -144,7 +146,8 @@ const pvBlock = w => { const p = S.pv[w];
   ${radioRow('Isapre', p.t === 'isapre' && p.is ? p.is : 'Elige tu isapre', p.t === 'isapre', 'pvT', w + '|isapre', 'buildings')}${p.t === 'isapre' ? `<div class="chips sub">${ISAPRES.map(t => chip(t, p.is === t, 'pvIs', w + '|' + t)).join('')}</div>` : ''}
   ${radioRow('Particular', 'Sin previsión o prefiero no usarla', p.t === 'part', 'pvT', w + '|part', 'wallet')}`; };
 def({ id: 'P64', name: 'Previsión de salud', kind: 'page', back: true, title: 'Previsión de salud',
-  body: () => { const w = pvW(); return `<div class="t2 sm">${patN(w)} · RUT ${RUTS[w]}</div><div class="mt12">${pvBlock(w)}</div>
+  body: () => { const w = pvW(); return `<div class="t2 sm">${patN(w)} · RUT ${RUTS[w]}</div><div class="mt12">${pvBlock(w)}</div>${S.pv[w].t === 'isapre' ? `<div class="mt12">${S.isa[w] ? row('box:link', `${S.isa[w].is} vinculada`, 'Reembolso automático activo', 'P82', st('ok', 'Activa'), '', 'lkW', w) : row('box:link', 'Reembolso automático', `Vincula ${S.pv[w].is || 'tu Isapre'} una vez y enviamos los reembolsos por ti`, 'P78', '<span class="lk">Vincular</span>', '', 'lkW', w)}</div>` : ''}
+  <div class="mt12">${row('box:chart-bar', 'Cotiza tu Isapre', 'Asesores de Isapre comparan planes para ti', 'P89')}</div>
   <div class="mt16">${note('receipt', 'La usamos para emitir tus boletas para reembolso: van con tu RUT, tu previsión y los códigos Fonasa de cada examen.')}</div>`; },
   foot: () => btn('Guardar', 'back') });
 
@@ -157,7 +160,7 @@ const reembolsoBlock = () => { const m = S.item === 'mue';
   <button class="lk mt8" data-go="P65">${ic('file-pdf')}Ver documentos para reembolso</button></div>`; };
 def({ id: 'P65', name: 'Documentos para reembolso', kind: 'page', back: true, title: 'Para tu reembolso',
   body: () => { const m = S.item === 'mue', w = S.who, pr = PRO(), p = price(); const toma = m ? p.pro : p.total;
-    return `<div class="pdfp"><div class="pdh"><div><b>Cuidapp</b><div class="xs t2">Documentos para reembolso · ${DAYS[S.day][3].replace(/^(hoy )?\S+ /, '')} 2026</div></div>${ic('file-pdf', 1)}</div>
+    return `${(S.pv[w] || {}).t === 'isapre' ? `<div class="mb12">${S.isa[w] ? row('box:lightning', 'Reembolso automático', `Lo enviamos a ${S.isa[w].is} por ti`, 'P80', st('ok', 'Activo')) : row('box:link', 'Que lo envíe Cuidapp', `Vincula ${S.pv[w].is} y no tienes que subir nada`, 'P78', '<span class="lk">Vincular</span>', '', 'lkW', w)}</div>` : ''}<div class="pdfp"><div class="pdh"><div><b>Cuidapp</b><div class="xs t2">Documentos para reembolso · ${DAYS[S.day][3].replace(/^(hoy )?\S+ /, '')} 2026</div></div>${ic('file-pdf', 1)}</div>
     <div class="xs t2 mt8">Paciente: <b style="color:var(--text)">${patN(w)}</b> · RUT ${RUTS[w]} · ${pvTxt(w)}</div>
     ${m ? `<div class="rmbs mt12"><b>1. Boleta de exámenes</b><table class="rtab mt8"><tr><th>Código</th><th>Examen</th><th>Valor</th></tr>${examKeys().map(k => `<tr><td class="num">${EXAMS[k][6] || EXAMS[k][5] || 's/c'}</td><td>${EXAMS[k][0]}</td><td class="num">${clp(EXAMS[k][1])}</td></tr>`).join('')}<tr><td></td><td><b>Total</b></td><td class="num"><b>${clp(examSum())}</b></td></tr></table>${examKeys().some(k => !EXAMS[k][6]) ? '<div class="xs t3 mt4">Sin código Fonasa: consulta con tu previsión si lo cubre.</div>' : ''}</div>` : ''}
     <div class="rmbs mt12"><b>${m ? '2' : '1'}. Boleta de honorarios electrónica</b><table class="rtab mt8"><tr><td>Profesional</td><td>${pr.n} · ${pr.t}</td></tr><tr><td>RUT</td><td class="num">${PRUT[pr.id] || PRUT.cr}</td></tr><tr><td>Prestación</td><td>${m ? 'Toma de muestra venosa a domicilio · cód. 0307011' : CAT[S.item].n + ' a domicilio'}</td></tr><tr><td>Valor</td><td class="num">${clp(toma)}</td></tr></table></div>
