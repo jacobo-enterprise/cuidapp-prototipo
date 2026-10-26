@@ -80,9 +80,11 @@ Object.assign(ACT, {
   lkW: w => { S.lk.w = w; const p = S.pv[w]; if (p.t === 'isapre') S.lk.is = p.is; },
   lkIs: i => { S.lk.is = i; },
   lkC: k => { S.lk[k] = !S.lk[k]; },
-  isaLink: () => { S.isa[S.lk.w] = { is: S.lk.is, desde: '26 oct 2026' }; S.pv[S.lk.w].t = 'isapre'; S.pv[S.lk.w].is = S.lk.is; S.rbAuto = true; toast(`${S.lk.is} vinculada. Desde ahora enviamos tus reembolsos por ti.`); },
+  isaLink: () => { S.isa[S.lk.w] = { is: S.lk.is, desde: '26 oct 2026' }; S.pv[S.lk.w].t = 'isapre'; S.pv[S.lk.w].is = S.lk.is; S.rbAuto = true; if (S.lkNext) S.rbAsk = 'si'; toast(`${S.lk.is} vinculada. Desde ahora enviamos tus reembolsos por ti.`); },
   isaUn: w => { delete S.isa[w]; S.rbAuto = false; toast('Isapre desvinculada. Borramos el acceso y dejamos de enviar reembolsos.'); },
-  rbAuto: () => { S.rbAuto = !S.rbAuto; },
+  rbAuto: () => { S.rbAuto = !S.rbAuto; S.rbAsk = S.rbAuto ? 'si' : 'no'; },
+  rbAsk: v => { S.rbAsk = v; S.rbAuto = v === 'si' && !!isaOf(S.who); },
+  lkBook: () => { S.lk.w = S.who; S.lk.is = (S.pv[S.who] || {}).is || S.lk.is; S.lkNext = 'P14'; },
   rb: id => { S.rbSel = id; },
   rbFix: () => { const r = RBS().find(x => x.id === S.rbSel); if (r) r.st = 'env'; toast('Reenviado con la orden médica corregida.'); },
 });
@@ -204,6 +206,12 @@ const RBST = ['listos', 'env', 'rev', 'res', 'pag'];
 const RBN = { listos: 'Documentos listos', env: 'Enviado a la Isapre', rev: 'En revisión', apr: 'Aprobado', rech: 'Rechazado', pag: 'Pagado' };
 const rbChip = s => s === 'pag' ? st('ok', 'Pagado', 'check-circle') : s === 'apr' ? st('ok', 'Aprobado', 'check') : s === 'rech' ? st('bad', 'Rechazado', 'x-circle') : s === 'rev' ? st('inf', 'En revisión', 'hourglass-medium') : s === 'env' ? st('inf', 'Enviado', 'paper-plane-tilt') : st('neu', 'Documentos listos', 'file-text');
 const rbIdx = s => s === 'pag' ? 4 : s === 'apr' || s === 'rech' ? 3 : RBST.indexOf(s);
+/* pregunta en la reserva: ¿gestionamos el reembolso? (antes de pagar) */
+const rbAsk = () => { const w = S.who, p = S.pv[w] || {}; if (p.t === 'fonasa') return '';
+  const lk = isaOf(w), is = lk ? lk.is : p.is || 'tu Isapre';
+  return `<div class="rbq mt16"><div class="rbq-h"><span class="ri box">${ic('lightning')}</span><div><b>¿Quieres que gestionemos tu reembolso automáticamente?</b><div class="sm t2 mt4">Cuidapp envía tu boleta a ${is} · ${clp(RB_FEE)}</div></div></div>
+  <div class="row8 mt12"><button class="btn ${S.rbAsk === 'si' ? '' : 'sec'} sm" data-act="rbAsk" data-arg="si">${S.rbAsk === 'si' ? ic('check') : ''}Sí</button><button class="btn ${S.rbAsk === 'no' ? '' : 'sec'} sm" data-act="rbAsk" data-arg="no">${S.rbAsk === 'no' ? ic('check') : ''}No, gracias</button></div>
+  ${S.rbAsk === 'si' ? (lk ? `<div class="xs t2 mt12">${ic('check-circle')} Listo. Al terminar la atención enviamos la boleta a ${lk.is}. La gestión (${clp(RB_FEE)}) aparece en el desglose.</div>` : `<div class="mt12">${row('box:link', 'Vincular mi Isapre', `Para enviarlo por ti necesitamos conectar ${is}. Toma 2 minutos.`, 'P78', '<span class="lk">Vincular</span>', '', 'lkBook', '')}</div>`) : S.rbAsk === 'no' ? `<div class="xs t2 mt12">Igual te dejamos la boleta para que la presentes tú.</div>` : ''}</div>`; };
 const rbAutoRow = () => { const w = S.who, p = S.pv[w] || {};
   if (p.t !== 'isapre') return p.t === 'fonasa' ? row('box:receipt', 'Reembolso Fonasa', 'Descarga los documentos y preséntalos en Fonasa', 'P65') : '';
   if (!isaOf(w)) return row('box:link', 'Reembolso automático', `Vincula ${p.is || 'tu Isapre'} y lo enviamos por ti · gestión ${clp(RB_FEE)}`, 'P78', '<span class="lk">Vincular</span>', '', 'lkW', w);
@@ -231,7 +239,7 @@ def({ id: 'P79', name: 'Vincular mi Isapre · conectar cuenta', kind: 'page', ba
     <div class="lbl2">Una sola vez</div>${row('box:identification-card', 'Carnet de identidad', S.lk.car ? 'Subido · por ambos lados' : 'Foto por ambos lados', '', S.lk.car ? st('ok', 'Listo') : '<span class="lk">Subir</span>', '', 'lkC', 'car')}
     ${row('box:bank', 'Cuenta para recibir el pago', S.lk.bank ? 'BancoEstado · Cuenta RUT •••• 3207' : 'Opcional, si tu Isapre paga por transferencia', '', S.lk.bank ? st('ok', 'Lista') : '<span class="lk">Agregar</span>', '', 'lkC', 'bank')}
     <div class="mt16">${note('info', 'Sujeto a las condiciones y plazos de cada Isapre. La Isapre decide el monto que reembolsa según tu plan.')}</div>`; },
-  foot: () => abtn(`${ic('link')}Vincular ${S.lk.is || 'Isapre'}`, 'isaLink', '', '', 'P80', !(S.lk.c1 && S.lk.c2)) });
+  foot: () => abtn(`${ic('link')}Vincular ${S.lk.is || 'Isapre'}`, 'isaLink', '', '', S.lkNext || 'P80', !(S.lk.c1 && S.lk.c2)) });
 
 def({ id: 'P80', name: 'Mis reembolsos', kind: 'page', back: true, title: 'Reembolsos', next: ['P81', 'P78', 'P82'],
   body: () => { const ws = Object.keys(S.isa); const l = RBS();

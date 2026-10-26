@@ -39,7 +39,7 @@ const labsNear = () => `<div class="shd mt24"><h3>Laboratorios cerca de ti</h3><
 const selEx = () => Object.keys(S.exams).filter(k => S.exams[k]);
 const labSel = l => (S.lbEx.length ? S.lbEx : ['hemo', 'lip']).filter(k => labHas(l, k));
 const TOMA_D = () => CAT.mue.base;
-const lbTot = () => { const l = labOf(S.labId), ex = labSel(l), s = ex.reduce((a, k) => a + lpp(l, k), 0), t = S.lbMode === 'dom' ? (s >= 30000 ? 0 : TOMA_D()) : 0; return { l, ex, s, t, tot: s + t }; };
+const lbTot = () => { const l = labOf(S.labId), ex = labSel(l), s = ex.reduce((a, k) => a + lpp(l, k), 0), t = S.lbMode === 'dom' ? (s >= 30000 ? 0 : TOMA_D()) : 0, sf = svcFeeOf(s + t); return { l, ex, s, t, sf, tot: s + t + sf }; };
 const mapThumb = l => `<div class="mapt"><span class="mpin">${ic('map-pin', 1)}</span><span class="mlab">${l.dir}</span></div>`;
 
 /* ---------- Asesores de Isapre (ficticios) ---------- */
@@ -121,7 +121,7 @@ def({ id: 'P86', name: 'Pagar exámenes', kind: 'page', back: true, title: 'Revi
   body: () => { const { l, ex, s, t, tot } = lbTot(), m = S.lbMode, su = l.sucs[S.lbSuc] || l.sucs[0];
     return `<div class="row8" style="align-items:center;gap:10px">${labLogo(l, 'sm')}<span class="tx"><b>${l.n}</b><div class="xs t2">${MODN[m]} · ${S.lbDay || 'Mié 28'} · ${S.lbHr || '08:00'}</div></span></div>
     ${row('box:' + (m === 'dom' ? 'house-line' : 'storefront'), m === 'dom' ? P().n : `Sucursal ${su[0]}`, m === 'dom' ? P().c : su[1], '', '')}
-    <div class="lbl2">Detalle</div>${ex.map(k => kv(EXAMS[k][0], clp(lpp(l, k)))).join('')}${m === 'dom' ? kv('Toma a domicilio', t ? clp(t) : '<s class="t3">' + clp(TOMA_D()) + '</s> $0') : ''}${kv('Total', clp(tot), 'tot')}
+    <div class="lbl2">Detalle</div>${ex.map(k => kv(EXAMS[k][0], clp(lpp(l, k)))).join('')}${m === 'dom' ? kv('Toma a domicilio', t ? clp(t) : '<s class="t3">' + clp(TOMA_D()) + '</s> $0') : ''}${kv(`Costo por servicio (${S.svcP}%)`, clp(lbTot().sf))}${kv('Total', clp(tot), 'tot')}
     <div class="lbl2">Pago</div>${row('box:wallet', 'Mercado Pago', 'Visa •••• 4821', '', '<span class="lk">Cambiar</span>')}
     <div class="mt16">${note('receipt', 'Pagas todo en Cuidapp. Te enviamos la boleta para el reembolso de tu Isapre o Fonasa.')}</div>`; },
   foot: () => abtn(`Pagar ${clp(lbTot().tot)}`, 'lbPay', '', '', 'P87') });
@@ -253,6 +253,8 @@ def({ id: 'A13', name: 'Liquidaciones de laboratorios', kind: 'adm', side: 'liq'
     ${rows.map(r => `<tr><td><b style="font-weight:600">${r.l.n}</b></td><td>${FREQ.find(f => f[0] === r.l.freq)[1]}</td><td class="num">${r.n}</td><td class="num">${clp(r.c)}</td><td class="num">${clp(r.p)}</td><td class="num">${clp(r.m)}</td><td class="num t2">${Math.round(r.m / r.c * 100)}%</td><td>${paid(r.l.id) ? st('ok', 'Pagada', 'check-circle') : st('warn', 'Pendiente', 'clock')}</td><td>${paid(r.l.id) ? '' : `<button class="pill" data-act="aPaid" data-arg="${r.l.id}">Marcar pagada</button>`}</td></tr>`).join('')}</table>
     <div class="h-m mt32">Profesionales · comisión ${S.comm}%</div><div class="t2 sm mt4">Sobre lo que cobra cada profesional: precio base más sus recargos.</div>
     <table class="t mt12"><tr><th>Profesional</th><th>Atenciones</th><th>Base</th><th>Recargos</th><th>Cobrado</th><th>Comisión ${S.comm}%</th><th>A pagar</th><th>Estado</th></tr>${PROS.slice(0, 5).map((p, i) => { const n = [14, 9, 11, 6, 8][i], b = n * (priceOf(p, 'iny') || 18000), rcg = Math.round(b * [0.06, 0.1, 0.04, 0, 0.08][i] / 100) * 100, t = b + rcg, c = Math.round(t * S.comm / 100); return `<tr><td><b style="font-weight:600">${p.n}</b></td><td class="num">${n}</td><td class="num">${clp(b)}</td><td class="num">${clp(rcg)}</td><td class="num">${clp(t)}</td><td class="num">${clp(c)}</td><td class="num">${clp(t - c)}</td><td>${per === 'sep' || i > 2 ? st('ok', 'Pagada', 'check-circle') : st('warn', 'Martes 27', 'clock')}</td></tr>`; }).join('')}</table>
+    <div class="h-m mt32">Costo por servicio · ${S.svcP}%</div><div class="t2 sm mt4">Lo paga la paciente sobre el total del pedido (servicios y exámenes, después de CUIDA15, sin la gestión de reembolso). Aparte de la comisión de profesionales y el margen de exámenes.</div>
+    <div class="kpis mt12">${[[412, 'Pedidos del período'], [clp(9864000), 'Total pedidos'], [clp(Math.round(9864000 * S.svcP / 100)), `Ingreso por costo ${S.svcP}%`]].map(t => `<div class="kpi"><b class="num">${t[0]}</b><span>${t[1]}</span></div>`).join('')}</div>
     <div class="h-m mt32">Gestión de reembolsos</div><div class="t2 sm mt4">${clp(RB_FEE)} por cada reembolso automático enviado a una Isapre.</div>
     <div class="kpis mt12">${[[38, 'Reembolsos gestionados'], [clp(38 * RB_FEE), 'Ingreso por gestión'], [31, 'Pagados por la Isapre']].map(t => `<div class="kpi"><b class="num">${t[0]}</b><span>${t[1]}</span></div>`).join('')}</div>
     <div class="xs t3 mt12">Cifras de ejemplo.</div>`; } });

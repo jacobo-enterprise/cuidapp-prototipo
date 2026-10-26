@@ -330,8 +330,8 @@ def({ id: 'P13', name: 'Elegir servicio, día y hora', kind: 'page', back: true,
   <div class="lbl2">Día</div>${dstrip(p, 'day', 'day')}
   <div class="lbl2">Hora de llegada · ${DAYS[S.day][3].replace('hoy ', '')}</div>
   ${groups(l).map(g => `<div class="sgrp"><div class="sg-t">${g[0]}</div><div class="slots3">${g[1].map(t => `<button class="slot ${S.slot === t ? 'on' : ''}" data-act="set" data-arg="slot=${t}">${t}${rcTag(p, S.day, t)}</button>`).join('')}</div></div>`).join('')}
-  <div class="mt16 col8">${rcLines(p, priceOf(p, S.item), S.day, S.slot, false).map(x => note(x[0].includes('nocturno') ? 'moon' : 'calendar-star', `${x[0]}: +${clp(x[1])}. Lo define ${first()}.`)).join('')}${note('calendar-check', `Llega entre ${S.slot} y ${slotEnd(S.slot)}. Cancelación gratis hasta 12 horas antes.`)}</div>`; },
-  foot: () => `<div class="fbar"><div class="fb-l"><b class="num">${clp(isT() ? price().total : price().pro - (price().disc || 0))}</b><span>${isT() ? `${shiftDates().length} turnos · ${shH()} h` : `${dayLbl(S.day)} · ${S.slot}`}${price().disc ? ` · CUIDA15 −${clp(price().disc)}` : ''}</span></div><button class="btn fbtn" data-act="set" data-arg="addrNext=P14" data-go="P14">Continuar</button></div>` });
+  <div class="mt16 col8">${rcLines(p, priceOf(p, S.item), S.day, S.slot, false).map(x => note(x[0].includes('nocturno') ? 'moon' : 'calendar-star', `${x[0]}: +${clp(x[1])}. Lo define ${first()}.`)).join('')}${S.slot ? `<div class="lbl2">Resumen</div>${price().L.filter(l => l[0] !== 'Gestión de reembolso').map(bkv).join('')}${kv('Total', clp(price().L.filter(l => l[0] !== 'Gestión de reembolso').reduce((x, y) => x + y[1], 0)), 'tot')}<div class="xs t3 mt4">Si pides el reembolso automático se suma la gestión (${clp(RB_FEE)}).</div>` : ''}${note('calendar-check', `Llega entre ${S.slot} y ${slotEnd(S.slot)}. Cancelación gratis hasta 12 horas antes.`)}</div>`; },
+  foot: () => `<div class="fbar"><div class="fb-l"><b class="num">${clp(price().total)}</b><span>${isT() ? `${shiftDates().length} turnos · ${shH()} h` : `${dayLbl(S.day)} · ${S.slot}`} ${price().disc ? ` · CUIDA15 −${clp(price().disc)}` : ''}</span></div><button class="btn fbtn" data-act="set" data-arg="addrNext=P14" data-go="P14">Continuar</button></div>` });
 
 const shiftForm = (p = PRO(), k = S.item, d = false) => { const c = CAT[k], hs = Object.keys(c.tp).map(Number), sc = shiftCalc(p, k);
   const st = [...Array(7)].map((_, i) => addD(SH0, i));
@@ -354,13 +354,14 @@ def({ id: 'P14', name: 'Dirección y detalles', kind: 'page', back: true, title:
   body: () => {
     const who = `<div class="lbl2">¿Para quién es?</div>${row('box:user', whoTxt(), S.who === 'mama' ? '78 años · Alergia a penicilina' : S.who === 'papa' ? '80 años · Hipertenso' : '37 años', 'P29', '<span class="lk">Cambiar</span>')}`;
     const addr = `<div class="lbl2">Dirección</div>${row('box:map-pin', P().n, P().full.split(', ').slice(1).join(', '), 'P08', '<span class="lk">Cambiar</span>', '', 'set', 'addrNext=P14')}`;
+    const rbq = rbAsk();
     const head = `${steps(1)}<div class="h-l mt16">${CAT[S.item].n}</div><div class="t2 mt4 sm">Con ${PRO().n} · ${whenTxt()}</div>`;
     let x;
     if (S.item === 'mue') x = `<div class="lbl2">Exámenes</div>${row('box:test-tube', byOrder() ? 'Orden en revisión' : nEx(), byOrder() ? 'Te avisamos para que confirmes' : S.needOrd ? clp(examSum()) + ' · orden médica por confirmar' : clp(examSum()) + ' · ' + (fasting() ? 'con ayuno' : 'sin ayuno'), 'P40', '<span class="lk">Cambiar</span>')}`;
     else if (isT()) x = `<div class="lbl2">¿Qué necesita en el turno?</div><div class="chips">${[['hig', 'Higiene y baño'], ['ali', 'Alimentación'], ['mov', 'Movilización'], ['rem', 'Recordar remedios'], ['com', 'Compañía']].map(t => chip(t[1], S.sh.need[t[0]], 'tog2', 'need.' + t[0])).join('')}</div><div class="lbl2">${('Algo que deba saber')}</div>${field('', 'Usa andador. Diabética, controla glicemia en la mañana.')}`;
     else if (S.item === 'iny' || CAT[S.item].g === 'vit') x = `<div class="lbl2">Medicamento</div>${field('pill', S.item === 'iny' ? 'Neurobionta 5.000 (ampolla)' : CAT[S.item].s + ' · lo traes tú con receta')}<div class="lbl2">${('¿Ya tienes el medicamento?')}</div><div class="chips">${chip('Sí, lo tengo', S.hasMed, 'set', 'hasMed=1')}${chip('Todavía no', !S.hasMed, 'set', 'hasMed=')}</div>${!S.hasMed ? `<div class="mt12">${note('warning', 'La profesional no lleva medicamentos. Cómpralo antes de la hora.', 'warn')}</div>` : ''}`;
     else x = `<div class="lbl2">Cuéntanos qué necesitas</div>${field('', S.item === 'son' ? 'Cambio de sonda Foley.' : S.item === 'sig' ? 'Control de presión y glicemia.' : 'Herida en el talón, curación cada 2 días.')}`;
-    return `${head}${addr}${who}${x}${shareBlock()}<div class="lbl2">${('Nota para ' + first() + ' (opcional)')}</div>${field('', '', 'Ej.: el timbre no funciona, llamar al llegar')}`;
+    return `${head}${addr}${who}${x}${shareBlock()}${rbq}<div class="lbl2">${('Nota para ' + first() + ' (opcional)')}</div>${field('', '', 'Ej.: el timbre no funciona, llamar al llegar')}`;
   },
   foot: () => `<button class="btn" data-go="${nextAfterP14()}">Continuar</button>` });
 
@@ -373,8 +374,8 @@ def({ id: 'P15', name: 'Receta médica', kind: 'page', back: true, title: 'Recet
   foot: () => abtn('Continuar', '', '', '', 'P17', !S.receta) });
 
 const bkv = l => l[2] === 'dsc' ? `<div class="kv dsc"><span class="k">${ic('tag')}${l[0]}</span><span class="num">−${clp(-l[1])}</span></div>` : kv(l[0], clp(l[1]));
-const breakdown = () => { const p = price(); if (S.item === 'mue' && !isT()) return `${p.L.map(l => l[0].startsWith('Exámenes') ? `${bkv(l)}<div class="exsub">${examList().map(e => `<span>${e[0]}</span><span class="num">${clp(e[1])}</span>`).join('')}</div>` : bkv(l)).join('')}${p.pend ? kv('Exámenes (laboratorio)', 'Por confirmar') : ''}${kv('Cargo por servicio', '$0')}${kv(p.pend ? 'Total por ahora' : 'Total', clp(p.total), 'tot')}`;
-  return `${p.L.map(bkv).join('')}${kv('Cargo por servicio', '$0')}${kv('Total', clp(p.total), 'tot')}`; };
+const breakdown = () => { const p = price(); if (S.item === 'mue' && !isT()) return `${p.L.map(l => l[0].startsWith('Exámenes') ? `${bkv(l)}<div class="exsub">${examList().map(e => `<span>${e[0]}</span><span class="num">${clp(e[1])}</span>`).join('')}</div>` : bkv(l)).join('')}${p.pend ? kv('Exámenes (laboratorio)', 'Por confirmar') : ''}${kv(p.pend ? 'Total por ahora' : 'Total', clp(p.total), 'tot')}`;
+  return `${p.L.map(bkv).join('')}${kv('Total', clp(p.total), 'tot')}`; };
 const cuidaRow = () => { const p = price(), svcN = isT() ? 'de los turnos' : 'del servicio'; return S.cuida ? row('box:tag', 'CUIDA15 aplicado', p.disc ? `Primera atención · −${clp(p.disc)} (15% ${svcN}, hasta $20.000)` : 'Primera atención · 15% hasta $20.000', '', '<span class="lk sm">Quitar</span>', '', 'set', 'cuida=0') : row('box:tag', 'Tienes un código', 'CUIDA15 · 15% en tu primera atención, hasta $20.000', '', '<span class="lk sm">Aplicar</span>', '', 'set', 'cuida=1'); };
 
 def({ id: 'P17', name: 'Revisa y paga', kind: 'page', back: true, title: 'Revisa y paga',
@@ -408,7 +409,7 @@ def({ id: 'P20', name: 'Cita confirmada', kind: 'page', next: ['P21'],
   body: () => `<div class="okc mt24">${ic('check', 0).replace('ph ', 'ph-bold ')}</div>
   <div class="h-l mt16">¡Listo! ${first()} confirmó tu cita</div><div class="t2 mt8">${whenLong()}</div>
   <div class="rvw mt24"><div class="rvw-h">${pav(PRO(), '', true)}<div><div class="b-m">${PRO().n}</div><div class="sm t2">${PRO().t} · ${PRO().tel}</div></div></div>
-  <div class="rvw-r">${ic(CAT[S.item].ic)}<span>${CAT[S.item].n} · ${whoTxt()}</span></div><div class="rvw-r">${ic('map-pin')}<span>${P().full}</span></div><div class="rvw-r">${ic('lock-simple')}<span>Retuvimos ${clp(price().total)} en Mercado Pago · se cobra al terminar</span></div>${price().disc ? `<div class="rvw-r">${ic('tag')}<span>Incluye descuento primera atención (CUIDA15) −${clp(price().disc)}</span></div>` : ''}</div>
+  <div class="rvw-r">${ic(CAT[S.item].ic)}<span>${CAT[S.item].n} · ${whoTxt()}</span></div><div class="rvw-r">${ic('map-pin')}<span>${P().full}</span></div><div class="rvw-r">${ic('lock-simple')}<span>Retuvimos ${clp(price().total)} en Mercado Pago · se cobra al terminar</span></div><div class="rvw-r">${ic('receipt')}<span>Incluye costo por servicio (${S.svcP}%) ${clp(price().sf)}${price().L.some(l => l[0] === 'Gestión de reembolso') ? ` y gestión de reembolso ${clp(RB_FEE)}` : ''}</span></div>${price().disc ? `<div class="rvw-r">${ic('tag')}<span>Incluye descuento primera atención (CUIDA15) −${clp(price().disc)}</span></div>` : ''}</div>
   <div class="mt12">${note('envelope-simple', 'Te enviamos el comprobante por correo. El día antes te recordamos la cita con una notificación push.')}</div>
   ${acts([['chat-circle', `Escribirle a ${first()}`, '', '', 'P22'], ['calendar-plus', 'Agregar a mi calendario', 'toast', 'Agregado a tu calendario.'], ['share-network', 'Compartir con la familia', 'toast', 'Link copiado. Mándalo por WhatsApp.']])}`,
   foot: () => `${abtn('Ver mis citas', 'book', '', '', 'P26')}${btn('Ir a Servicios', 'P06', 'ghost')}` });

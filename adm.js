@@ -16,6 +16,7 @@ Object.assign(ACT, {
   admTab: t => { S.admTab = t; },
   aedit: k => { S.aedit = k; },
   amin: d => { const k = S.aedit; S.mins[k] = Math.max(5000, S.mins[k] + (d === '+' ? 500 : -500)); },
+  svcP: v => { S.svcP = +v; toast(`Costo por servicio: ${v}% del total del pedido.`); },
   comm: v => { S.comm = +v; toast(`Comisión propuesta: ${v}%. Rige para reservas nuevas.`); },
 });
 const stOf = i => S.aprob.includes(i) ? st('ok', 'Aprobada') : S.rech.includes(i) ? st('bad', 'Rechazada') : i === 2 ? st('warn', 'Falta título') : st('neu', 'Por revisar');
@@ -63,7 +64,7 @@ def({ id: 'A05', name: 'Catálogo y comisión', kind: 'adm', side: 'tar', next: 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px" class="mt24"><div class="box" style="border:1px solid var(--border);border-radius:12px;padding:16px"><div class="b-m">Comisión de Cuidapp</div><div class="t2 sm mt4">Mínimo 15% sobre lo que cobra la profesional (precio base más sus recargos); puede ser mayor. En exámenes, mínimo 10% sobre el precio del laboratorio. Gestión de reembolso: $3.500 por solicitud.</div>
   <div class="chips mt12">${[15, 18, 20, 25].map(v => chip(v + '%', S.comm === v, 'comm', v)).join('')}</div>
   <div class="mt12">${kv('Inyección a $18.000 · profesional recibe', clp(net(18000)))}</div></div>
-  <div class="box" style="border:1px solid var(--border);border-radius:12px;padding:16px"><div class="b-m">Tope de recargos</div><div class="t2 sm mt4">Cada profesional define sus recargos (noche, fines de semana, festivos, urgencia). Cuidapp fija el máximo sobre su precio base.</div><div class="chips mt12">${[50, 100, 150].map(v => chip('+' + v + '%', S.rcMax === v, 'rcMax', v)).join('')}</div></div></div>` });
+  <div class="box" style="border:1px solid var(--border);border-radius:12px;padding:16px"><div class="b-m">Costo por servicio</div><div class="t2 sm mt4">Lo paga la paciente sobre el total del pedido (servicios y exámenes, después de CUIDA15, sin la gestión de reembolso). Aparte de la comisión y del margen de exámenes.</div><div class="chips mt12">${[1, 2].map(v => chip(v + '%', S.svcP === v, 'svcP', v)).join('')}</div><div class="b-m mt24">Tope de recargos</div><div class="t2 sm mt4">Cada profesional define sus recargos (noche, fines de semana, festivos, urgencia). Cuidapp fija el máximo sobre su precio base.</div><div class="chips mt12">${[50, 100, 150].map(v => chip('+' + v + '%', S.rcMax === v, 'rcMax', v)).join('')}</div></div></div>` });
 
 def({ id: 'A07', name: 'Editar servicio del catálogo', kind: 'adm', side: 'tar',
   body: () => { const k = S.aedit; return `<div style="display:flex;align-items:center;gap:12px"><button class="ib" data-go="A05">${ic('arrow-left')}</button><div class="h-l">${CAT[k].n}</div></div>

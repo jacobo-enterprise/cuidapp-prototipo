@@ -1211,3 +1211,5 @@ input[type=search]::-webkit-search-cancel-button{display:none}
 .pp .dsd{display:block;font-size:11px;font-weight:500;color:var(--t3);line-height:12px;text-align:right}
 .lk.xs{font-size:12px}
 .kv.dsc .k{display:inline-flex;align-items:center;gap:6px}.kv.dsc .k .ph{font-size:16px;color:var(--accent,#7A7CF0)}.kv.dsc .num{color:#3E8A5B;font-weight:600;white-space:nowrap;flex:none}.kv.dsc .k{flex:1;min-width:0}
+.rbq{padding:16px;border-radius:16px;box-shadow:0 0 0 1px var(--border);background:#fff}.rbq-h{display:flex;gap:12px;align-items:flex-start}.rbq-h b{font-weight:600;line-height:21px}
+.rbq .row8{display:flex;gap:8px}.rbq .btn.sm{height:40px;flex:1;font-size:15px;gap:6px}.rbq .xs .ph{color:#3E8A5B;vertical-align:-2px}
