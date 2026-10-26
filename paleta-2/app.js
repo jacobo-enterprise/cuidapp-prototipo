@@ -13,7 +13,7 @@ const S0 = () => ({
   item: 'iny', addr: 'mama', who: 'mama', when: 'prog', pro: 'cr', day: 1, slot: '08:00', sort: 'rel', ptab: 'serv', det: 'next',
   f: { enf: true, tens: true }, fmax: 0, fday: 'all', frat: 0, fgen: '', fcom: '',
   fav: { cr: true, pg: true }, q: '', typed: false, sheet: '', ctab: 'next', revF: 'all', revSort: 'rec', resp: { cr4: 'Gracias, Francisco. Ese día me pilló un taco en Grecia, por eso te avisé. ¡Nos vemos en el próximo control!' }, replyTo: 'cr1', rtxt: false, rcrit: {}, pday: 1, svcFrom: '',
-  hasMed: true, receta: false, orden: '', mmode: 'cat', exq: '', kinAv: false, promo: 'kin', exams: { hemo: true, lip: true, gli: true }, tensNeeds: { hig: true, mov: true, sig: true, com: false },
+  hasMed: true, receta: false, orden: '', mmode: 'cat', exq: '', kinAv: false, medAv: false, promo: 'kin', exams: { hemo: true, lip: true, gli: true }, tensNeeds: { hig: true, mov: true, sig: true, com: false },
   pay: 'visa', prev: 'fonasa', consent: false, rating: 0, tags: {}, tip: 0, chat: [], phase: 'llego', cancelFrom: 'P27', booked: false, hecho: false, cr: 0,
   docs: { carnet: false, selfie: false, titulo: false, antec: false, banco: false }, prof: 'enf',
   online: false, code: '', chk: { id: false, rec: false, ale: false }, earn: 186405, done: 9, pRating: 0, pTags: {}, paid: false,
@@ -96,7 +96,7 @@ const GRP = {
 const GK = Object.keys(GRP);
 /* iconos 3D de servicios (img/iconos-3d); el resto de la interfaz usa Phosphor */
 const i3k = k => CAT[k] ? (CAT[k].i || CAT[k].g) : k;
-const i3 = (k, c = '') => `<img class="i3d ${c}" src="img/iconos-3d/${i3k(k)}.webp" alt="" draggable="false">`;
+const i3 = (k, c = '') => `<img class="i3d ${c}" src="img/iconos-3d/${i3k(k)}.webp?v=20261026b" alt="" draggable="false">`;
 const INC = { ins: 'Insumos: jeringa, aguja, tórulas y guantes', pre: 'Control de presión antes y después', res: 'Retiro de residuos clínicos', edu: 'Indicaciones escritas para la familia' };
 /* catálogo del laboratorio aliado: precios fijos, no los pone la profesional */
 const LAB = 'Laboratorio aliado';
@@ -270,14 +270,18 @@ const abtn = (t, act, arg = '', k = '', go = '', dis = false) => `<button class=
 const row = (i, a, b = '', go = '', end = ic('caret-right'), cls = '', act = '', arg = '') => {
   const tag = go || act ? 'button' : 'div';
   return `<${tag} class="row ${cls}" ${go ? `data-go="${go}"` : ''} ${act ? `data-act="${act}" data-arg="${arg}"` : ''}>
-  ${i ? `<span class="ri ${i.startsWith('box:') ? 'box' : ''}">${ic(i.replace('box:', ''))}</span>` : ''}
+  ${i ? (i.startsWith('av:') ? av(i.slice(3), 's') : `<span class="ri ${i.startsWith('box:') ? 'box' : ''}">${ic(i.replace('box:', ''))}</span>`) : ''}
   <span class="tx"><div class="a">${a}</div>${b ? `<div class="b">${b}</div>` : ''}</span>${end ? `<span class="end">${end}</span>` : ''}</${tag}>`;
 };
 const ST_I = { ok: 'check-circle', warn: 'clock', inf: 'clock-countdown', bad: 'x-circle' };
 const st = (k, t, i) => { i = i === '' ? '' : (i || ST_I[k]); return `<span class="st ${k}">${i ? ic(i, 1) : ''}${t}</span>`; };
 const PHOTO = ['CR', 'FA', 'MC', 'PG', 'VM', 'FL', 'DN', 'JS', 'CD', 'IP', 'RS'];
-const avIn = ini => PHOTO.includes(ini) ? `<img class="avp" src="img/pro/${ini.toLowerCase()}.webp" alt="" loading="lazy">` : ini;
-const av = (ini, cls = '', ver = false) => `<span class="av ${cls}${PHOTO.includes(ini) ? ' hasp' : ''}">${avIn(ini)}${ver ? `<span class="vb">${ic('check', 0).replace('ph ', 'ph-bold ')}</span>` : ''}</span>`;
+const V = '?v=20261026b';
+const slug = n => n.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\./g, '').trim().replace(/\s+/g, '-');
+const PACPH = { DF: 'daniela-fuentes', RM: 'rosa-m' };
+const phSrc = ini => PHOTO.includes(ini) ? `img/pro/${ini.toLowerCase()}.webp${V}` : PACPH[ini] ? `img/pac/${PACPH[ini]}.webp${V}` : '';
+const avIn = ini => phSrc(ini) ? `<img class="avp" src="${phSrc(ini)}" alt="" loading="lazy">` : ini;
+const av = (ini, cls = '', ver = false) => `<span class="av ${cls}${phSrc(ini) ? ' hasp' : ''}">${avIn(ini)}${ver ? `<span class="vb">${ic('check', 0).replace('ph ', 'ph-bold ')}</span>` : ''}</span>`;
 const kv = (k, v, cls = '') => `<div class="kv ${cls}"><span class="k">${k}</span><span class="num">${v}</span></div>`;
 const note = (i, t, k = '') => `<div class="note ${k}">${ic(i)}<div>${t}</div></div>`;
 const chip = (t, on, act, arg) => `<button class="chip ${on ? 'on' : ''}" data-act="${act}" data-arg="${arg}">${t}</button>`;
@@ -401,7 +405,7 @@ window.addEventListener('resize', () => cur && fit());
 
 /* ---------- mapas ---------- */
 const pinHome = () => L.divIcon({ className: '', iconSize: [26, 26], iconAnchor: [13, 13], html: '<div style="width:26px;height:26px;border-radius:6px;background:#0D0D0D;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.3)"><div style="width:8px;height:8px;background:#fff;border-radius:2px"></div></div>' });
-const pinPro = (lbl) => L.divIcon({ className: '', iconSize: [22, 22], iconAnchor: [11, 11], html: `<div style="position:relative"><div style="width:22px;height:22px;border-radius:11px;background:#6950F2;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35)"></div>${lbl ? `<div style="position:absolute;left:30px;top:-3px;background:#0D0D0D;color:#fff;font:600 13px/28px var(--font);padding:0 10px;border-radius:14px;white-space:nowrap">${lbl}</div>` : ''}</div>` });
+const pinPro = (lbl) => L.divIcon({ className: '', iconSize: [40, 40], iconAnchor: [20, 20], html: `<div style="position:relative"><div style="width:40px;height:40px;border-radius:20px;background:#6950F2;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35);overflow:hidden;box-sizing:border-box"><img src="${phSrc(typeof PRO === 'function' && view && S.pro && roleOf(cur) !== 'pro' ? PRO().i : 'CR')}" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>${lbl ? `<div style="position:absolute;left:48px;top:6px;background:#0D0D0D;color:#fff;font:600 13px/28px var(--font);padding:0 10px;border-radius:14px;white-space:nowrap">${lbl}</div>` : ''}</div>` });
 const pinDot = (c = '#6950F2') => L.divIcon({ className: '', iconSize: [14, 14], iconAnchor: [7, 7], html: `<div style="width:14px;height:14px;border-radius:7px;background:${c};border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>` });
 const pinPulse = () => L.divIcon({ className: '', iconSize: [160, 160], iconAnchor: [80, 80], html: '<div class="pulse"><span></span><span></span><span></span></div>' });
 const pinLabel = (t) => L.divIcon({ className: '', iconSize: [0, 0], iconAnchor: [0, 0], html: `<div style="transform:translate(-50%,-44px);background:#0D0D0D;color:#fff;font:600 13px/30px var(--font);padding:0 12px;border-radius:15px;white-space:nowrap;display:inline-block">${t}</div>` });
@@ -551,6 +555,7 @@ function openFlow() {
 function closeFlow() { const f = $('#flow'); if (f) f.remove(); }
 
 /* ---------- auditoría (la usa Playwright) ---------- */
+const AVSRC = new Set();
 window.__audit = function () {
   const bad = [], ids = Object.keys(SC);
   const vs = ['m', 'd'];
@@ -559,6 +564,7 @@ window.__audit = function () {
     if (v === 'd' && TO_D[id]) continue;
     for (const shv of [''].concat(SC[id].sheets || [])) {
     view = v; S = S0(); stack = ['P06']; cur = id; if (SC[id].prep) SC[id].prep(); S.sheet = shv; render(); clearT();
+    document.querySelectorAll('.av').forEach(x => { if (!x.querySelector('img.avp') && !x.classList.contains('addph') && x.offsetParent !== null) bad.push(`${v} ${id}: avatar con iniciales «${x.textContent.trim().slice(0, 4)}»`); x.querySelectorAll('img.avp').forEach(i => AVSRC.add(i.getAttribute('src'))); });
     document.querySelectorAll('#stage button, #stage a, #stage tr.cl').forEach(b => {
       const g = b.dataset.go, a = b.dataset.act;
       if (!g && !a && !b.disabled) bad.push(`${v} ${id}: botón muerto «${b.textContent.trim().slice(0, 40)}»`);
@@ -571,7 +577,7 @@ window.__audit = function () {
   const seen = new Set(), q = ['P06', 'P01', 'R01', 'A01'];
   while (q.length) { const x = q.shift(); if (seen.has(x)) continue; seen.add(x); linksOf(x).forEach(y => { q.push(y); if (TO_D[y]) q.push(TO_D[y]); if (TO_M[y]) q.push(TO_M[y]); }); }
   ids.forEach(id => { if (!seen.has(id)) bad.push('pantalla suelta (no se llega): ' + id); });
-  return { pantallas: ids.length, problemas: bad };
+  return { pantallas: ids.length, problemas: bad, fotos: [...AVSRC] };
 };
 
 /* ---------- inicio ---------- */

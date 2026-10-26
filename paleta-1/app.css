@@ -825,3 +825,11 @@ table .ri.box{flex:none;min-width:40px}
 .av.hasp{background:#E9E8EE!important}
 .av .avp{width:100%;height:100%;border-radius:inherit;object-fit:cover;display:block}
 .av.hasp .vb{z-index:1}
+.row > .av{margin-right:12px}
+/* ===== selección con color de la paleta ===== */
+.check.on{background:var(--accent)!important;border-color:var(--accent)!important}
+.check.on i{color:#fff!important}
+.exr .check.on{border-color:var(--accent)!important}
+.radio.on{border:7px solid var(--accent)!important;background:#fff!important}
+.tog.on{background:var(--accent)!important}
+.medh{text-align:center;padding-top:8px}.medh .medi{display:block;width:120px;height:120px;margin:0 auto}.medh .medi .i3d{width:120px;height:120px}.medb{margin-top:12px;display:inline-flex}

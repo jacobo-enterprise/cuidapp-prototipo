@@ -11,6 +11,7 @@ Object.assign(ACT, {
   kinAv: () => { S.kinAv = !S.kinAv; toast(S.kinAv ? 'Listo. Te avisaremos cuando Kinesiología abra en tu comuna.' : 'Ya no te avisaremos.'); },
   promo: k => { S.promo = k; },
   code: () => toast('Código CUIDA20 copiado.'),
+  medAv: () => { S.medAv = !S.medAv; toast(S.medAv ? 'Listo. Te avisaremos cuando Medicamentos abra en tu comuna.' : 'Ya no te avisaremos.'); },
   kin: () => toast('Kinesiología llega muy pronto. Te avisamos cuando abra en tu comuna.'),
   pick: a => { const [pro, d, t] = a.split('|'); S.pro = pro; S.when = 'prog'; if (!S.item || !priceOf(PRO(), S.item)) S.item = svcsOf(PRO())[0]; if (d !== undefined && d !== '') { S.day = +d; S.slot = t; } else { const x = nextOf(PRO()); if (x) { S.day = x[0]; S.slot = x[1]; } } S.pday = S.day; },
   day: d => { S.day = +d; fixSlot(); },
@@ -59,7 +60,7 @@ const shd = (t, go, act, arg, lab = 'Ver todas') => `<div class="shd"><h3>${t}</
 const revsOf = id => { const l = (REVIEWS[id] || []).slice(); if (S.myRev && S.myRev.pro === id) l.unshift({ id: 'me', n: 'Daniela Fuentes', c: 'Ñuñoa', d: 'recién', s: S.myRev.s, r: S.myRev.r, t: 'Llegó puntual, le explicó todo a mi mamá y dejó las indicaciones por escrito. Muy recomendada.' }); return l; };
 const starsN = n => `<span class="strs">${[1, 2, 3, 4, 5].map(i => `<i class="ph-fill ph-star ${i <= n ? '' : 'off'}"></i>`).join('')}</span>`;
 const ini = n => n.split(' ').map(x => x[0]).slice(0, 2).join('');
-const rvCard = (r, full, pid) => `<div class="rv ${full ? 'full' : ''}"><div class="rv-h"><span class="av s rvav">${ini(r.n)}</span><div><div class="rv-n">${r.n}</div><div class="rv-m">${r.c} · ${r.d}</div></div></div>
+const rvCard = (r, full, pid) => `<div class="rv ${full ? 'full' : ''}"><div class="rv-h"><span class="av s rvav hasp"><img class="avp" src="img/pac/${slug(r.n)}.webp${V}" alt="" loading="lazy"></span><div><div class="rv-n">${r.n}</div><div class="rv-m">${r.c} · ${r.d}</div></div></div>
   <div class="rv-s">${starsN(r.r)}<span>${CAT[r.s].n}</span></div><div class="rv-t">${r.t}</div>
   ${full && S.resp[r.id] ? `<div class="rv-resp"><div class="rv-n sm">Respuesta de ${first(PRO(pid))}</div><div class="sm t2 mt4">${S.resp[r.id]}</div></div>` : ''}</div>`;
 const bars = p => `<div class="rbars">${[5, 4, 3, 2, 1].map((n, i) => `<div class="rb"><span>${n}</span><div class="tr"><i style="width:${p.dist[i]}%"></i></div></div>`).join('')}</div>`;
@@ -89,7 +90,7 @@ const rcard = (pr, wide) => {
 const grpGo = k => k === 'mue' ? 'P40' : GRP[k].l.length > 1 ? 'P37' : 'P10';
 const svcGo = k => k === 'mue' ? 'P40' : 'P10';
 const grpStats = k => { const ps = PROS.filter(p => GRP[k].l.some(x => priceOf(p, x))); const mn = Math.min(...GRP[k].l.flatMap(x => PROS.map(p => priceOf(p, x)).filter(Boolean))); return [ps.length, mn]; };
-const catGrid = () => `<div class="cats">${GK.map(k => `<button class="cat" data-act="grp" data-arg="${k}" data-go="${grpGo(k)}"><span class="ci">${i3(k)}</span><span class="cn">${GRP[k].c}</span></button>`).join('')}<button class="cat dim" data-act="kin"><span class="ci">${i3('kin')}</span><span class="cn">Kinesiología</span><span class="pr">Muy pronto</span></button><button class="cat" data-go="P33"><span class="ci">${i3('todos')}</span><span class="cn">Ver todos</span></button></div>`;
+const catGrid = () => `<div class="cats">${GK.map(k => `<button class="cat" data-act="grp" data-arg="${k}" data-go="${grpGo(k)}"><span class="ci">${i3(k)}</span><span class="cn">${GRP[k].c}</span></button>`).join('')}<button class="cat dim" data-act="kin"><span class="ci">${i3('kin')}</span><span class="cn">Kinesiología</span><span class="pr">Muy pronto</span></button><button class="cat dim" data-go="P46"><span class="ci">${i3('med')}</span><span class="cn">Medicamentos</span><span class="pr">Muy pronto</span></button></div>`;
 const featured = () => PROS.filter(p => priceOf(p, '')).sort((a, b) => (b.top ? 1 : 0) - (a.top ? 1 : 0) || a.km - b.km).slice(0, 5);
 const topRated = () => PROS.slice().sort((a, b) => b.rn - a.rn || b.rv - a.rv).slice(0, 3);
 const range = l => { const ps = l.map(p => priceOf(p, S.item)); return ps.length ? [Math.min(...ps), Math.max(...ps)] : [0, 0]; };
@@ -113,8 +114,9 @@ const svcRow = (k, label, q) => { const [n, mn] = statsOf(k); return `<button cl
 function sugg() {
   const q = S.q, s = SUG.filter(x => norm(x[0]).includes(norm(q))), ps = PROS.filter(p => norm(p.n).includes(norm(q)));
   return `${s.length ? `<div class="lbl2">Servicios</div>${s.slice(0, 5).map(x => svcRow(x[1], x[0], q)).join('')}` : ''}
+  ${/medic|farma|remedi|pastill|receta/.test(norm(q)) ? `<div class="lbl2">Muy pronto</div><button class="svcard dim" data-go="P46"><span class="si">${i3('med')}</span><span class="tx"><span class="a">Medicamentos</span><span class="b">Con receta, junto a una farmacia aliada</span><span class="c">Muy pronto · Avísame</span></span>${ic('bell')}</button>` : ''}
   ${ps.length ? `<div class="lbl2">Profesionales</div>${ps.map(p => lcard(p, 'flat')).join('')}` : ''}
-  ${!s.length && !ps.length ? `<div class="empty"><div class="b-m">No encontramos “${q}”</div><div class="sm t2 mt4">Prueba con otra palabra o mira todos los servicios.</div>${btn('Ver todos los servicios', 'P33', 'sec')}</div>` : ''}
+  ${!s.length && !ps.length && !/medic|farma|remedi|pastill|receta/.test(norm(q)) ? `<div class="empty"><div class="b-m">No encontramos “${q}”</div><div class="sm t2 mt4">Prueba con otra palabra o mira todos los servicios.</div>${btn('Ver todos los servicios', 'P33', 'sec')}</div>` : ''}
   <div class="lbl2">Búsquedas parecidas</div><div class="chips">${['Neurobionta', 'Vitamina B12', 'Con receta'].map(t => `<button class="chip" data-act="svc" data-arg="iny" data-go="P10">${t}</button>`).join('')}</div>`;
 }
 const groups = l => [['Por la mañana', t => t < '12:00'], ['Por la tarde', t => t >= '12:00' && t < '19:00'], ['Por la noche', t => t >= '19:00']].map(g => [g[0], l.filter(g[1])]).filter(g => g[1].length);
@@ -185,7 +187,7 @@ def({ id: 'P06', name: 'Servicios (inicio)', kind: 'page', tab: 'servicios', bod
   <button class="sbig mt16" data-go="P07">${ic('magnifying-glass')}<span>Inyección, curación, exámenes…</span></button></div>
   ${S.booked && !S.hecho ? `<button class="upc mt16" data-act="set" data-arg="det=next" data-go="P27"><span class="db"><span>${DAYS[S.day][0]}</span><b>${DAYS[S.day][1]}</b></span><span class="tx"><span class="xs t2">Tu próxima cita</span><b>${CAT[S.item].n}</b><span class="sm t2">${S.slot} · ${PRO().n}</span></span>${ic('caret-right')}</button>` : ''}
   <div class="mt16">${promoCar()}</div>
-  <div class="mt24">${catGrid()}</div>
+  <div class="mt24">${shd('Servicios', 'P33', '', '', 'Ver todos')}${catGrid()}</div>
   ${shd('Destacadas cerca de ti', 'P10', 'svc', '')}
   <div class="hcar">${featured().map(fcard).join('')}</div>
   ${shd('Búsquedas recientes')}
@@ -205,7 +207,12 @@ const svcCard = k => { const [n, mn] = statsOf(k); return `<button class="svcard
 def({ id: 'P33', name: 'Todos los servicios', kind: 'page', back: true, title: 'Servicios',
   body: () => `<div class="sm t2">Cada profesional pone su precio y dice qué incluye. Los exámenes tienen el precio fijo del laboratorio aliado.</div>
   ${GK.map(k => `<div class="lbl2">${GRP[k].n}</div>${GRP[k].l.map(svcCard).join('')}`).join('')}
-  <div class="lbl2">Muy pronto</div><button class="svcard dim" data-act="kin"><span class="si">${i3('kin')}</span><span class="tx"><span class="a">Kinesiología a domicilio</span><span class="b">Motora y respiratoria</span><span class="c">Te avisamos cuando abra</span></span>${ic('bell')}</button>` });
+  <div class="lbl2">Muy pronto</div><button class="svcard dim" data-act="kin"><span class="si">${i3('kin')}</span><span class="tx"><span class="a">Kinesiología a domicilio</span><span class="b">Motora y respiratoria</span><span class="c">Te avisamos cuando abra</span></span>${ic('bell')}</button><button class="svcard dim" data-go="P46"><span class="si">${i3('med')}</span><span class="tx"><span class="a">Medicamentos</span><span class="b">Con receta, junto a una farmacia aliada</span><span class="c">Muy pronto · Avísame</span></span>${ic('bell')}</button>` });
+
+def({ id: 'P46', name: 'Medicamentos (muy pronto)', kind: 'page', back: true, title: '',
+  body: () => `<div class="medh"><span class="medi">${i3('med')}</span><span class="badge medb">Muy pronto</span><div class="h-l mt16">Medicamentos</div><div class="t2 mt8">Pronto podrás pedir tus medicamentos con receta desde Cuidapp junto a una farmacia aliada.</div></div>
+  <div class="mt24">${row('box:file-text', 'Con tu receta médica', 'La subes una vez y la farmacia la revisa', '', '')}${row('box:storefront', 'Farmacia aliada', 'Precios de la farmacia, sin recargo de Cuidapp', '', '')}${row('box:bell', 'Te avisamos cuando abra', 'Con una notificación push y por correo', '', '')}</div>`,
+  foot: () => abtn(S.medAv ? ic('check') + 'Te avisaremos' : ic('bell') + 'Avísame', 'medAv', '', S.medAv ? 'sec' : '') });
 
 def({ id: 'P37', name: 'Categoría de servicios', kind: 'page', back: true, title: '', next: ['P10'],
   body: () => { const g = GRP[S.grp || 'iny']; return `<div class="i3hero">${i3(S.grp || 'iny')}</div><div class="h-l">${g.n}</div><div class="t2 sm mt4">${g.d}</div>
@@ -502,7 +509,7 @@ def({ id: 'W01', name: 'Servicios (web)', kind: 'dfree', dtab: 'servicios', shee
   <div class="wsearch mt32"><button class="ws-f" data-act="set" data-arg="sheet=wsvc"><span class="xs t2">Servicio</span><b>${svcN(S.item)}</b></button><span class="ws-d"></span><button class="ws-f" data-act="set" data-arg="addrNext=W01" data-go="P08"><span class="xs t2">Dirección</span><b>${P().n}, ${P().c}</b></button><button class="btn ws-b" data-go="W02">${ic('magnifying-glass')}Buscar</button></div>
   <div class="chips mt16">${['iny', 'mue', 'cur', 'sig'].map(k => `<button class="chip" data-act="svc" data-arg="${k}" data-go="${k === 'mue' ? 'P40' : 'W02'}">${k === 'mue' ? 'Exámenes de sangre' : CAT[k].n}</button>`).join('')}</div></div></section>
   <section class="wsec wpromo"><div class="wprow">${Object.keys(PROMO).map(promoCard).join('')}</div></section>
-  <section class="wsec"><h2 class="h-l">Explora por servicio</h2><div class="wcats mt24">${GK.map(k => { const [n, mn] = grpStats(k); return `<button class="wcat" data-act="grp" data-arg="${k}" data-go="${k === 'mue' ? 'P40' : GRP[k].l.length > 1 ? 'P37' : 'W02'}"><span class="ci">${i3(k)}</span><b>${GRP[k].n}</b><span class="sm t2">${GRP[k].l.length > 1 ? GRP[k].l.map(x => CAT[x].s).join(' · ') : k === 'mue' ? 'Precio del laboratorio + toma' : nPro(n) + ' · desde ' + clp(mn)}</span></button>`; }).join('')}<button class="wcat soon" data-act="kin"><span class="ci">${i3('kin')}</span><b>Kinesiología</b><span class="sm t2">Muy pronto</span></button></div></section>
+  <section class="wsec"><h2 class="h-l">Explora por servicio</h2><div class="wcats mt24">${GK.map(k => { const [n, mn] = grpStats(k); return `<button class="wcat" data-act="grp" data-arg="${k}" data-go="${k === 'mue' ? 'P40' : GRP[k].l.length > 1 ? 'P37' : 'W02'}"><span class="ci">${i3(k)}</span><b>${GRP[k].n}</b><span class="sm t2">${GRP[k].l.length > 1 ? GRP[k].l.map(x => CAT[x].s).join(' · ') : k === 'mue' ? 'Precio del laboratorio + toma' : nPro(n) + ' · desde ' + clp(mn)}</span></button>`; }).join('')}<button class="wcat soon" data-act="kin"><span class="ci">${i3('kin')}</span><b>Kinesiología</b><span class="sm t2">Muy pronto</span></button><button class="wcat soon" data-go="P46"><span class="ci">${i3('med')}</span><b>Medicamentos</b><span class="sm t2">Muy pronto · farmacia aliada</span></button></div></section>
   <section class="wsec"><div class="shd"><h2 class="h-l">Destacadas cerca de ti</h2><button class="lk" data-act="svc" data-arg="" data-go="W02">Ver todas</button></div><div class="wfeat mt24">${featured().slice(0, 4).map(fcard).join('')}</div></section>
   <section class="wsec last"><h2 class="h-l">Cómo funciona</h2><div class="wsteps mt24">${[['magnifying-glass', 'Busca el servicio', 'Inyección, curación, exámenes o cuidados TENS.'], ['users-three', 'Compara', 'Precio, qué incluye, reseñas reales y próxima hora libre.'], ['calendar-check', 'Agenda y listo', 'Pagas en la app. Se cobra solo al terminar la atención.']].map((s, i) => `<div class="wst"><span class="n">${i + 1}</span>${ic(s[0])}<b>${s[1]}</b><span class="t2">${s[2]}</span></div>`).join('')}</div></section>` });
 

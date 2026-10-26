@@ -165,12 +165,12 @@ def({ id: 'R17', name: 'Solicitud de reserva', kind: 'page', back: true, title: 
   <div class="mt8">${row('box:syringe', 'Inyección intramuscular', 'Neurobionta 5.000 · tiene el medicamento', '', '')}
   ${row('box:file-text', 'Receta adjunta', 'Dr. Andrés Valenzuela · 20/10/2026', '', st('ok', 'Se lee bien'))}
   ${row('box:map-pin', 'Ñuñoa · 1,8 km de tu casa', 'La dirección exacta aparece al aceptar', '', '')}
-  ${row('box:user', 'Rosa Muñoz, 78 años', 'La pidió su hija, Daniela', '', '')}</div>
+  ${row('av:RM', 'Rosa Muñoz, 78 años', 'La pidió su hija, Daniela', '', '')}</div>
   <div class="mt8">${note('warning', '<b>Alergia a penicilina.</b>', 'warn')}</div>`,
   foot: () => `${abtn('Aceptar reserva', 'req', 'r1:ok', '', 'R18')}<div style="display:flex;gap:8px"><button class="btn sec" data-act="toast" data-arg="Le propusimos a Daniela el martes 27 a las 09:00.">Proponer otra hora</button><button class="btn danger" data-act="req" data-arg="r1:no" data-go="R16">Rechazar</button></div>` });
 
 def({ id: 'R18', name: 'Detalle de la visita', kind: 'page', back: true, title: 'Reserva confirmada',
-  body: () => `<div class="h-l">Rosa Muñoz</div><div class="t2 mt4">78 años · la pidió Daniela Fuentes (hija) · +56 9 8765 4321</div>
+  body: () => `<div style="display:flex;align-items:center;gap:14px">${av('RM', 'l')}<div><div class="h-l">Rosa Muñoz</div><div class="t2 mt4">78 años · la pidió Daniela Fuentes (hija) · +56 9 8765 4321</div></div></div>
   <div class="mt16">${note('warning', '<b>Alergia a penicilina.</b>', 'warn')}</div>
   <div class="mt8">${row('box:calendar-check', 'Martes 27 oct · 08:00 a 08:30', 'Te recordamos 1 hora antes', '', '')}
   ${row('box:map-pin', 'Av. Irarrázaval 3450, depto 1204, torre B', 'Ñuñoa · Conserjería 24 h · estacionar en visitas', '', '')}
