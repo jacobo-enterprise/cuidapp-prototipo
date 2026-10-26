@@ -13,7 +13,7 @@ const S0 = () => ({
   item: 'iny', addr: 'mama', who: 'mama', when: 'prog', pro: 'cr', day: 1, slot: '08:00', sort: 'rel', ptab: 'serv', det: 'next',
   f: { enf: true, tens: true, cuid: true }, fmax: 0, fday: 'all', frat: 0, fgen: '', fcom: '',
   fav: { cr: true, pg: true }, q: '', typed: false, sheet: '', ctab: 'next', revF: 'all', revSort: 'rec', resp: { cr4: 'Gracias, Francisco. Ese día me pilló un taco en Grecia, por eso te avisé. ¡Nos vemos en el próximo control!' }, replyTo: 'cr1', rtxt: false, rcrit: {}, pday: 1, svcFrom: '',
-  hasMed: true, receta: false, orden: '', mmode: 'cat', exq: '', kinAv: false, medAv: false, promo: 'kin', exams: { hemo: true, lip: true, gli: true }, needOrd: false, ord: '', ordSel: null, ordFrom: false, help: '', exPage: 0, exLim: 20, scope: '', aexq: '', aexPage: 0, aord: 0, aordSel: {}, aordDone: [], pv: { mama: { t: 'fonasa', tr: 'B', is: '' }, papa: { t: 'isapre', tr: '', is: 'Colmena' }, yo: { t: 'isapre', tr: '', is: 'Banmédica' } }, isaOpen: false, rbDocs: false, tensNeeds: { hig: true, mov: true, sig: true, com: false },
+  hasMed: true, receta: false, orden: '', mmode: 'cat', exq: '', kinAv: false, medAv: false, promo: 'kin', exams: {}, needOrd: false, ord: '', ordSel: null, ordFrom: false, help: '', exPage: 0, exLim: 20, scope: '', aexq: '', aexPage: 0, aord: 0, aordSel: {}, aordDone: [], pv: { mama: { t: 'fonasa', tr: 'B', is: '' }, papa: { t: 'isapre', tr: '', is: 'Colmena' }, yo: { t: 'isapre', tr: '', is: 'Banmédica' } }, isaOpen: false, blog: 'b12', blogF: '', rbDocs: false, tensNeeds: { hig: true, mov: true, sig: true, com: false },
   pay: 'visa', prev: 'fonasa', consent: false, rating: 0, tags: {}, tip: 0, chat: [], phase: 'llego', cancelFrom: 'P27', booked: false, hecho: false, cr: 0,
   docs: { carnet: false, selfie: false, titulo: false, antec: false, banco: false }, prof: 'enf',
   online: false, code: '', chk: { id: false, rec: false, ale: false }, earn: 186405, done: 9, pRating: 0, pTags: {}, paid: false,
@@ -112,7 +112,7 @@ const CAT = {
   pun: { n: 'Herida operatoria y retiro de puntos', s: 'Herida operatoria', g: 'cur', d: 'Curación de la herida, retiro de puntos o corchetes y educación', ic: 'bandaids', who: ['enf'], dur: 30, dt: '30 min', ind: 'Sí (cirujano)', base: 22000 },
   dren: { n: 'Manejo de drenajes', s: 'Drenajes', g: 'cur', i: 'cura', d: 'Medición del débito, curación del sitio y registro', ic: 'first-aid', who: ['enf'], dur: 45, dt: '30–45 min', ind: 'Sí', base: 28000 },
   // 3. Exámenes a domicilio
-  mue: { n: 'Toma de muestras a domicilio', s: 'Toma de muestras', g: 'mue', d: 'Sangre u orina. Más de 650 exámenes del laboratorio aliado, sin orden médica', ic: 'test-tube', who: ['enf', 'tens'], dur: 20, dt: '15–20 min', ind: 'No', lab: true, base: 6490 },
+  mue: { n: 'Toma de muestras a domicilio', s: 'Toma de muestras', g: 'mue', d: 'Sangre u orina. Más de 650 exámenes, sin orden médica', ic: 'test-tube', who: ['enf', 'tens'], dur: 20, dt: '15–20 min', ind: 'No', lab: true, base: 6490 },
   ecg: { n: 'Electrocardiograma a domicilio', s: 'Electrocardiograma', g: 'mue', i: 'sig', d: 'Registro e informe por cardiólogo', ic: 'heartbeat', who: ['enf'], dur: 30, dt: '30 min', ind: 'Sí', soon: true, base: 31990 },
   holt: { n: 'Holter de presión o de ritmo', s: 'Holter', g: 'mue', i: 'cron', d: 'Instalación del equipo, retiro e informe', ic: 'heartbeat', who: ['enf'], dur: 30, dt: '24 h', ind: 'Sí', soon: true, base: 84990 },
   // 4. Adulto mayor
@@ -161,7 +161,7 @@ const CAT = {
 const GRP = {
   iny: { n: 'Inyecciones y medicamentos', c: 'Inyecciones', d: 'Intramuscular, endovenosa, sueros, vacunas, insulina y pastillero', l: ['iny', 'inysc', 'inyev', 'via', 'recs', 'suero', 'vac', 'insu', 'past'] },
   vit: { n: 'Vitaminas y sueros', c: 'Vitaminas', d: 'Neurobionta, B12, vitamina D y C, hierro y magnesio. Trae tu ampolla con receta', l: ['vneu', 'vb12', 'vd', 'vc', 'vfe', 'vsue', 'vmg', 'vmed'] },
-  mue: { n: 'Exámenes de laboratorio', c: 'Exámenes de laboratorio', d: 'Más de 650 exámenes con el laboratorio aliado. Sin orden médica: el laboratorio la gestiona', lab: true, l: ['mue', 'ecg', 'holt'] },
+  mue: { n: 'Exámenes de laboratorio', c: 'Exámenes de laboratorio', d: 'Más de 650 exámenes. Sin orden médica: nosotros la gestionamos', lab: true, l: ['mue', 'ecg', 'holt'] },
   cur: { n: 'Curaciones y heridas', c: 'Curaciones', d: 'Simple, avanzada, escaras, herida operatoria y drenajes', l: ['cur', 'cura', 'esc', 'pun', 'dren'] },
   am: { n: 'Adulto mayor', c: 'Adulto mayor', d: 'Cuidadoras por turno, acompañamiento, valoración y baño asistido', l: ['valo', 'cuid', 'acomp', 'bano', 'cogn'] },
   pd: { n: 'Postrados y dependencia', c: 'Postrados', d: 'Turnos TENS, sondas, ostomías, oxígeno y prevención de escaras', l: ['tens8', 'pos', 'sonali', 'son', 'ost', 'traq', 'oxi', 'pack'] },
@@ -183,10 +183,10 @@ const SUR = { dom: 0.5, fest: 1.0, noche: 0.25 };
 const FEST = { '31-10': 'Día de las Iglesias Evangélicas', '1-11': 'Todos los Santos', '8-12': 'Inmaculada Concepción' };
 /* iconos 3D de servicios (img/iconos-3d); el resto de la interfaz usa Phosphor */
 const i3k = k => CAT[k] ? (CAT[k].i || IC3[CAT[k].g] || CAT[k].g) : (IC3[k] || k);
-const i3 = (k, c = '') => `<img class="i3d ${c}" src="img/iconos-3d/${i3k(k)}.webp?v=20261026f" alt="" draggable="false">`;
+const i3 = (k, c = '') => `<img class="i3d ${c}" src="img/iconos-3d/${i3k(k)}.webp?v=20261026g" alt="" draggable="false">`;
 const INC = { ins: 'Insumos: jeringa, aguja, tórulas y guantes', pre: 'Control de presión antes y después', res: 'Retiro de residuos clínicos', edu: 'Indicaciones escritas para la familia' };
-/* catálogo del laboratorio aliado: precios fijos, no los pone la profesional */
-const LAB = 'Laboratorio aliado';
+/* catálogo del laboratorio: precios fijos, no los pone la profesional */
+const LAB = 'Laboratorio';
 /* catálogo completo (examenes.js, desde el Excel del laboratorio): [nombre, precio, tubo, ayuno, tipo de precio c|p, código, código Fonasa, muestra, plazo, nombre completo] */
 const EXAMS = {};
 EXDB.forEach(r => { EXAMS[r[0]] = [r[1], r[2], r[7] || r[6] || 'Según indicación', r[9], r[3], r[4], r[5], r[6], r[8], r[10] || r[1]]; });
@@ -433,7 +433,7 @@ const row = (i, a, b = '', go = '', end = ic('caret-right'), cls = '', act = '',
 const ST_I = { ok: 'check-circle', warn: 'clock', inf: 'clock-countdown', bad: 'x-circle' };
 const st = (k, t, i) => { i = i === '' ? '' : (i || ST_I[k]); return `<span class="st ${k}">${i ? ic(i, 1) : ''}${t}</span>`; };
 const PHOTO = ['CR', 'FA', 'MC', 'PG', 'VM', 'FL', 'DN', 'JS', 'CD', 'IP', 'RS', 'XV', 'MP'];
-const V = '?v=20261026f';
+const V = '?v=20261026g';
 const slug = n => n.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\./g, '').trim().replace(/\s+/g, '-');
 const PACPH = { DF: 'daniela-fuentes', RM: 'rosa-m', LF: 'luis-fuentes' };
 const phSrc = ini => PHOTO.includes(ini) ? `img/pro/${ini.toLowerCase()}.webp${V}` : PACPH[ini] ? `img/pac/${PACPH[ini]}.webp${V}` : '';
@@ -664,7 +664,7 @@ function linksOf(id) {
 }
 window.__links = linksOf;
 const LANES = [
-  ['pac', 'Paciente', [['P01', 'P02', 'P03', 'P04', 'P05'], ['P06', 'P07', 'P08', 'P09'], ['P10', 'P11', 'P36', 'P34'], ['P12', 'P32', 'P33', 'P22'], ['P13', 'P14', 'P15', 'P16'], ['P17', 'P18', 'P19', 'P20'], ['P26', 'P27', 'P30', 'P28', 'P29'], ['P21', 'P23', 'P24', 'P25'], ['P50', 'P51', 'P52', 'P53'], ['P54', 'P55', 'P56', 'P57', 'P58', 'P59'], ['P40', 'P60', 'P61', 'P62', 'P63'], ['P16', 'P64', 'P65'], ['W01', 'W02', 'W03', 'W04']]],
+  ['pac', 'Paciente', [['P01', 'P02', 'P03', 'P04', 'P05'], ['P06', 'P07', 'P08', 'P09'], ['P10', 'P11', 'P36', 'P34'], ['P12', 'P32', 'P33', 'P22'], ['P13', 'P14', 'P15', 'P16'], ['P17', 'P18', 'P19', 'P20'], ['P26', 'P27', 'P30', 'P28', 'P29'], ['P21', 'P23', 'P24', 'P25'], ['P50', 'P51', 'P52', 'P53'], ['P54', 'P55', 'P56', 'P57', 'P58', 'P59'], ['P40', 'P60', 'P61', 'P62', 'P63'], ['P16', 'P64', 'P65'], ['P66', 'P67'], ['W01', 'W02', 'W03', 'W04']]],
   ['pro', 'Profesional', [['R01', 'R02', 'R03'], ['R04', 'R05', 'R06', 'R07'], ['R08', 'R09', 'R10', 'R26'], ['R11', 'R12', 'R13', 'R14', 'R15'], ['R16', 'R17', 'R18'], ['R19', 'R20', 'R21', 'R22'], ['R23', 'R24', 'R25'], ['R27', 'R28', 'R29'], ['R37', 'R38', 'R31', 'R32'], ['R40', 'R41', 'R33', 'R34'], ['R35', 'R39', 'R36']]],
   ['adm', 'Admin', [['A01', 'A02', 'A03'], ['A04', 'A05', 'A07'], ['A06', 'A08'], ['A09', 'A10']]],
 ];

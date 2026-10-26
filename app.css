@@ -874,9 +874,9 @@ table .ri.box{flex:none;min-width:40px}
 .pinal{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:14px;background:var(--danger-soft);color:var(--danger)}
 .pinal > i{font-size:24px}.pinal .xs{display:flex;gap:4px;align-items:center;font-weight:600;opacity:.85}.pinal b{font-size:16px;color:#7A1A12}
 .pinal.ok{background:var(--s2);color:var(--t2)}.pinal.ok b{color:var(--text)}
-.fcard,.lastn{display:flex;gap:14px;align-items:center;width:100%;padding:14px;border-radius:16px;box-shadow:0 0 0 1px var(--border);margin-bottom:10px;text-align:left}
-.fcard .tx,.lastn .tx{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}.fcard .a,.lastn .a{font-weight:600}.fcard .b,.lastn .b{font-size:14px;color:var(--t2)}
-.fcard > i,.lastn > i{color:var(--t3)}.lastn{background:var(--acc-soft);box-shadow:none}.lastn > i:first-child{font-size:24px;color:var(--accent)}
+.famc,.lastn{display:flex;gap:14px;align-items:center;width:100%;padding:14px;border-radius:16px;box-shadow:0 0 0 1px var(--border);margin-bottom:10px;text-align:left}
+.famc .tx,.lastn .tx{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}.famc .a,.lastn .a{font-weight:600}.famc .b,.lastn .b{font-size:14px;color:var(--t2)}
+.famc > i,.lastn > i{color:var(--t3)}.lastn{background:var(--acc-soft);box-shadow:none}.lastn > i:first-child{font-size:24px;color:var(--accent)}
 .scls{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .scl{padding:12px;border-radius:14px;background:var(--s2)}.scl-h{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;font-weight:600}
 .scl-h b{font-size:20px}.scl-h small{font-size:12px;color:var(--t2);font-weight:500}
@@ -1056,3 +1056,30 @@ input[type=search]::-webkit-search-cancel-button{display:none}
 .rmb{display:block}
 .pdfp .rtab td:nth-child(2),.pdfp .rtab th:nth-child(2){text-align:left}
 .scopes .chip{padding:0 12px;font-size:13px}
+
+/* tarjeta destacada v2: sin banda de color, etiqueta bajo el nombre, precio y horario sin choque */
+.fcard{position:relative;padding:16px;display:block}
+.fc-top{display:flex;align-items:flex-start;justify-content:space-between}
+.fc-top .av{box-shadow:none}
+.fc-top .hrt.fl{position:static;margin:-6px -6px 0 0;background:transparent}
+.fcard .fc-b{padding:12px 0 0}
+.fc-tag{position:static;display:inline-flex;align-items:center;gap:4px;background:var(--acc-soft);color:var(--acc-text);font-size:11px;font-weight:600;line-height:20px;padding:0 8px;border-radius:999px;margin-bottom:6px}
+.fcard .fc-f{flex-wrap:wrap;gap:8px;align-items:flex-end}
+.fcard .fc-f .nx{margin-left:auto}
+.famc{background:#fff;cursor:pointer}
+
+/* consejos / blog */
+.bcar{gap:12px}
+.bcard{flex:none;width:220px;border-radius:16px;box-shadow:0 0 0 1px var(--border);overflow:hidden;background:#fff;text-align:left;scroll-snap-align:start;display:flex;flex-direction:column;cursor:pointer}
+.bcard .bph{display:block;height:124px;background:var(--tile)}.bcard img,.brow img,.bhero img{width:100%;height:100%;object-fit:cover;display:block}
+.bbd{display:flex;flex-direction:column;gap:6px;padding:12px 14px 14px}
+.btag{display:inline-flex;align-self:flex-start;font-size:11px;font-weight:600;line-height:20px;padding:0 8px;border-radius:999px;background:var(--acc-soft);color:var(--acc-text)}
+.bt{font-size:15px;font-weight:600;line-height:20px;color:var(--text)}
+.blist{display:flex;flex-direction:column;gap:12px}
+.brow{display:flex;gap:12px;text-align:left;align-items:flex-start;padding:0;background:none}
+.brow .bph{flex:none;width:104px;height:84px;border-radius:12px;overflow:hidden;background:var(--tile)}
+.brow .tx{display:flex;flex-direction:column;gap:4px;min-width:0}
+.bhero{margin:0 -20px;height:220px;overflow:hidden;background:var(--tile)}
+.bbody p{font-size:16px;line-height:24px;color:var(--text);margin:0 0 12px}
+.exsel .chip{height:32px;font-size:13px}
+.hcar{scroll-padding-left:20px}.home .hcar{scroll-padding-left:24px}

@@ -115,7 +115,7 @@ def({ id: 'R11', name: 'Servicios y precios', kind: 'page', back: true, title: '
 
 def({ id: 'R12', name: 'Editar servicio y precio', kind: 'page', back: true, title: '',
   body: () => { const k = S.edit, m = S.my[k], min = S.mins[k]; return `<div class="i3hero">${i3(k)}</div><div class="h-l">${CAT[k].n}</div><div class="t2 sm mt4">${CAT[k].d}</div>
-  ${k === 'mue' ? `<div class="mt16">${note('info', 'Los exámenes tienen precio fijo del laboratorio aliado y se cobran aparte. Tú solo defines lo que cobras por ir a tomar la muestra.')}</div>` : ''}
+  ${k === 'mue' ? `<div class="mt16">${note('info', 'Los exámenes tienen precio fijo del laboratorio y se cobran aparte. Tú solo defines lo que cobras por ir a tomar la muestra.')}</div>` : ''}
   ${lbl(k === 'mue' ? 'Tu tarifa de toma a domicilio' : 'Tu precio')}<div class="pricein"><button class="ib sbtn" data-act="pr" data-arg="-">${ic('minus')}</button><div class="v num">${clp(m.p)}</div><button class="ib sbtn" data-act="pr" data-arg="+">${ic('plus')}</button></div>
   <div class="pmeta"><span>Mínimo Cuidapp <b class="num">${clp(min)}</b></span><span>Promedio en Ñuñoa <b class="num">$19.500</b></span></div>
   <div class="mt8">${kv(`Tú recibes (Cuidapp cobra ${S.comm}%)`, `<b style="color:var(--text)">${clp(net(m.p))}</b>`)}</div>
@@ -254,10 +254,10 @@ def({ id: 'R30', name: 'Solicitud de toma de muestras', kind: 'page', back: true
   body: () => { const ex = R30EX.map(k => EXAMS[k]); const tb = [...new Set(ex.map(e => e[2]))];
     return `<div class="sm t2">Agendada para</div><div class="h-l">Miércoles 28 oct · 08:00</div><div class="t2 sm mt4">Responde antes de 1 h 10 min o se libera la solicitud.</div>
   <div class="pbox mt16"><div><div class="sm t2">Tu tarifa de toma</div><div class="price num">${clp(S.my.mue.p)}</div></div><div style="text-align:right"><div class="sm t2">Recibes</div><div class="h-m num">${clp(net(S.my.mue.p))}</div></div></div>
-  <div class="xs t2 mt8">Los exámenes los cobra el ${LAB.toLowerCase()} a la paciente. No pasan por tu pago.</div>
-  <div class="lbl2">Exámenes · ${LAB}</div>${ex.map(e => `<div class="kv"><span class="k">${e[0]}</span><span class="t2 sm">${e[2]}</span></div>`).join('')}
+  <div class="xs t2 mt8">Los exámenes los cobra el laboratorio a la paciente. No pasan por tu pago.</div>
+  <div class="lbl2">Exámenes</div>${ex.map(e => `<div class="kv"><span class="k">${e[0]}</span><span class="t2 sm">${e[2]}</span></div>`).join('')}
   <div class="lbl2">Lleva</div><div class="tubes">${tb.map(t => `<span class="tube"><span class="dot" style="background:${TUBE[t]}"></span>${t} × ${ex.filter(e => e[2] === t).length}</span>`).join('')}</div>
   <div class="mt16">${row('box:clock-countdown', 'Paciente en ayuno de 8 horas', 'Perfil bioquímico', '', '')}
   ${row('box:map-pin', 'Providencia · 2,4 km de tu casa', 'La dirección exacta aparece al aceptar', '', '')}
-  ${row('box:flask', 'Entrega en Laboratorio aliado · Providencia', 'Antes de las 12:00, en la caja refrigerada', '', '')}</div>`; },
+  ${row('box:flask', 'Entrega en el laboratorio · Providencia', 'Antes de las 12:00, en la caja refrigerada', '', '')}</div>`; },
   foot: () => `${abtn('Aceptar solicitud', 'req', 'r2:ok', '', 'R16')}<button class="btn danger" data-act="req" data-arg="r2:no" data-go="R16">Rechazar</button>` });
