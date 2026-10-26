@@ -11,7 +11,7 @@ const esc = s => String(s);
 /* ---------- estado ---------- */
 const S0 = () => ({
   item: 'iny', addr: 'mama', who: 'mama', when: 'prog', pro: 'cr', day: 1, slot: '08:00', sort: 'rel', ptab: 'serv', det: 'next',
-  f: { enf: true, tens: true }, fmax: 0, fday: 'all', frat: 0, fgen: '', fcom: '',
+  f: { enf: true, tens: true, cuid: true }, fmax: 0, fday: 'all', frat: 0, fgen: '', fcom: '',
   fav: { cr: true, pg: true }, q: '', typed: false, sheet: '', ctab: 'next', revF: 'all', revSort: 'rec', resp: { cr4: 'Gracias, Francisco. Ese día me pilló un taco en Grecia, por eso te avisé. ¡Nos vemos en el próximo control!' }, replyTo: 'cr1', rtxt: false, rcrit: {}, pday: 1, svcFrom: '',
   hasMed: true, receta: false, orden: '', mmode: 'cat', exq: '', kinAv: false, medAv: false, promo: 'kin', exams: { hemo: true, lip: true, gli: true }, tensNeeds: { hig: true, mov: true, sig: true, com: false },
   pay: 'visa', prev: 'fonasa', consent: false, rating: 0, tags: {}, tip: 0, chat: [], phase: 'llego', cancelFrom: 'P27', booked: false, hecho: false, cr: 0,
@@ -20,22 +20,40 @@ const S0 = () => ({
   my: {
     iny: { on: true, p: 18000, night: 22000, nOn: true, dur: 30, inc: { ins: true, pre: true, res: true, edu: false } },
     cur: { on: true, p: 24000, night: 0, nOn: false, dur: 45, inc: { ins: true, pre: false, res: true, edu: true } },
-    cura: { on: false, p: 25000, night: 0, nOn: false, dur: 60, inc: { ins: true, pre: false, res: true, edu: true } },
+    cura: { on: false, p: 34000, night: 0, nOn: false, dur: 60, inc: { ins: true, pre: false, res: true, edu: true } },
     mue: { on: true, p: 15000, night: 0, nOn: false, dur: 20, inc: { ins: true, pre: false, res: true, edu: false } },
-    sig: { on: true, p: 12000, night: 0, nOn: false, dur: 30, inc: { ins: false, pre: true, res: false, edu: true } },
-    son: { on: false, p: 28000, night: 0, nOn: false, dur: 45, inc: { ins: true, pre: false, res: true, edu: true } },
+    sig: { on: true, p: 16000, night: 0, nOn: false, dur: 30, inc: { ins: false, pre: true, res: false, edu: true } },
+    son: { on: false, p: 34000, night: 0, nOn: false, dur: 45, inc: { ins: true, pre: false, res: true, edu: true } },
     inysc: { on: true, p: 16000, night: 0, nOn: false, dur: 20, inc: { ins: true, pre: false, res: true, edu: true } },
-    inyev: { on: false, p: 26000, night: 0, nOn: false, dur: 45, inc: { ins: true, pre: true, res: true, edu: false } },
-    pie: { on: false, p: 32000, night: 0, nOn: false, dur: 60, inc: { ins: true, pre: false, res: true, edu: true } },
+    inyev: { on: false, p: 34000, night: 0, nOn: false, dur: 45, inc: { ins: true, pre: true, res: true, edu: false } },
     pun: { on: true, p: 18000, night: 0, nOn: false, dur: 30, inc: { ins: true, pre: false, res: true, edu: true } },
-    suero: { on: false, p: 30000, night: 0, nOn: false, dur: 60, inc: { ins: true, pre: true, res: true, edu: false } },
+    via: { on: false, p: 58000, night: 0, nOn: false, dur: 45, inc: { ins: true, pre: false, res: true, edu: true } },
+    recs: { on: false, p: 28000, night: 0, nOn: false, dur: 30, inc: { ins: true, pre: false, res: true, edu: true } },
+    vac: { on: true, p: 16000, night: 0, nOn: false, dur: 20, inc: { ins: true, pre: false, res: true, edu: true } },
+    insu: { on: true, p: 18000, night: 0, nOn: false, dur: 30, inc: { ins: true, pre: false, res: true, edu: true } },
+    past: { on: true, p: 24000, night: 0, nOn: false, dur: 45, inc: { ins: true, pre: false, res: true, edu: true } },
+    esc: { on: true, p: 34000, night: 0, nOn: false, dur: 60, inc: { ins: true, pre: false, res: true, edu: true } },
+    dren: { on: false, p: 30000, night: 0, nOn: false, dur: 45, inc: { ins: true, pre: false, res: true, edu: true } },
+    valo: { on: true, p: 32000, night: 0, nOn: false, dur: 45, inc: { ins: true, pre: false, res: true, edu: true } },
+    alta: { on: true, p: 40000, night: 0, nOn: false, dur: 60, inc: { ins: true, pre: false, res: true, edu: true } },
+    sonali: { on: false, p: 34000, night: 0, nOn: false, dur: 45, inc: { ins: true, pre: false, res: true, edu: true } },
+    ost: { on: false, p: 34000, night: 0, nOn: false, dur: 45, inc: { ins: true, pre: false, res: true, edu: true } },
+    traq: { on: false, p: 40000, night: 0, nOn: false, dur: 45, inc: { ins: true, pre: false, res: true, edu: true } },
+    oxi: { on: false, p: 24000, night: 0, nOn: false, dur: 30, inc: { ins: true, pre: false, res: true, edu: true } },
+    pal: { on: false, p: 52000, night: 0, nOn: false, dur: 60, inc: { ins: true, pre: false, res: true, edu: true } },
+    diab: { on: true, p: 26000, night: 0, nOn: false, dur: 45, inc: { ins: true, pre: false, res: true, edu: true } },
+    edu: { on: true, p: 16000, night: 0, nOn: false, dur: 30, inc: { ins: true, pre: false, res: true, edu: true } },
+    rcp: { on: false, p: 62000, night: 0, nOn: false, dur: 150, inc: { ins: true, pre: false, res: true, edu: true } },
+    suero: { on: false, p: 48000, night: 0, nOn: false, dur: 60, inc: { ins: true, pre: true, res: true, edu: false } },
   },
+  sh: { h: 12, jor: 'dia', start: 0, rep: { lun: false, mar: true, mie: false, jue: true, vie: false, sab: true, dom: true }, wk: 2, need: { hig: true, ali: true, mov: true, rem: false, com: true } },
+  share: 'res', sharePh: false, shareOk: true, fichaOk: false, fichaChk: false, fm: 'mama', tlF: 'all', note: { hin: '08:02', hout: '08:41', tpl: 'cur', sig: false, add: false, rec: { a: true, b: true, c: true }, al: { a: true, b: true, c: true }, med5: { pac: true, med: true, dos: true, via: true, hor: true }, foto: true, prox: 2 }, bit: { h: 2 }, pushSeen: false, noteSigned: false, wsel: 'w1',
   edit: 'iny', setup: { pres: true, serv: false, com: false, hor: false },
   com: { prov: true, nun: true, lr: true, lc: false, vit: false, pen: false, stgo: true, mac: false, flo: false, sjo: false },
   week: { lun: true, mar: true, mie: true, jue: true, vie: true, sab: true, dom: false }, gap: 30, antic: 2,
   blocked: { 30: true }, req: { r1: 'new', r2: 'new' }, aday: 1, spec: { am: true, pd: true, ped: false, pal: false },
   sis: 0, aprob: [], rech: [], admTab: 'rev', cand: 0, aedit: 'iny', comm: 15,
-  mins: { iny: 12000, inysc: 10000, inyev: 18000, cur: 15000, cura: 25000, pie: 25000, pun: 12000, mue: 10000, sig: 10000, son: 25000, suero: 22000, tens4: 24000, tens8: 40000 }, aRec: true,
+  mins: { iny: 12000, inysc: 12000, inyev: 26000, via: 44000, recs: 22000, suero: 36000, vac: 12000, insu: 14000, past: 18000, cur: 15000, cura: 24000, esc: 26000, pun: 16000, dren: 22000, mue: 5000, ecg: 25000, holt: 68000, valo: 24000, cuid: 32000, acomp: 23000, bano: 18000, cogn: 16000, tens8: 37000, pos: 38000, sonali: 26000, son: 25000, ost: 26000, traq: 30000, oxi: 18000, pack: 250000, alta: 30000, noche: 40000, hdia: 27000, hnoc: 32000, h24: 52000, ncasa: 34000, pal: 40000, fin: 36000, sig: 12000, diab: 20000, edu: 12000, rcp: 48000 }, aRec: true,
 });
 let S = S0();
 let view = localStorage.getItem('cv') || 'm';
@@ -68,35 +86,90 @@ const PLACE = {
 };
 const P = () => PLACE[S.addr];
 
-/* ---------- catálogo de Cuidapp (lo define Cuidapp; el precio lo pone cada profesional) ---------- */
+/* ---------- catálogo de Cuidapp (lo define Cuidapp; el precio lo pone cada profesional) ----------
+   who: enf = enfermera/o universitaria · tens = técnico en enfermería · cuid = cuidadora
+   ind: requiere indicación o receta médica · dt: duración típica · base: precio de referencia del estudio de mercado
+   turno: se agenda por turnos (tp = precio de referencia por turno según horas) */
 const CAT = {
-  iny: { n: 'Inyección intramuscular', s: 'Intramuscular', g: 'iny', d: 'Neurobionta, vitamina B12 y otras, con receta', ic: 'syringe', who: ['enf', 'tens'], dur: 30, receta: true },
-  inysc: { n: 'Inyección subcutánea', s: 'Subcutánea', g: 'iny', d: 'Insulina, heparina y vacunas indicadas, con receta', ic: 'syringe', who: ['enf', 'tens'], dur: 20, receta: true },
-  inyev: { n: 'Inyección endovenosa', s: 'Endovenosa', g: 'iny', d: 'Medicamento por la vena, con receta', ic: 'syringe', who: ['enf'], dur: 45, receta: true },
-  cur: { n: 'Curación simple', s: 'Simple', g: 'cur', d: 'Heridas, puntos y quemaduras leves', ic: 'bandaids', who: ['enf'], dur: 45 },
-  cura: { n: 'Curación avanzada', s: 'Avanzada', g: 'cur', i: 'cura', d: 'Escaras, úlceras y heridas que no cierran', ic: 'first-aid', who: ['enf'], dur: 60 },
-  pie: { n: 'Curación de pie diabético', s: 'Pie diabético', g: 'cur', i: 'cura', d: 'Con evaluación y fotos de control', ic: 'first-aid', who: ['enf'], dur: 60 },
-  pun: { n: 'Retiro de puntos', s: 'Retiro de puntos', g: 'cur', d: 'Puntos o corchetes después de una cirugía', ic: 'bandaids', who: ['enf'], dur: 30 },
-  mue: { n: 'Toma de muestras a domicilio', s: 'Toma de muestras', g: 'mue', d: 'Exámenes con precio del laboratorio aliado', ic: 'test-tube', who: ['enf', 'tens'], dur: 20, lab: true },
-  sig: { n: 'Control de signos vitales', s: 'Signos vitales', g: 'sig', d: 'Presión, glicemia, temperatura y saturación', ic: 'heartbeat', who: ['enf', 'tens'], dur: 30 },
-  son: { n: 'Instalación o cambio de sonda', s: 'Sondas', g: 'son', d: 'Sonda Foley o nasogástrica', ic: 'first-aid-kit', who: ['enf'], dur: 45 },
-  suero: { n: 'Instalación de suero', s: 'Suero', g: 'son', d: 'Hidratación o medicamento por goteo, con receta', ic: 'drop', who: ['enf'], dur: 60, receta: true },
-  tens4: { n: 'Cuidados TENS · 4 horas', s: '4 horas', g: 'tens4', d: 'Higiene, movilización, remedios y compañía', ic: 'hand-heart', who: ['tens'], dur: 240 },
-  tens8: { n: 'Cuidados TENS · 8 horas', s: '8 horas', g: 'tens4', d: 'Turno de día o de noche', ic: 'hand-heart', who: ['tens'], dur: 480 },
+  // 1. Inyecciones y medicamentos
+  iny: { n: 'Inyección intramuscular', s: 'Intramuscular', g: 'iny', d: 'Neurobionta, vitamina B12 y otras. Verifica la receta y observa la reacción', ic: 'syringe', who: ['enf', 'tens'], dur: 30, dt: '20–30 min', ind: 'Sí', receta: true, base: 14990 },
+  inysc: { n: 'Inyección subcutánea', s: 'Subcutánea', g: 'iny', d: 'Heparina, enoxaparina y otras indicadas', ic: 'syringe', who: ['enf', 'tens'], dur: 20, dt: '20 min', ind: 'Sí', receta: true, base: 14990 },
+  inyev: { n: 'Medicamento endovenoso', s: 'Endovenoso', g: 'iny', d: 'Vía venosa, administración (hasta 45 min), control y retiro', ic: 'syringe', who: ['enf'], dur: 60, dt: '45–60 min', ind: 'Sí', receta: true, base: 32890 },
+  via: { n: 'Instalación o retiro de vía SC o EV', s: 'Vía SC o EV', g: 'iny', d: 'Vía, fijación y educación a la familia', ic: 'syringe', who: ['enf'], dur: 45, dt: '45 min', ind: 'Sí', receta: true, base: 54990 },
+  recs: { n: 'Recambio de suero en vía instalada', s: 'Recambio de suero', g: 'iny', d: 'Recambio del suero o medicamento y control de la vía', ic: 'drop', who: ['enf'], dur: 30, dt: '30 min', ind: 'Sí', receta: true, base: 26990 },
+  suero: { n: 'Hidratación o sueroterapia EV', s: 'Sueroterapia', g: 'iny', d: 'Suero, vía y control. El suero se paga aparte', ic: 'drop', who: ['enf'], dur: 90, dt: '60–90 min', ind: 'Sí', receta: true, base: 45000 },
+  vac: { n: 'Vacuna a domicilio', s: 'Vacuna', g: 'iny', d: 'Administración, registro y observación. La vacuna se paga aparte', ic: 'syringe', who: ['enf'], dur: 20, dt: '20 min', ind: 'Según la vacuna', base: 14990 },
+  insu: { n: 'Insulina y control de glicemia', s: 'Insulina', g: 'iny', d: 'Glicemia capilar, dosis según tu esquema y registro', ic: 'syringe', who: ['enf', 'tens'], dur: 30, dt: '20–30 min', ind: 'Sí', receta: true, base: 18000 },
+  past: { n: 'Preparación de pastillero semanal', s: 'Pastillero', g: 'iny', d: 'Ordena los remedios por día y hora según la receta y deja una planilla', ic: 'pill', who: ['enf'], dur: 45, dt: '30–45 min', ind: 'Receta vigente', base: 22000 },
+  // 2. Curaciones y heridas
+  cur: { n: 'Curación simple', s: 'Simple', g: 'cur', d: 'Limpieza, cobertura y registro. Heridas pequeñas y quemaduras leves', ic: 'bandaids', who: ['enf', 'tens'], dur: 45, dt: '30–45 min', ind: 'Recomendada', base: 20000 },
+  cura: { n: 'Curación avanzada', s: 'Avanzada', g: 'cur', i: 'cura', d: 'Úlceras, pie diabético y quemaduras. Apósitos especiales y fotos de control', ic: 'first-aid', who: ['enf'], dur: 60, dt: '45–60 min', ind: 'Sí', base: 30000 },
+  esc: { n: 'Úlceras por presión (escaras)', s: 'Escaras', g: 'cur', i: 'cura', d: 'Valoración, curación y plan de cambios de posición', ic: 'first-aid', who: ['enf'], dur: 60, dt: '45–60 min', ind: 'Recomendada', base: 32000 },
+  pun: { n: 'Herida operatoria y retiro de puntos', s: 'Herida operatoria', g: 'cur', d: 'Curación de la herida, retiro de puntos o corchetes y educación', ic: 'bandaids', who: ['enf'], dur: 30, dt: '30 min', ind: 'Sí (cirujano)', base: 22000 },
+  dren: { n: 'Manejo de drenajes', s: 'Drenajes', g: 'cur', i: 'cura', d: 'Medición del débito, curación del sitio y registro', ic: 'first-aid', who: ['enf'], dur: 45, dt: '30–45 min', ind: 'Sí', base: 28000 },
+  // 3. Exámenes a domicilio
+  mue: { n: 'Toma de muestras a domicilio', s: 'Toma de muestras', g: 'mue', d: 'Sangre u orina. Exámenes con precio del laboratorio aliado', ic: 'test-tube', who: ['enf', 'tens'], dur: 20, dt: '15–20 min', ind: 'Orden médica', lab: true, base: 6490 },
+  ecg: { n: 'Electrocardiograma a domicilio', s: 'Electrocardiograma', g: 'mue', i: 'sig', d: 'Registro e informe por cardiólogo', ic: 'heartbeat', who: ['enf'], dur: 30, dt: '30 min', ind: 'Sí', soon: true, base: 31990 },
+  holt: { n: 'Holter de presión o de ritmo', s: 'Holter', g: 'mue', i: 'cron', d: 'Instalación del equipo, retiro e informe', ic: 'heartbeat', who: ['enf'], dur: 30, dt: '24 h', ind: 'Sí', soon: true, base: 84990 },
+  // 4. Adulto mayor
+  valo: { n: 'Valoración integral de enfermería', s: 'Valoración integral', g: 'am', d: 'Signos vitales, riesgo de caídas, piel, remedios y plan de cuidados', ic: 'clipboard-text', who: ['enf'], dur: 45, dt: '45 min', ind: 'No', base: 30000 },
+  cuid: { n: 'Cuidadora de adulto mayor por turno', s: 'Cuidadora por turno', g: 'am', d: 'Higiene, alimentación, compañía, ayuda con remedios y movilización', ic: 'hand-heart', who: ['cuid', 'tens'], dur: 480, dt: '8, 12 o 24 h', ind: 'No', turno: true, tp: { 8: 40000, 12: 42000, 24: 80000 }, base: 40000 },
+  acomp: { n: 'Acompañamiento por horas', s: 'Acompañamiento', g: 'am', d: 'Compañía, paseo y apoyo en casa. Mínimo 3 horas', ic: 'hand-heart', who: ['cuid', 'tens'], dur: 180, dt: '3 a 6 h', ind: 'No', turno: true, tp: { 3: 29000, 4: 36000, 6: 52000 }, base: 29000 },
+  bano: { n: 'Baño e higiene asistida', s: 'Baño asistido', g: 'am', d: 'Ducha o baño en cama, cuidado de la piel y cambio de ropa', ic: 'drop', who: ['cuid', 'tens'], dur: 90, dt: '60–90 min', ind: 'No', base: 22000 },
+  cogn: { n: 'Estimulación cognitiva y compañía', s: 'Estimulación cognitiva', g: 'am', d: 'Juegos de memoria, conversación y rutina diaria', ic: 'puzzle-piece', who: ['cuid'], dur: 120, dt: '2 h', ind: 'No', base: 20000 },
+  // 5. Postrados y dependencia
+  tens8: { n: 'TENS por turno', s: 'TENS por turno', g: 'pd', d: 'Higiene, movilización, signos vitales, remedios y registro en bitácora', ic: 'hand-heart', who: ['tens'], dur: 480, dt: '8, 12 o 24 h', ind: 'No', turno: true, tp: { 8: 46000, 12: 48000, 24: 92000 }, base: 46000 },
+  pos: { n: 'Cambios de posición y prevención de escaras', s: 'Cambios de posición', g: 'pd', d: 'Cambios cada 2 horas, cuidado de la piel y registro', ic: 'arrows-clockwise', who: ['tens', 'cuid'], dur: 720, dt: 'Turno de 12 o 24 h', ind: 'No', turno: true, tp: { 12: 48000, 24: 92000 }, base: 48000 },
+  sonali: { n: 'Alimentación por sonda', s: 'Alimentación por sonda', g: 'pd', i: 'son', d: 'Sonda nasogástrica o gastrostomía: instalación, control y educación', ic: 'first-aid-kit', who: ['enf'], dur: 45, dt: '45 min', ind: 'Sí', base: 32000 },
+  son: { n: 'Sonda Foley', s: 'Sonda Foley', g: 'pd', i: 'son', d: 'Instalación, cambio, retiro o control de la sonda urinaria', ic: 'first-aid-kit', who: ['enf'], dur: 45, dt: '45 min', ind: 'Sí', base: 31990 },
+  ost: { n: 'Cuidado de ostomías', s: 'Ostomías', g: 'pd', i: 'son', d: 'Cambio de bolsa, cuidado de la piel y educación a la familia', ic: 'first-aid-kit', who: ['enf'], dur: 45, dt: '45 min', ind: 'Recomendada', base: 32000 },
+  traq: { n: 'Traqueostomía y aspiración', s: 'Traqueostomía', g: 'pd', i: 'son', d: 'Aspiración de secreciones, curación del estoma y educación', ic: 'wind', who: ['enf'], dur: 45, dt: '45 min', ind: 'Sí', base: 38000 },
+  oxi: { n: 'Oxigenoterapia', s: 'Oxígeno', g: 'pd', i: 'cron', d: 'Control de saturación, uso del equipo y educación', ic: 'wind', who: ['enf', 'tens'], dur: 30, dt: '30 min', ind: 'Sí', base: 22000 },
+  pack: { n: 'Plan dependencia severa', s: 'Plan semanal', g: 'pd', d: 'Enfermera coordinadora, visitas y turnos TENS. Plan semanal a medida', ic: 'users-three', who: ['enf'], dur: 60, dt: 'Plan semanal', ind: 'Sí', plan: true, base: 310000 },
+  // 6. Post-operatorio y alta
+  alta: { n: 'Visita post-alta de enfermería', s: 'Visita post-alta', g: 'post', d: 'Revisa la epicrisis, ordena los remedios, controla la herida y signos de alarma', ic: 'clipboard-text', who: ['enf'], dur: 60, dt: '45–60 min', ind: 'Epicrisis', base: 38000 },
+  noche: { n: 'Turno de noche post-cirugía', s: 'Noche post-cirugía', g: 'post', i: 'turn', d: 'Vigilancia, ayuda para ir al baño, dolor y signos de alarma', ic: 'moon', who: ['tens', 'cuid'], dur: 720, dt: '12 h', ind: 'No', turno: true, jor: 'noche', tp: { 12: 50000 }, base: 50000 },
+  // 7. Turnos y acompañamiento
+  hdia: { n: 'Acompañamiento hospitalario de día', s: 'Hospital de día', g: 'turn', d: 'Compañía en la clínica u hospital, apoyo en comidas y aviso a la familia', ic: 'hospital', who: ['cuid', 'tens'], dur: 480, dt: '8 o 12 h', ind: 'No', turno: true, jor: 'dia', tp: { 8: 34000, 12: 45000 }, base: 34000 },
+  hnoc: { n: 'Acompañamiento hospitalario de noche', s: 'Hospital de noche', g: 'turn', d: 'Noche completa en la clínica para que la familia descanse', ic: 'moon', who: ['cuid', 'tens'], dur: 720, dt: '12 h', ind: 'No', turno: true, jor: 'noche', tp: { 12: 40000 }, base: 40000 },
+  h24: { n: 'Acompañamiento hospitalario 24 h', s: 'Hospital 24 h', g: 'turn', d: 'Turno completo con entrega de turno escrita', ic: 'hospital', who: ['cuid', 'tens'], dur: 1440, dt: '24 h', ind: 'No', turno: true, tp: { 24: 65000 }, base: 65000 },
+  ncasa: { n: 'Turno de noche en casa', s: 'Noche en casa', g: 'turn', d: 'Vigilancia nocturna, cambios de posición y ayuda para ir al baño', ic: 'moon', who: ['cuid', 'tens'], dur: 720, dt: '10 o 12 h', ind: 'No', turno: true, jor: 'noche', tp: { 10: 42000, 12: 45000 }, base: 42000 },
+  // 8. Cuidados paliativos
+  pal: { n: 'Visita de enfermería paliativa', s: 'Visita paliativa', g: 'pal', d: 'Control del dolor y síntomas, apoyo a la familia. Coordinada con el equipo tratante', ic: 'heart', who: ['enf'], dur: 60, dt: '60 min', ind: 'Sí (equipo tratante)', base: 50000 },
+  fin: { n: 'Acompañamiento de final de vida', s: 'Final de vida', g: 'pal', d: 'Confort, higiene, posición y compañía, de día o de noche', ic: 'heart', who: ['tens', 'cuid'], dur: 720, dt: '12 o 24 h', ind: 'No', turno: true, tp: { 12: 45000, 24: 85000 }, base: 45000 },
+  // Ver todas · control de crónicos
+  sig: { n: 'Control de signos vitales', s: 'Signos vitales', g: 'cron', d: 'Presión, glicemia, temperatura y saturación, con registro', ic: 'heartbeat', who: ['enf', 'tens'], dur: 30, dt: '20–30 min', ind: 'No', base: 15000 },
+  diab: { n: 'Programa de diabetes', s: 'Programa diabetes', g: 'cron', d: 'Visitas periódicas: glicemia, insulina, pie y educación', ic: 'calendar-check', who: ['enf'], dur: 45, dt: '45 min por visita', ind: 'Recomendada', base: 25000 },
+  // Ver todas · educación
+  edu: { n: 'Educación a la familia o cuidadora', s: 'Educación', g: 'edu', d: 'Cómo movilizar, curar, alimentar por sonda o dar remedios', ic: 'chalkboard-teacher', who: ['enf'], dur: 30, dt: '30–60 min', ind: 'No', base: 15000 },
+  rcp: { n: 'Taller de RCP y primeros auxilios', s: 'Taller RCP', g: 'edu', d: 'Para la familia en tu casa, con muñeco de práctica', ic: 'heartbeat', who: ['enf'], dur: 150, dt: '2–3 h', ind: 'No', base: 60000 },
 };
 /* categorías (lo que ve la paciente primero); cada una agrupa servicios concretos */
 const GRP = {
-  iny: { n: 'Inyecciones', c: 'Inyecciones', d: 'Intramuscular, subcutánea y endovenosa', l: ['iny', 'inysc', 'inyev'] },
-  cur: { n: 'Curaciones y heridas', c: 'Curaciones y heridas', d: 'Simple, avanzada, pie diabético y retiro de puntos', l: ['cur', 'cura', 'pie', 'pun'] },
-  mue: { n: 'Exámenes y toma de muestras', c: 'Exámenes', d: 'Precios del laboratorio aliado + toma a domicilio', l: ['mue'] },
-  sig: { n: 'Signos vitales', c: 'Signos vitales', d: 'Presión, glicemia, temperatura y saturación', l: ['sig'] },
-  son: { n: 'Sondas y sueros', c: 'Sondas y sueros', d: 'Sonda Foley, nasogástrica y suero', l: ['son', 'suero'] },
-  tens4: { n: 'Cuidados TENS (por horas)', c: 'Cuidados TENS', d: 'Turnos de 4 u 8 horas', l: ['tens4', 'tens8'] },
+  iny: { n: 'Inyecciones y medicamentos', c: 'Inyecciones', d: 'Intramuscular, endovenosa, sueros, vacunas, insulina y pastillero', l: ['iny', 'inysc', 'inyev', 'via', 'recs', 'suero', 'vac', 'insu', 'past'] },
+  cur: { n: 'Curaciones y heridas', c: 'Curaciones', d: 'Simple, avanzada, escaras, herida operatoria y drenajes', l: ['cur', 'cura', 'esc', 'pun', 'dren'] },
+  mue: { n: 'Exámenes a domicilio', c: 'Exámenes', d: 'Toma de muestras con precios del laboratorio aliado', l: ['mue', 'ecg', 'holt'] },
+  am: { n: 'Adulto mayor', c: 'Adulto mayor', d: 'Cuidadoras por turno, acompañamiento, valoración y baño asistido', l: ['valo', 'cuid', 'acomp', 'bano', 'cogn'] },
+  pd: { n: 'Postrados y dependencia', c: 'Postrados', d: 'Turnos TENS, sondas, ostomías, oxígeno y prevención de escaras', l: ['tens8', 'pos', 'sonali', 'son', 'ost', 'traq', 'oxi', 'pack'] },
+  post: { n: 'Post-operatorio y alta', c: 'Post-operatorio', d: 'Para volver a casa tranquilos después de la clínica', l: ['alta', 'pun', 'noche'] },
+  turn: { n: 'Turnos y acompañamiento', c: 'Turnos', d: 'De día, de noche o 24 horas, en casa o en el hospital', l: ['hdia', 'hnoc', 'h24', 'ncasa', 'cuid'] },
+  pal: { n: 'Cuidados paliativos', c: 'Paliativos', d: 'Confort y compañía, coordinados con el equipo tratante', l: ['pal', 'fin'] },
+  cron: { n: 'Control de crónicos', c: 'Crónicos', d: 'Signos vitales y programa de diabetes', l: ['sig', 'diab'], x: true },
+  edu: { n: 'Educación a la familia', c: 'Educación', d: 'Aprende a cuidar en casa', l: ['edu', 'rcp'], x: true },
 };
-const GK = Object.keys(GRP);
+const GK = Object.keys(GRP).filter(k => !GRP[k].x);   // grilla de inicio: 8 categorías
+const GX = Object.keys(GRP).filter(k => GRP[k].x);    // solo en «Ver todas»
+const GALL = Object.keys(GRP);
+const IC3 = { am: 'tens4', pal: 'sig' };              // íconos reutilizados
+const WHO = { enf: 'Enfermera', tens: 'TENS', cuid: 'Cuidadora' };
+const whoB = k => `<span class="wb">${CAT[k].who.map(w => WHO[w]).join(' · ')}</span>`;
+const indB = k => CAT[k].ind && CAT[k].ind !== 'No' ? `<span class="ib2">${ic('file-text')}Ind. médica${CAT[k].ind !== 'Sí' ? ': ' + CAT[k].ind.replace(/^Sí \((.*)\)$/, '$1').toLowerCase() : ''}</span>` : '';
+/* turnos: recargos (estudio de mercado) */
+const SUR = { dom: 0.5, fest: 1.0, noche: 0.25 };
+const FEST = { '31-10': 'Día de las Iglesias Evangélicas', '1-11': 'Todos los Santos', '8-12': 'Inmaculada Concepción' };
 /* iconos 3D de servicios (img/iconos-3d); el resto de la interfaz usa Phosphor */
-const i3k = k => CAT[k] ? (CAT[k].i || CAT[k].g) : k;
-const i3 = (k, c = '') => `<img class="i3d ${c}" src="img/iconos-3d/${i3k(k)}.webp?v=20261026b" alt="" draggable="false">`;
+const i3k = k => CAT[k] ? (CAT[k].i || IC3[CAT[k].g] || CAT[k].g) : (IC3[k] || k);
+const i3 = (k, c = '') => `<img class="i3d ${c}" src="img/iconos-3d/${i3k(k)}.webp?v=20261026c" alt="" draggable="false">`;
 const INC = { ins: 'Insumos: jeringa, aguja, tórulas y guantes', pre: 'Control de presión antes y después', res: 'Retiro de residuos clínicos', edu: 'Indicaciones escritas para la familia' };
 /* catálogo del laboratorio aliado: precios fijos, no los pone la profesional */
 const LAB = 'Laboratorio aliado';
@@ -122,7 +195,7 @@ const PROS = [
     spec: ['Adulto mayor', 'Inyecciones con receta', 'Curaciones', 'Paciente diabético'],
     edu: [['Enfermería', 'Universidad de Chile', '2019'], ['Diplomado en Heridas y Ostomías', 'Pontificia Universidad Católica', '2022'], ['Curso IAAS y RCP básico', 'Hospital del Salvador', '2024']],
     dist: [91, 7, 2, 0, 0], crit: [['Puntualidad', '4,9'], ['Trato', '5,0'], ['Técnica', '4,9'], ['Explica todo', '4,9']],
-    p: { iny: 18000, cur: 24000, mue: 15000, sig: 12000 }, night: { iny: 22000 }, xinc: 'Control de presión antes y después',
+    f: 1.1, gs: [], p: { iny: 18000, cur: 24000, mue: 15000, sig: 12000 }, night: { iny: 22000 }, xinc: 'Control de presión antes y después',
     sl: [[], ['08:00', '09:00', '11:30', '19:00', '21:00'], ['08:00', '10:00', '18:30', '21:00'], ['09:00', '12:00', '19:30'], ['08:00', '08:30', '17:00'], ['10:00', '11:00']] },
   { id: 'fa', n: 'Fernanda Araya', i: 'FA', t: 'Enfermera', k: 'enf', g: 'f', reg: '512.884', r: '5,0', rn: 5.0, a: 61, rv: 44, km: 3.2, yrs: 3, bg: '#F3F3F5', fg: '#111111',
     com: ['Ñuñoa', 'Macul', 'La Florida', 'Peñalolén'], tel: '+56 9 6620 1475', resp: '15 min',
@@ -130,7 +203,7 @@ const PROS = [
     spec: ['Pie diabético', 'Heridas complejas', 'Sondas'],
     edu: [['Enfermería', 'Universidad de Santiago', '2022'], ['Curso de Curación Avanzada de Heridas', 'Fundación Instituto Nacional de Heridas', '2023']],
     dist: [98, 2, 0, 0, 0], crit: [['Puntualidad', '5,0'], ['Trato', '5,0'], ['Técnica', '5,0'], ['Explica todo', '4,9']],
-    p: { iny: 22000, cur: 28000, cura: 38000, mue: 17000, son: 32000 }, night: {}, xinc: 'Fotos de control de la herida',
+    f: 1.15, gs: ['iny', 'cur', 'pd', 'post', 'cron'], p: { iny: 22000, cur: 28000, cura: 38000, mue: 17000, son: 32000 }, night: {}, xinc: 'Fotos de control de la herida',
     sl: [['19:30', '20:30'], ['07:30', '13:00', '20:00'], ['07:30', '14:00'], ['16:00', '20:00'], ['07:30'], []] },
   { id: 'mc', n: 'Matías Contreras', i: 'MC', t: 'Enfermero', k: 'enf', g: 'm', reg: '505.317', r: '4,7', rn: 4.7, a: 48, rv: 31, km: 0.9, yrs: 2, bg: '#EEEAFB', fg: '#3D3FB0',
     com: ['Ñuñoa', 'Santiago'], tel: '+56 9 5531 8820', resp: '1 h',
@@ -138,15 +211,15 @@ const PROS = [
     spec: ['Inyecciones', 'Toma de muestras', 'Control de presión'],
     edu: [['Enfermería', 'Universidad Andrés Bello', '2023'], ['Curso de Urgencias Prehospitalarias', 'Clínica Indisa', '2024']],
     dist: [76, 18, 4, 2, 0], crit: [['Puntualidad', '4,8'], ['Trato', '4,7'], ['Técnica', '4,8'], ['Explica todo', '4,5']],
-    p: { iny: 15000, cur: 20000, mue: 13000, sig: 10000 }, night: {}, xinc: '',
+    f: 0.95, gs: ['iny', 'mue', 'cron', 'edu'], p: { iny: 15000, cur: 20000, mue: 13000, sig: 10000 }, night: {}, xinc: '',
     sl: [[], [], ['09:00', '10:00', '11:00'], ['09:00', '15:00'], ['18:00', '19:00'], ['09:00', '10:00', '11:00', '12:00']] },
   { id: 'pg', n: 'Paula Godoy', i: 'PG', t: 'TENS', k: 'tens', g: 'f', reg: '311.208', r: '4,8', rn: 4.8, a: 87, rv: 63, km: 2.4, yrs: 8, bg: '#F3F3F5', fg: '#2A2A2E',
     com: ['Providencia', 'Ñuñoa', 'Santiago'], tel: '+56 9 8840 1206', resp: '25 min',
     bio: 'Técnica en enfermería (TENS) con 8 años en el Hospital Salvador. Acompaño a adultos mayores en su casa: higiene, movilización, remedios y compañía. También pongo inyecciones con receta.',
-    spec: ['Cuidado de adulto mayor', 'Movilización', 'Inyecciones con receta'],
+    spec: ['Cuidado de adulto mayor', 'Turnos de 8, 12 y 24 h', 'Movilización', 'Inyecciones con receta'],
     edu: [['Técnico de Nivel Superior en Enfermería', 'Inacap', '2017'], ['Curso de Cuidados Paliativos', 'Fundación Paliativos Chile', '2021']],
     dist: [84, 12, 3, 1, 0], crit: [['Puntualidad', '4,9'], ['Trato', '5,0'], ['Técnica', '4,7'], ['Explica todo', '4,8']],
-    p: { iny: 14000, mue: 12000, sig: 10000, tens4: 28000 }, night: { iny: 17000 }, xinc: 'Ayuda a ordenar los remedios de la semana',
+    f: 1.0, gs: ['iny', 'cur', 'mue', 'am', 'pd', 'turn', 'pal', 'cron'], p: { iny: 14000, mue: 12000, sig: 12000, tens8: 46000 }, night: { iny: 17000 }, xinc: 'Ayuda a ordenar los remedios de la semana',
     sl: [['20:00'], ['10:30', '12:00', '16:00'], ['10:30', '17:00'], ['08:00', '10:30'], ['10:30', '12:00'], ['09:00']] },
   { id: 'vm', n: 'Valentina Morales', i: 'VM', t: 'Enfermera', k: 'enf', g: 'f', reg: '509.663', r: '4,9', rn: 4.9, a: 203, rv: 148, km: 4.1, yrs: 11, bg: '#EEEAFB', fg: '#5557D9', top: true,
     com: ['Las Condes', 'La Reina', 'Vitacura', 'Ñuñoa'], tel: '+56 9 9012 4477', resp: '30 min',
@@ -154,7 +227,7 @@ const PROS = [
     spec: ['Heridas y úlceras', 'Paciente postrado', 'Sondas', 'Post operatorio'],
     edu: [['Enfermería', 'Pontificia Universidad Católica', '2015'], ['Magíster en Enfermería', 'Universidad de los Andes', '2020'], ['Certificación en Heridas', 'WCET', '2021']],
     dist: [90, 8, 1, 1, 0], crit: [['Puntualidad', '5,0'], ['Trato', '4,9'], ['Técnica', '5,0'], ['Explica todo', '4,9']],
-    p: { iny: 25000, cur: 30000, cura: 42000, mue: 18000, son: 35000 }, night: { iny: 30000 }, xinc: 'Informe de la atención por correo',
+    f: 1.25, gs: ['iny', 'cur', 'pd', 'post', 'pal', 'am', 'edu'], p: { iny: 25000, cur: 30000, cura: 42000, mue: 18000, son: 35000 }, night: { iny: 30000 }, xinc: 'Informe de la atención por correo',
     sl: [[], [], [], ['08:30', '10:00', '15:00'], ['08:30', '12:00'], ['10:00']] },
   { id: 'fl', n: 'Francisca León', i: 'FL', t: 'Enfermera', k: 'enf', g: 'f', reg: '498.120', r: '4,8', rn: 4.8, a: 156, rv: 104, km: 3.6, yrs: 9, bg: '#F3F3F5', fg: '#3A3A40',
     com: ['Las Condes', 'Providencia', 'Ñuñoa', 'Vitacura'], tel: '+56 9 7340 2291', resp: '40 min',
@@ -162,7 +235,7 @@ const PROS = [
     spec: ['Post operatorio', 'Toma de muestras', 'Inyecciones'],
     edu: [['Enfermería', 'Universidad de los Andes', '2017'], ['Diplomado en Enfermería Quirúrgica', 'Universidad de Chile', '2019']],
     dist: [85, 11, 3, 1, 0], crit: [['Puntualidad', '4,8'], ['Trato', '4,9'], ['Técnica', '4,9'], ['Explica todo', '4,7']],
-    p: { iny: 20000, cur: 27000, cura: 40000, mue: 16000 }, night: { iny: 24000 }, xinc: 'Control de presión antes y después',
+    f: 1.15, gs: ['iny', 'cur', 'mue', 'post'], p: { iny: 20000, cur: 27000, cura: 40000, mue: 16000 }, night: { iny: 24000 }, xinc: 'Control de presión antes y después',
     sl: [[], ['18:00', '19:00'], ['08:00', '18:00'], ['08:00'], ['07:30', '09:00'], ['10:00', '11:00']] },
   { id: 'dn', n: 'Diego Navarro', i: 'DN', t: 'Enfermero', k: 'enf', g: 'm', reg: '517.402', r: '4,7', rn: 4.7, a: 64, rv: 47, km: 2.9, yrs: 4, bg: '#EEEAFB', fg: '#4447C2',
     com: ['Macul', 'La Florida', 'Ñuñoa', 'Peñalolén'], tel: '+56 9 6118 4420', resp: '35 min',
@@ -170,8 +243,24 @@ const PROS = [
     spec: ['Inyecciones', 'Signos vitales', 'Toma de muestras'],
     edu: [['Enfermería', 'Universidad Mayor', '2021'], ['Curso de Toma de Muestras', 'Laboratorio Bionet', '2022']],
     dist: [74, 21, 3, 2, 0], crit: [['Puntualidad', '4,7'], ['Trato', '4,8'], ['Técnica', '4,7'], ['Explica todo', '4,6']],
-    p: { iny: 16000, cur: 22000, mue: 14000, sig: 11000 }, night: { iny: 19000 }, xinc: '',
+    f: 1.0, gs: ['iny', 'mue', 'cron', 'am'], p: { iny: 16000, cur: 22000, mue: 14000, sig: 11000 }, night: { iny: 19000 }, xinc: '',
     sl: [[], ['17:00', '18:30', '20:00'], ['17:00', '19:00'], ['18:00'], ['17:30', '19:00'], ['09:00', '10:30']] },
+  { id: 'xv', n: 'Ximena Vera', i: 'XV', t: 'Cuidadora', k: 'cuid', g: 'f', reg: 'Curso OTEC 2019', r: '4,9', rn: 4.9, a: 74, rv: 51, km: 2.2, yrs: 12, bg: '#EEEAFB', fg: '#4447C2',
+    com: ['Ñuñoa', 'Providencia', 'La Reina', 'Macul'], tel: '+56 9 7120 4486', resp: '20 min',
+    bio: 'Soy cuidadora hace 12 años. Acompañé a mi propia mamá con alzhéimer y desde entonces cuido a adultos mayores en su casa y en clínicas. Hago turnos de día y de noche y dejo todo anotado en la bitácora para la familia.',
+    spec: ['Adulto mayor', 'Alzhéimer y demencias', 'Turnos de noche', 'Acompañamiento hospitalario'],
+    edu: [['Curso de Cuidador de Adulto Mayor', 'OTEC Senama', '2019'], ['Primeros auxilios y RCP básico', 'Cruz Roja Chilena', '2024']],
+    dist: [92, 6, 2, 0, 0], crit: [['Puntualidad', '4,9'], ['Trato', '5,0'], ['Técnica', '4,8'], ['Explica todo', '4,9']],
+    f: 1.0, gs: ['am', 'turn', 'pd', 'pal', 'post'], p: {}, night: {}, xinc: 'Bitácora del turno para la familia',
+    sl: [['20:00'], ['08:00', '10:00', '14:00', '20:00'], ['08:00', '20:00'], ['08:00', '14:00'], ['08:00', '20:00'], ['09:00', '20:00']] },
+  { id: 'mp', n: 'Marisol Paredes', i: 'MP', t: 'Cuidadora', k: 'cuid', g: 'f', reg: 'Curso OTEC 2021', r: '4,8', rn: 4.8, a: 39, rv: 28, km: 3.4, yrs: 7, bg: '#F3F3F5', fg: '#2A2A2E',
+    com: ['Ñuñoa', 'Santiago', 'San Joaquín', 'Macul'], tel: '+56 9 6633 9012', resp: '30 min',
+    bio: 'Cuidadora con 7 años en casas de reposo y a domicilio. Me especialicé en personas postradas: cambios de posición, baño en cama y alimentación. Soy tranquila y muy cariñosa.',
+    spec: ['Paciente postrado', 'Baño en cama', 'Acompañamiento hospitalario'],
+    edu: [['Curso de Cuidados Básicos de Enfermería', 'OTEC Fundación Las Rosas', '2021'], ['Prevención de úlceras por presión', 'Hospital del Salvador', '2023']],
+    dist: [86, 10, 3, 1, 0], crit: [['Puntualidad', '4,8'], ['Trato', '4,9'], ['Técnica', '4,7'], ['Explica todo', '4,8']],
+    f: 1.05, gs: ['am', 'turn', 'pd', 'post'], p: {}, night: {}, xinc: 'Bitácora del turno para la familia',
+    sl: [[], ['09:00', '15:00', '20:00'], ['09:00', '20:00'], ['08:00', '20:00'], ['20:00'], ['09:00', '12:00']] },
 ];
 const comStr = p => p.com.length > 1 ? p.com.slice(0, -1).join(', ') + ' y ' + p.com[p.com.length - 1] : p.com[0];
 /* reseñas de ejemplo (r: estrellas) */
@@ -195,7 +284,7 @@ const REVIEWS = {
     { id: 'mc3', n: 'Hernán Bustos', c: 'Ñuñoa', d: 'hace 1 mes', s: 'sig', r: 5, t: 'Me controló la presión toda la semana. Muy responsable.' },
   ],
   pg: [
-    { id: 'pg1', n: 'Teresa Alarcón', c: 'Providencia', d: 'hace 6 días', s: 'tens4', r: 5, t: 'Cuida a mi mamá dos veces por semana. Es cariñosa, ordenada y la tiene feliz.' },
+    { id: 'pg1', n: 'Teresa Alarcón', c: 'Providencia', d: 'hace 6 días', s: 'tens8', r: 5, t: 'Cuida a mi mamá dos veces por semana. Es cariñosa, ordenada y la tiene feliz.' },
     { id: 'pg2', n: 'Luis Cárdenas', c: 'Santiago', d: 'hace 2 semanas', s: 'iny', r: 5, t: 'Excelente y muy cuidadosa. No dolió nada.' },
     { id: 'pg3', n: 'Mónica Fuenzalida', c: 'Ñuñoa', d: 'hace 1 mes', s: 'mue', r: 4, t: 'Muy amable. Tuvo que pincharme dos veces, pero me explicó por qué.' },
   ],
@@ -214,16 +303,33 @@ const REVIEWS = {
     { id: 'dn2', n: 'Sergio Molina', c: 'La Florida', d: 'hace 3 semanas', s: 'sig', r: 5, t: 'Le controla la presión a mi papá cada semana. Responsable y puntual.' },
     { id: 'dn3', n: 'Javiera Rubio', c: 'Peñalolén', d: 'hace 1 mes', s: 'mue', r: 4, t: 'Rápido y ordenado. Recomendado.' },
   ],
+  xv: [
+    { id: 'xv1', n: 'Carolina Méndez', c: 'Ñuñoa', d: 'hace 5 días', s: 'cuid', r: 5, t: 'Cuidó a mi papá tres noches seguidas. Dejó todo anotado en la bitácora y pudimos dormir tranquilos.' },
+    { id: 'xv2', n: 'Patricio Núñez', c: 'Providencia', d: 'hace 3 semanas', s: 'hnoc', r: 5, t: 'Acompañó a mi mamá en la clínica de noche. Muy atenta y nos avisaba todo por chat.' },
+    { id: 'xv3', n: 'Soledad Ríos', c: 'La Reina', d: 'hace 1 mes', s: 'acomp', r: 4, t: 'Cariñosa y puntual. La sacó a caminar todos los días.' },
+  ],
+  mp: [
+    { id: 'mp1', n: 'Rocío Villalobos', c: 'Macul', d: 'hace 1 semana', s: 'pos', r: 5, t: 'Mi abuelo está postrado y no ha tenido ni una escara desde que lo cuida Marisol.' },
+    { id: 'mp2', n: 'Luis Cárdenas', c: 'Santiago', d: 'hace 1 mes', s: 'bano', r: 5, t: 'Lo baña en cama con mucho respeto. Mi papá la adora.' },
+  ],
 };
 const PRO = (id = S.pro) => PROS.find(p => p.id === id);
 const proName = () => PRO();
-const DERIV = { inysc: ['iny', -2000], inyev: ['iny', 8000, 'enf'], pie: ['cura', 2000], pun: ['cur', -6000], suero: ['son', -2000], tens8: ['tens4', 22000] };
-const derived = (pr, k) => { const d = DERIV[k]; if (!d || !pr.p[d[0]] || (d[2] && pr.k !== d[2])) return 0; return pr.p[d[0]] + d[1]; };
+const r500 = n => Math.round(n / 500) * 500;
+const minH = k => Math.min(...Object.keys(CAT[k].tp).map(Number));
+// ¿la profesional ofrece el servicio? Lo define su profesión y las categorías donde atiende.
+const offers = (pr, k) => !!CAT[k] && !CAT[k].soon && CAT[k].who.includes(pr.k) && (!!pr.p[k] || pr.gs.includes(CAT[k].g));
+// precio por turno de h horas (día o noche). Recargo nocturno solo si el servicio no es ya de noche.
+const shiftUnit = (pr, k, h = minH(k), jor = 'dia') => { const c = CAT[k]; if (!c.tp || !c.tp[h]) return 0; const b = pr.p[k] && h === minH(k) ? pr.p[k] : r500(c.tp[h] * pr.f); return r500(b * (jor === 'noche' && !c.jor ? 1 + SUR.noche : 1)); };
 // precio de una profesional para un servicio. Camila (la cuenta profesional del prototipo) usa lo que ella edita.
 function priceOf(pr, item = S.item, slot) {
-  if (!item) { const l = Object.keys(CAT).map(k => priceOf(pr, k)).filter(Boolean); return l.length ? Math.min(...l) : 0; }
-  let base = pr.p[item] || derived(pr, item), nt = pr.night[item];
+  if (!item) { const l = Object.keys(CAT).filter(k => !CAT[k].plan && !CAT[k].turno).map(k => priceOf(pr, k)).filter(Boolean); return l.length ? Math.min(...l) : 0; }
+  if (!CAT[item] || CAT[item].soon) return 0;
+  let base, nt = pr.night[item];
   if (pr.id === 'cr') { const m = S.my[item]; base = m && m.on ? m.p : undefined; nt = m && m.nOn ? m.night : 0; }
+  else if (!offers(pr, item)) return 0;
+  else if (CAT[item].turno) base = shiftUnit(pr, item);
+  else base = pr.p[item] || r500(CAT[item].base * pr.f);
   if (!base) return 0;
   return slot && slot >= '21:00' && nt ? nt : base;
 }
@@ -251,16 +357,46 @@ function prosFor(item = S.item) {
 }
 function price() {
   const pr = PRO(), L = [];
+  if (isT()) { const c = shiftCalc(pr); return { L: c.L, total: c.total, pro: c.unit, shift: c }; }
   const p = priceOf(pr, S.item, S.when === 'prog' ? S.slot : '');
   const isN = S.when === 'prog' && S.slot >= '21:00' && nightOf(pr);
   if (S.item === 'mue') { L.push([`Toma a domicilio · ${first(pr)}`, p]); if (!byOrder()) L.push([`Exámenes (laboratorio) · ${examList().length}`, examSum()]); if (!byOrder() && examSum() >= 30000) L.push(['Toma gratis · exámenes sobre $30.000', -p]); return { L, total: L.reduce((a, b) => a + b[1], 0), pro: p, lab: byOrder() ? 0 : examSum(), pend: byOrder() }; }
   L.push([`${CAT[S.item].n}${isN ? ' · horario nocturno' : ''}`, p]);
   return { L, total: L.reduce((a, b) => a + b[1], 0), pro: p };
 }
+/* ---------- turnos (cuidadoras y TENS) ---------- */
+const SH0 = new Date(2026, 9, 27);   // mar 27 oct: primer día que se puede iniciar un turno
+const WD = ['dom', 'lun', 'mar', 'mie', 'jue', 'vie', 'sab'];
+const WDN = { lun: 'Lun', mar: 'Mar', mie: 'Mié', jue: 'Jue', vie: 'Vie', sab: 'Sáb', dom: 'Dom' };
+const MES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+const addD = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+const dTxt = d => `${WDN[WD[d.getDay()]].toLowerCase()} ${d.getDate()} ${MES[d.getMonth()]}`;
+const festOf = d => FEST[`${d.getDate()}-${d.getMonth() + 1}`];
+const shH = (k = S.item) => { const hs = Object.keys(CAT[k].tp).map(Number); return hs.includes(S.sh.h) ? S.sh.h : hs[hs.length > 1 && hs.includes(12) ? hs.indexOf(12) : 0]; };
+const shJor = (k = S.item) => CAT[k].jor || (shH(k) >= 24 ? '24' : S.sh.jor);
+const shRange = (k = S.item) => { const h = shH(k), j = shJor(k); if (h >= 24) return '08:00 a 08:00'; const st = j === 'noche' ? (h >= 12 ? 20 : 22) : 8; const en = (st + h) % 24; return `${String(st).padStart(2, '0')}:00 a ${String(en).padStart(2, '0')}:00`; };
+function shiftDates() {
+  const st = addD(SH0, S.sh.start), out = [];
+  for (let i = 0; i < 7 * S.sh.wk; i++) { const d = addD(st, i); if (S.sh.rep[WD[d.getDay()]] || i === 0) { const f = festOf(d), dom = d.getDay() === 0; out.push({ d, f, dom, sur: f ? SUR.fest : dom ? SUR.dom : 0 }); } }
+  return out;
+}
+function shiftCalc(pr = PRO(), k = S.item) {
+  const h = shH(k), jor = shJor(k), unit = shiftUnit(pr, k, h, jor === 'noche' ? 'noche' : 'dia'), ds = shiftDates();
+  const nF = ds.filter(x => x.f).length, nD = ds.filter(x => !x.f && x.dom).length;
+  const L = [[`${ds.length} turno${ds.length === 1 ? '' : 's'} de ${h} h${jor === 'noche' ? ' de noche' : jor === 'dia' && h < 24 ? ' de día' : ''} × ${clp(unit)}`, unit * ds.length]];
+  if (nD) L.push([`Recargo domingo +50% · ${nD} turno${nD === 1 ? '' : 's'}`, Math.round(unit * SUR.dom * nD)]);
+  if (nF) L.push([`Recargo festivo +100% · ${nF} turno${nF === 1 ? '' : 's'}`, Math.round(unit * SUR.fest * nF)]);
+  return { h, jor, unit, ds, nF, nD, L, total: L.reduce((a, b) => a + b[1], 0) };
+}
+const repTxt = () => { const l = Object.keys(WDN).filter(k => S.sh.rep[k]).map(k => WDN[k].toLowerCase()); return l.length ? (l.length > 1 ? l.slice(0, -1).join(', ') + ' y ' + l[l.length - 1] : l[0]) : 'un solo turno'; };
+const isT = (k = S.item) => !!(k && CAT[k] && CAT[k].turno);
+const durT = (pr, k) => CAT[k].turno ? `Turno de ${Object.keys(CAT[k].tp).join(', ').replace(/, (\d+)$/, ' o $1')} h` : CAT[k].plan ? 'Plan semanal' : `${durOf(pr, k)} min`;
 const slotEnd = t => { const [h, m] = t.split(':').map(Number); const x = h * 60 + m + 30; return String(Math.floor(x / 60)).padStart(2, '0') + ':' + String(x % 60).padStart(2, '0'); };
-const whenTxt = () => S.when === 'ahora' ? `Hoy, llega en ~${PRO().asap || 30} min` : `${dayShort(S.day)}, ${S.slot} a ${slotEnd(S.slot)}`;
-const whenLong = () => S.when === 'ahora' ? `Hoy, llega en ~${PRO().asap || 30} min` : `${DAYS[S.day][3].replace(/^\w/, c => c.toUpperCase())}, llega entre ${S.slot} y ${slotEnd(S.slot)}`;
+const whenTxt = () => isT() ? `Desde ${dTxt(addD(SH0, S.sh.start))} · ${shH()} h · ${repTxt()}` : S.when === 'ahora' ? `Hoy, llega en ~${PRO().asap || 30} min` : `${dayShort(S.day)}, ${S.slot} a ${slotEnd(S.slot)}`;
+const whenLong = () => isT() ? `${shiftDates().length} turnos de ${shH()} h (${shRange()}) desde el ${dTxt(addD(SH0, S.sh.start))} · ${repTxt()} · ${S.sh.wk} semana${S.sh.wk > 1 ? 's' : ''}` : S.when === 'ahora' ? `Hoy, llega en ~${PRO().asap || 30} min` : `${DAYS[S.day][3].replace(/^\w/, c => c.toUpperCase())}, llega entre ${S.slot} y ${slotEnd(S.slot)}`;
 const whoTxt = () => ({ mama: 'Rosa Muñoz (mamá)', yo: 'Daniela Fuentes (tú)', papa: 'Luis Fuentes (papá)' })[S.who];
+const FAM = { mama: { n: 'Rosa Muñoz Pérez', c: 'Rosa', r: 'mamá', i: 'RM', e: 78, al: ['Penicilina'], dx: ['Hipertensión arterial', 'Diabetes tipo 2', 'Úlcera venosa pierna izquierda'], meds: [['Losartán 50 mg', '1 en la mañana'], ['Metformina 850 mg', 'Con almuerzo y cena'], ['Neurobionta 5.000', '1 amp. IM cada 48 h · 3 dosis']], dev: ['Bastón', 'Glucómetro'], barthel: 75, braden: 17 }, papa: { n: 'Luis Fuentes Ortiz', c: 'Luis', r: 'papá', i: 'LF', e: 80, al: ['Sin alergias conocidas'], dx: ['Hipertensión arterial', 'Post-operatorio de cadera (oct 2026)'], meds: [['Amlodipino 5 mg', '1 en la mañana'], ['Enoxaparina 40 mg', '1 SC al día · 21 días'], ['Paracetamol 1 g', 'Cada 8 h si hay dolor']], dev: ['Andador', 'Alza baño'], barthel: 55, braden: 15 }, yo: { n: 'Daniela Fuentes Muñoz', c: 'Daniela', r: 'tú', i: 'DF', e: 37, al: ['Sin alergias conocidas'], dx: ['Sin diagnósticos crónicos'], meds: [], dev: [], barthel: 100, braden: 23 } };
+const FM = () => FAM[S.fm] || FAM.mama;
 const first = (p = PRO()) => p.n.split(' ')[0];
 const net = p => Math.round(p * (100 - S.comm) / 100);
 
@@ -275,10 +411,10 @@ const row = (i, a, b = '', go = '', end = ic('caret-right'), cls = '', act = '',
 };
 const ST_I = { ok: 'check-circle', warn: 'clock', inf: 'clock-countdown', bad: 'x-circle' };
 const st = (k, t, i) => { i = i === '' ? '' : (i || ST_I[k]); return `<span class="st ${k}">${i ? ic(i, 1) : ''}${t}</span>`; };
-const PHOTO = ['CR', 'FA', 'MC', 'PG', 'VM', 'FL', 'DN', 'JS', 'CD', 'IP', 'RS'];
-const V = '?v=20261026b';
+const PHOTO = ['CR', 'FA', 'MC', 'PG', 'VM', 'FL', 'DN', 'JS', 'CD', 'IP', 'RS', 'XV', 'MP'];
+const V = '?v=20261026c';
 const slug = n => n.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\./g, '').trim().replace(/\s+/g, '-');
-const PACPH = { DF: 'daniela-fuentes', RM: 'rosa-m' };
+const PACPH = { DF: 'daniela-fuentes', RM: 'rosa-m', LF: 'luis-fuentes' };
 const phSrc = ini => PHOTO.includes(ini) ? `img/pro/${ini.toLowerCase()}.webp${V}` : PACPH[ini] ? `img/pac/${PACPH[ini]}.webp${V}` : '';
 const avIn = ini => phSrc(ini) ? `<img class="avp" src="${phSrc(ini)}" alt="" loading="lazy">` : ini;
 const av = (ini, cls = '', ver = false) => `<span class="av ${cls}${phSrc(ini) ? ' hasp' : ''}">${avIn(ini)}${ver ? `<span class="vb">${ic('check', 0).replace('ph ', 'ph-bold ')}</span>` : ''}</span>`;
@@ -507,8 +643,8 @@ function linksOf(id) {
 }
 window.__links = linksOf;
 const LANES = [
-  ['pac', 'Paciente', [['P01', 'P02', 'P03', 'P04', 'P05'], ['P06', 'P07', 'P08', 'P09'], ['P10', 'P11', 'P36', 'P34'], ['P12', 'P32', 'P33', 'P22'], ['P13', 'P14', 'P15', 'P16'], ['P17', 'P18', 'P19', 'P20'], ['P26', 'P27', 'P30', 'P28', 'P29'], ['P21', 'P23', 'P24', 'P25'], ['W01', 'W02', 'W03', 'W04']]],
-  ['pro', 'Profesional', [['R01', 'R02', 'R03'], ['R04', 'R05', 'R06', 'R07'], ['R08', 'R09', 'R10', 'R26'], ['R11', 'R12', 'R13', 'R14', 'R15'], ['R16', 'R17', 'R18'], ['R19', 'R20', 'R21', 'R22'], ['R23', 'R24', 'R25'], ['R27', 'R28', 'R29']]],
+  ['pac', 'Paciente', [['P01', 'P02', 'P03', 'P04', 'P05'], ['P06', 'P07', 'P08', 'P09'], ['P10', 'P11', 'P36', 'P34'], ['P12', 'P32', 'P33', 'P22'], ['P13', 'P14', 'P15', 'P16'], ['P17', 'P18', 'P19', 'P20'], ['P26', 'P27', 'P30', 'P28', 'P29'], ['P21', 'P23', 'P24', 'P25'], ['P50', 'P51', 'P52', 'P53'], ['P54', 'P55', 'P56', 'P57', 'P58'], ['W01', 'W02', 'W03', 'W04']]],
+  ['pro', 'Profesional', [['R01', 'R02', 'R03'], ['R04', 'R05', 'R06', 'R07'], ['R08', 'R09', 'R10', 'R26'], ['R11', 'R12', 'R13', 'R14', 'R15'], ['R16', 'R17', 'R18'], ['R19', 'R20', 'R21', 'R22'], ['R23', 'R24', 'R25'], ['R27', 'R28', 'R29'], ['R37', 'R38', 'R31', 'R32'], ['R33', 'R34', 'R35', 'R39', 'R36']]],
   ['adm', 'Admin', [['A01', 'A02', 'A03'], ['A04', 'A05', 'A07'], ['A06']]],
 ];
 function openFlow() {

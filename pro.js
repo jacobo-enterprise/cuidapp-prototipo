@@ -107,7 +107,7 @@ def({ id: 'R26', name: 'Foto y presentación', kind: 'page', back: true, title: 
 
 def({ id: 'R11', name: 'Servicios y precios', kind: 'page', back: true, title: 'Servicios y precios',
   body: () => `<div class="t2 sm">Cuidapp define los servicios. Tú eliges cuáles haces, cuánto cobras y qué incluyes.</div><div class="mt8">
-  ${GK.filter(g => GRP[g].l.some(k => mySvcs().includes(k))).map(g => `<div class="lbl2">${GRP[g].n}</div>${GRP[g].l.filter(k => mySvcs().includes(k)).map(k => { const m = S.my[k]; return `<div class="svcrow"><span class="si">${i3(k)}</span><button class="tog ${m.on ? 'on' : ''}" data-act="svcOn" data-arg="${k}"></button>
+  ${GALL.filter(g => GRP[g].l.some(k => mySvcs().includes(k))).map(g => `<div class="lbl2">${GRP[g].n}</div>${GRP[g].l.filter(k => mySvcs().includes(k)).map(k => { const m = S.my[k]; return `<div class="svcrow"><span class="si">${i3(k)}</span><button class="tog ${m.on ? 'on' : ''}" data-act="svcOn" data-arg="${k}"></button>
   <button class="tx" data-act="edit" data-arg="${k}" data-go="R12"><div class="a">${CAT[k].n}</div><div class="b">${!m.on ? 'No lo ofreces' : k === 'mue' ? 'Tu tarifa de toma · exámenes los cobra el laboratorio' : `${m.dur} min · mínimo ${clp(S.mins[k])}${m.nOn ? ` · noche ${clp(m.night)}` : ''}`}</div></button>
   <button class="end" data-act="edit" data-arg="${k}" data-go="R12">${m.on ? money(m.p) : ''}${ic('caret-right')}</button></div>`; }).join('')}`).join('')}</div>
   <div class="mt16">${note('info', `Cuidapp cobra ${S.comm}% de cada atención. El resto es tuyo y se deposita los martes.`)}</div>`,
@@ -172,6 +172,7 @@ def({ id: 'R17', name: 'Solicitud de reserva', kind: 'page', back: true, title: 
 def({ id: 'R18', name: 'Detalle de la visita', kind: 'page', back: true, title: 'Reserva confirmada',
   body: () => `<div style="display:flex;align-items:center;gap:14px">${av('RM', 'l')}<div><div class="h-l">Rosa Muñoz</div><div class="t2 mt4">78 años · la pidió Daniela Fuentes (hija) · +56 9 8765 4321</div></div></div>
   <div class="mt16">${note('warning', '<b>Alergia a penicilina.</b>', 'warn')}</div>
+  <button class="lastn mt12" data-go="R37">${ic('notebook')}<span class="tx"><span class="xs t2">Disponible 24 h antes de la cita</span><span class="a">Resumen de la ficha de Rosa</span><span class="b">Diagnósticos, remedios, última curación y escalas</span></span>${ic('caret-right')}</button>
   <div class="mt8">${row('box:calendar-check', 'Martes 27 oct · 08:00 a 08:30', 'Te recordamos 1 hora antes', '', '')}
   ${row('box:map-pin', 'Av. Irarrázaval 3450, depto 1204, torre B', 'Ñuñoa · Conserjería 24 h · estacionar en visitas', '', '')}
   ${row('box:syringe', 'Inyección intramuscular', 'El medicamento está en la casa (refrigerador)', '', '')}
@@ -196,8 +197,9 @@ def({ id: 'R21', name: 'Cerrar atención', kind: 'page', title: 'Atención en cu
   body: () => `<div class="t2">Comenzó 08:02 · Rosa Muñoz</div><div class="h-l mt8 num">00:12:40</div>
   ${lbl('¿Qué hiciste?')}${checkRow('Inyección IM de Neurobionta 5.000', true, 'toast', 'Procedimiento registrado.')}
   ${lbl('Zona')}<div class="chips">${chip('Glúteo derecho', true, 'toast', 'Zona registrada.')}${chip('Glúteo izquierdo', false, 'toast', 'Zona registrada.')}${chip('Deltoides', false, 'toast', 'Zona registrada.')}</div>
-  ${lbl('Nota para la familia')}<div class="field" style="height:auto;min-height:72px;align-items:flex-start;padding-top:12px"><span>Sin reacción. Próxima dosis en 48 h según receta.</span></div>`,
-  foot: () => abtn('Terminar atención', 'earn', '', '', 'R22') });
+  ${lbl('Durante la visita')}${row('box:list', 'Historial de Rosa', SHARE[S.share][0] + ' · compartido por Daniela', 'R38')}
+  <div class="mt12">${note('notebook', 'Al terminar escribes la nota: signos vitales, curación, indicaciones y próximo control. Daniela la recibe con una notificación push.')}</div>`,
+  foot: () => abtn('Terminar y escribir la nota', 'earn', '', '', 'R31') });
 
 def({ id: 'R22', name: 'Calificar paciente', kind: 'page',
   body: () => `<div class="st ok" style="margin-top:12px">${ic('check-circle', 1)}+${clp(net(S.my.iny.p))}</div><div class="h-l mt16">Terminaste. ¿Cómo te fue?</div>
