@@ -24,9 +24,6 @@ b.classList.add('on');gsap.fromTo(b,{yPercent:45,opacity:0,filter:'blur(8px)'},{
 gsap.utils.toArray('.rv').forEach(function(el){gsap.fromTo(el,{opacity:0,y:24},{opacity:1,y:0,duration:.9,ease:'expo.out',scrollTrigger:{trigger:el,start:'top 90%',once:true}})});
 // tray objects pop in one by one
 gsap.fromTo('.tc img',{opacity:0,scale:.5,y:20},{opacity:1,scale:1,y:0,duration:.6,ease:'back.out(1.8)',stagger:{each:.035,from:'center'},scrollTrigger:{trigger:'.tray',start:'top 85%',once:true}});
-// film card grows like a video reveal
-gsap.fromTo('.film',{scale:.86,borderRadius:48},{scale:1,borderRadius:30,ease:'none',scrollTrigger:{trigger:'.film',start:'top 95%',end:'center 55%',scrub:true}});
-gsap.fromTo('.film img',{scale:1.18},{scale:1,ease:'none',scrollTrigger:{trigger:'.film',start:'top bottom',end:'bottom top',scrub:true}});
 // rows: phone rises, cards break out, objects float
 gsap.utils.toArray('.row').forEach(function(r){var ph=r.querySelector('.phn'),bo=r.querySelectorAll('.bo'),em=r.querySelectorAll('.emo');
 var t=gsap.timeline({scrollTrigger:{trigger:r,start:'top 72%',once:true}});

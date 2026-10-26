@@ -1,4 +1,4 @@
-@font-face{font-family:"Inter Tight";src:url(assets/fonts/InterTight.ttf?v=20261026v7) format("truetype");font-weight:100 900;font-display:swap}
+@font-face{font-family:"Inter Tight";src:url(assets/fonts/InterTight.ttf?v=20261026v8) format("truetype");font-weight:100 900;font-display:swap}
 :root{--ink:#111;--ink2:#5F5E6B;--ink3:#8B8A97;--lav:#7A7CF0;--lavt:#5557D9;--ind:#2A1F66;--pink:#FFA8CD;--w:#FBFBFC;--g:#F3F3F6;--line:rgba(17,17,17,.08);--e:cubic-bezier(.22,1,.36,1)}
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
@@ -57,11 +57,6 @@ button,input{font:inherit}
 .tc{display:flex;align-items:center;justify-content:center;height:84px}
 .tc img{width:58px;height:58px;object-fit:contain;transition:transform .3s var(--e)}
 .tc:hover img{transform:translateY(-6px) scale(1.12) rotate(-4deg)}
-.film{position:relative;width:min(1060px,100%);margin:64px auto 0;border-radius:30px;overflow:hidden;aspect-ratio:16/9;background:#dcdce4}
-.film img{width:100%;height:100%;object-fit:cover}
-.film figcaption{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#fff;background:linear-gradient(180deg,rgba(17,17,30,.05),rgba(17,17,30,.35))}
-.film-k{font-size:clamp(22px,2.4vw,34px);font-weight:500;letter-spacing:-.02em;opacity:.9}
-.film b{font-size:clamp(56px,8vw,112px);font-weight:600;letter-spacing:-.045em;line-height:1}
 /* rows */
 .row{position:relative;overflow:hidden;padding-top:96px}
 .row-g{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
@@ -110,7 +105,6 @@ a.li:hover .chev{transform:translateX(4px)}
 .ask{margin-top:32px}
 .todo{padding:84px 0}.sub,.body{font-size:16.5px}
 .tray{grid-template-columns:repeat(6,1fr);padding:18px 10px;gap:6px;border-radius:22px;margin-top:36px}.tc{height:56px}.tc img{width:40px;height:40px}
-.film{margin-top:36px;border-radius:22px;aspect-ratio:4/5}
 .row{padding-top:72px}.row-g{grid-template-columns:1fr;gap:36px}.side-r .mock{order:0}.txt{padding-bottom:0;order:-1}
 .mock{transform:scale(.64);transform-origin:top center;margin:0 0 -202px calc((100% - 560px)/2);justify-self:start}
 .row-g{justify-items:stretch}
