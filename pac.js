@@ -405,7 +405,7 @@ def({ id: 'P19', name: 'Esperando confirmación', kind: 'page', auto: 'P20', aut
   <div class="mt16">${row('box:check', 'Solicitud enviada', `${CAT[S.item].n} · ${whenTxt()}`, '', '')}${row('box:hourglass-medium', `${first()} revisa tu solicitud`, S.item === 'iny' ? 'También revisa la receta' : 'Y confirma la hora', '', st('inf', 'En curso'))}${row('box:lock-simple', 'Aún no te cobramos nada', `Retenemos ${clp(price().total)} cuando confirme`, '', '')}</div>`,
   foot: () => `${btn('Ir a Servicios', 'P06', 'sec')}${btn('Cancelar solicitud', 'P30', 'ghost')}`, enter: () => T(() => { S.booked = true; go('P20'); }, 4500) });
 
-def({ id: 'P20', name: 'Cita confirmada', kind: 'page', next: ['P21'],
+def({ id: 'P20', name: 'Cita confirmada', kind: 'page', next: ['P27'],
   body: () => `<div class="okc mt24">${ic('check', 0).replace('ph ', 'ph-bold ')}</div>
   <div class="h-l mt16">¡Listo! ${first()} confirmó tu cita</div><div class="t2 mt8">${whenLong()}</div>
   <div class="rvw mt24"><div class="rvw-h">${pav(PRO(), '', true)}<div><div class="b-m">${PRO().n}</div><div class="sm t2">${PRO().t} · ${PRO().tel}</div></div></div>
@@ -414,14 +414,12 @@ def({ id: 'P20', name: 'Cita confirmada', kind: 'page', next: ['P21'],
   ${acts([['chat-circle', `Escribirle a ${first()}`, '', '', 'P22'], ['calendar-plus', 'Agregar a mi calendario', 'toast', 'Agregado a tu calendario.'], ['share-network', 'Compartir con la familia', 'toast', 'Link copiado. Mándalo por WhatsApp.']])}`,
   foot: () => `${abtn('Ver mis citas', 'book', '', '', 'P26')}${btn('Ir a Servicios', 'P06', 'ghost')}` });
 
-const trackBody = () => `<div class="trk-h"><div class="h-m">Va en camino · llega en <span id="eta" class="num">${P().min + 3}</span> min</div></div><div class="sm t2 mt4">${dayShort(S.day)} · ${S.slot} · ${CAT[S.item].n}</div>
-  <div class="progress mt12"><span id="etabar" style="width:4%"></span></div>
-  <div class="mt16">${proCard(false, true)}</div>
+const addMin = (t, m) => { const [h, mi] = t.split(':').map(Number), x = h * 60 + mi + m; return String(Math.floor(x / 60) % 24).padStart(2, '0') + ':' + String(x % 60).padStart(2, '0'); };
+/* estado simple de llegada, sin mapa */
+const etaCard = () => `<div class="eta mt16"><div class="eta-h"><span class="eta-d"></span><div style="flex:1;min-width:0"><b>${first()} va en camino</b><div class="sm t2">Llega aprox. ${addMin(S.slot, 10)} · te avisamos con una notificación cuando llegue</div></div></div>
   <div class="note inf mt12">${ic('key')}<div>Tu código es <b class="num" style="font-size:17px;letter-spacing:2px">2749</b>. Dáselo a ${first()} cuando llegue.</div></div>
-  <div class="row8 mt12"><button class="btn sec" data-go="P22">${ic('chat-circle')}Mensaje</button><button class="btn sec" data-act="toast" data-arg="Llamando a ${first()}…">${ic('phone')}Llamar</button></div>
-  <button class="btn ghost mt8" style="color:var(--danger)" data-act="set" data-arg="cancelFrom=P21" data-go="P30">Cancelar atención</button>`;
-const trackMap = () => ({ home: P().ll, pro: P().route[0], route: P().route, anim: { route: P().route, dur: 16000, tick: k => { const e = $('#eta'); if (e) e.textContent = Math.max(1, Math.round((P().min + 3) * (1 - k))); const b = $('#etabar'); if (b) b.style.width = Math.max(4, k * 100) + '%'; }, end: () => { S.phase = 'llego'; go('P23'); } } });
-def({ id: 'P21', name: 'Va en camino (mapa)', kind: 'map', back: true, auto: 'P23', autoAct: () => { S.phase = 'llego'; }, map: trackMap, body: trackBody });
+  <div class="row8 mt12"><button class="btn sec" data-act="toast" data-arg="Llamando a ${first()}…">${ic('phone')}Llamar</button><button class="btn sec" data-go="P22">${ic('chat-circle')}Mensaje</button></div>
+  <button class="lk sm mt12" data-act="set" data-arg="phase=llego" data-go="P23">Simular llegada</button></div>`;
 
 def({ id: 'P22', name: 'Chat con la profesional', kind: 'page', back: true, title: '',
   body: () => `${mini(PRO(), `${PRO().t} · ${S.booked ? whenTxt() : 'responde en ~' + PRO().resp}`)}
@@ -472,21 +470,21 @@ def({ id: 'P26', name: 'Mis citas', kind: 'page', tab: 'citas',
   <div class="citas mt16">${l.map(citaCard).join('')}</div>
   ${S.ctab === 'past' ? `<div class="again mt16"><div><div class="b-m">¿Repetimos con Camila?</div><div class="sm t2">Curación simple · ${clp(priceOf(PRO('cr'), 'cur'))}</div></div><button class="pill on" data-act="pick" data-arg="cr|" data-go="P13">${ic('repeat')}Agendar</button></div>` : `<button class="newb mt16" data-go="P07">${ic('plus')}Agendar otro servicio</button>`}`; } });
 
-def({ id: 'P27', name: 'Detalle de la cita', kind: 'page', back: true, title: 'Detalle de la cita', next: ['P21', 'P13', 'P42'],
-  body: () => S.det === 'next' ? `<div class="h-l">${CAT[S.item].n}</div><div class="t2 mt4">${whenLong()}</div><div class="mt8">${st('ok', 'Confirmada', 'check-circle')}</div>
+def({ id: 'P27', name: 'Detalle de la cita', kind: 'page', back: true, title: 'Detalle de la cita', next: ['P23', 'P13', 'P42'],
+  body: () => S.det === 'next' ? `<div class="h-l">${CAT[S.item].n}</div><div class="t2 mt4">${whenLong()}</div><div class="mt8">${st('ok', 'Confirmada', 'check-circle')}</div>${etaCard()}
   <div class="rvw mt16"><div class="rvw-h" data-act="pick" data-arg="${S.pro}|" data-go="P12" role="button">${pav(PRO(), '', true)}<div style="flex:1"><div class="b-m">${PRO().n}</div><div class="sm t2">${PRO().t} · ${rate(PRO(), false)}</div></div>${ic('caret-right')}</div>
   <div class="rvw-r">${ic('map-pin')}<span>${P().full}</span></div><div class="rvw-r">${ic('user')}<span>${whoTxt()}</span></div><div class="rvw-r">${ic('lock-simple')}<span>${clp(price().total)} retenido · se cobra al terminar</span></div>${price().disc ? `<div class="rvw-r">${ic('tag')}<span>Descuento primera atención (CUIDA15) −${clp(price().disc)}</span></div>` : ''}</div>
   ${S.item === 'mue' ? `<div class="lbl2">Exámenes</div>${byOrder() ? row('box:file-text', 'Según orden médica', 'El laboratorio confirma el precio', '', '') : examList().map(e => kv(e[0], clp(e[1]))).join('')}${row('box:file-pdf', 'Resultados', 'Disponibles en PDF 24 a 48 horas después de la toma', '', st('neu', 'Pendiente', ''))}` : ''}
-  ${acts([['chat-circle', `Chat con ${first()}`, '', '', 'P22'], ['navigation-arrow', 'Ver dónde viene (el día de la cita)', '', '', 'P21'], ['calendar-blank', 'Cambiar día u hora', '', '', 'P13'], ['calendar-plus', 'Agregar a mi calendario', 'toast', 'Agregado a tu calendario.']])}
+  ${acts([['chat-circle', `Chat con ${first()}`, '', '', 'P22'], ['calendar-blank', 'Cambiar día u hora', '', '', 'P13'], ['calendar-plus', 'Agregar a mi calendario', 'toast', 'Agregado a tu calendario.']])}
   <div class="mt16">${note('calendar-x', 'Cancelación gratis hasta 12 horas antes. Después se cobra $5.000 por el traslado.')}</div>
-  <button class="btn ghost mt8" style="color:var(--danger)" data-act="set" data-arg="cancelFrom=P27" data-go="P30">Cancelar cita</button>`
+  <button class="btn ghost mt8" style="color:var(--danger)" data-act="set" data-arg="cancelFrom=camino" data-go="P30">Cancelar cita</button>`
     : S.det === 'pastm' ? `<div class="h-l">Toma de muestras</div><div class="t2 mt4">3 oct · 07:30 · Av. Irarrázaval 3450, Ñuñoa</div><div class="mt16">${proCard(false, false, 'pg')}</div>
   <div class="lbl2">Resultados</div>${row('box:file-pdf', 'Resultados en PDF', 'Laboratorio · 4 oct', 'P42', st('ok', 'Listos'))}
   <div class="lbl2">Pago</div>${kv('Toma a domicilio · Paula', '$12.000')}${['hemo', 'lip', 'bioq'].map(k => kv(EXAMS[k][0], clp(EXAMS[k][1]))).join('')}${kv('Total · Visa •••• 4821', clp(12000 + ['hemo', 'lip', 'bioq'].reduce((a, k) => a + EXAMS[k][1], 0)), 'tot')}`
     : `<div class="h-l">Curación simple</div><div class="t2 mt4">12 sep · 19:00 a 19:45 · Av. Irarrázaval 3450, Ñuñoa</div><div class="mt16">${proCard()}</div>
   <div class="lbl2">Pago</div>${kv('Curación simple · precio de Camila', '$24.000')}${kv('Total · Visa •••• 4821', '$24.000', 'tot')}
   <div class="lbl2">Nota de la profesional</div><div class="note">${ic('note')}<div>Herida limpia, sin signos de infección. Repetir en 48 h.</div></div>${row('box:notebook', 'Ver en la ficha de Rosa', 'Nota firmada, signos vitales y fotos', 'P52', ic('caret-right'), '', 'fm', 'mama')}`,
-  foot: () => S.det === 'next' ? `<div class="row8"><button class="btn sec" data-go="P22">${ic('chat-circle')}Chat</button><button class="btn" data-go="P21">Va en camino</button></div>` : `<div class="row8"><button class="btn sec" data-go="P65">${ic('receipt')}Boleta para reembolso</button><button class="btn sec" data-act="toast" data-arg="Te escribimos por WhatsApp en menos de 10 minutos.">${ic('lifebuoy')}Ayuda</button></div>${abtn('Agendar otra vez', 'pick', 'cr|', '', 'P13')}` });
+  foot: () => S.det === 'next' ? '' : `<div class="row8"><button class="btn sec" data-go="P65">${ic('receipt')}Boleta para reembolso</button><button class="btn sec" data-act="toast" data-arg="Te escribimos por WhatsApp en menos de 10 minutos.">${ic('lifebuoy')}Ayuda</button></div>${abtn('Agendar otra vez', 'pick', 'cr|', '', 'P13')}` });
 
 def({ id: 'P42', name: 'Resultados de exámenes', kind: 'page', back: true, title: 'Resultados',
   body: () => `<div class="pdf"><div class="pdf-h"><div><b>Cuidapp · Laboratorio</b><div class="xs t2">Informe de resultados · 4 oct 2026</div></div>${ic('file-pdf', 1)}</div>
@@ -527,7 +525,7 @@ def({ id: 'P29', name: 'Pacientes guardados', kind: 'page', back: true, title: '
 
 def({ id: 'P30', name: 'Cancelar', kind: 'page', back: true, title: 'Cancelar',
   body: () => `<div class="h-m">¿Por qué cancelas?</div><div class="mt8">${['Ya no la necesito', 'Me equivoqué de hora o dirección', 'Encontré otra hora', 'Otro motivo'].map((t, i) => radioRow(t, '', (S.cr || 0) === i, 'set', 'cr=' + i)).join('')}</div>
-  <div class="mt16">${S.cancelFrom === 'P21' ? note('warning', `${first()} ya va en camino. Se cobra $5.000 por el traslado y liberamos el resto.`, 'warn') : S.cancelFrom === 'P19' ? note('check-circle', 'Aún no te cobramos nada. Cancelar no tiene costo.') : note('check-circle', `Faltan más de 12 horas: cancelar es gratis y liberamos los ${clp(price().total)} retenidos.`)}</div>`,
+  <div class="mt16">${S.cancelFrom === 'camino' ? note('warning', `${first()} ya va en camino. Se cobra $5.000 por el traslado y liberamos el resto.`, 'warn') : S.cancelFrom === 'P19' ? note('check-circle', 'Aún no te cobramos nada. Cancelar no tiene costo.') : note('check-circle', `Faltan más de 12 horas: cancelar es gratis y liberamos los ${clp(price().total)} retenidos.`)}</div>`,
   foot: () => `${abtn('Cancelar cita', 'cancel', '', 'danger', 'P06')}${btn('Volver', 'back', 'ghost')}` });
 
 /* ===== escritorio paciente ===== */
@@ -567,4 +565,3 @@ def({ id: 'W03', name: 'Perfil y agenda (web)', kind: 'dfree', dtab: 'servicios'
    <button class="btn mt16" data-act="set" data-arg="addrNext=P14" data-go="P14">Agendar</button><button class="btn ghost mt8" data-go="P22">${ic('chat-circle')}Preguntarle algo</button>
    <div class="xs t3 mt8 center">No se cobra nada hasta que ${first()} confirme.</div></div></aside></div>`; } });
 
-def({ id: 'W04', name: 'Va en camino (web)', kind: 'map', dtab: 'citas', back: true, auto: 'P23', autoAct: () => { S.phase = 'llego'; }, map: trackMap, body: trackBody });

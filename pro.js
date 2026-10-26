@@ -1,6 +1,8 @@
 /* ===== Profesional ===== */
 Object.assign(ACT, {
   doc: k => { S.docs[k] = true; },
+  proGo: () => { S.proSt = 'camino'; toast('Listo. Le avisamos a Daniela que vas en camino.'); },
+  gmaps: () => { window.open(GMAPS, '_blank', 'noopener'); },
   online: () => { S.online = !S.online; toast(S.online ? 'Listo. Te mostramos a pacientes que piden “lo antes posible” cerca.' : 'Ya no recibes pedidos para hoy. Tu agenda sigue igual.'); },
   key: d => { if (d === '<') S.code = S.code.slice(0, -1); else if (S.code.length < 4) S.code += d; },
   chk: k => { S.chk[k] = !S.chk[k]; },
@@ -147,6 +149,10 @@ def({ id: 'R15', name: 'Bloquear días', kind: 'page', back: true, title: 'Bloqu
   <div class="mt16">${note('info', 'Las reservas ya confirmadas en esos días no se cancelan solas. Si necesitas cancelar una, avísale a la paciente por el chat.')}</div>`,
   foot: () => btn('Listo', 'back') });
 
+const GMAPS = 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent('Av. Irarrázaval 3450, Ñuñoa, Santiago, Chile');
+const goCard = () => `<div class="gost mt16 ${S.proSt === 'camino' ? 'on' : ''}"><div class="gost-h">${S.proSt === 'camino' ? st('inf', 'En camino', 'car-simple') : st('neu', 'Aún no sales', 'clock')}<span class="xs t2">${S.proSt === 'camino' ? 'Daniela ve «Camila va en camino»' : 'Avísale a Daniela cuando salgas'}</span></div>
+  <div class="gost-a">${ic('map-pin')}<div><b>Av. Irarrázaval 3450, depto 1204</b><div class="sm t2">Ñuñoa · torre B</div></div></div>
+  <button class="btn sec mt12" data-act="gmaps">${ic('arrow-square-out')}Abrir en Google Maps</button></div>`;
 const avlPill = () => `<button class="avl mt16 ${S.online ? 'on' : ''}" data-act="online" role="switch" aria-checked="${S.online}" aria-label="Disponible hoy"><span class="avl-d"></span><span class="avl-t"><b>${S.online ? 'Disponible' : 'No disponible'}</b><span>${S.online ? 'Apareces en «Disponible hoy»' : 'Actívalo para recibir pedidos de hoy'}</span></span><span class="tog ${S.online ? 'on' : ''}" aria-hidden="true"></span></button>`;
 const reqRow = (r, i, a, b, p, go = 'R17') => S.req[r] === 'new' ? row('box:' + i, a, b, go, money(p)) : '';
 def({ id: 'R16', name: 'Inicio profesional', kind: 'page', tab: 'inicio', next: ['R17'],
@@ -169,22 +175,16 @@ def({ id: 'R17', name: 'Solicitud de reserva', kind: 'page', back: true, title: 
   <div class="mt8">${note('warning', '<b>Alergia a penicilina.</b>', 'warn')}</div>`,
   foot: () => `${abtn('Aceptar reserva', 'req', 'r1:ok', '', 'R18')}<div style="display:flex;gap:8px"><button class="btn sec" data-act="toast" data-arg="Le propusimos a Daniela el martes 27 a las 09:00.">Proponer otra hora</button><button class="btn danger" data-act="req" data-arg="r1:no" data-go="R16">Rechazar</button></div>` });
 
-def({ id: 'R18', name: 'Detalle de la visita', kind: 'page', back: true, title: 'Reserva confirmada',
+def({ id: 'R18', name: 'Detalle de la visita', kind: 'page', back: true, title: 'Reserva confirmada', next: ['R20'],
   body: () => `<div style="display:flex;align-items:center;gap:14px">${av('RM', 'l')}<div><div class="h-l">Rosa Muñoz</div><div class="t2 mt4">78 años · la pidió Daniela Fuentes (hija) · +56 9 8765 4321</div></div></div>
-  <div class="mt16">${note('warning', '<b>Alergia a penicilina.</b>', 'warn')}</div>
+  <div class="mt16">${note('warning', '<b>Alergia a penicilina.</b>', 'warn')}</div>${goCard()}
   <button class="lastn mt12" data-go="R37">${ic('notebook')}<span class="tx"><span class="xs t2">Disponible 24 h antes de la cita</span><span class="a">Resumen de la ficha de Rosa</span><span class="b">Diagnósticos, remedios, última curación y escalas</span></span>${ic('caret-right')}</button>
   <div class="mt8">${row('box:calendar-check', 'Martes 27 oct · 08:00 a 08:30', 'Te recordamos 1 hora antes', '', '')}
   ${row('box:map-pin', 'Av. Irarrázaval 3450, depto 1204, torre B', 'Ñuñoa · Conserjería 24 h · estacionar en visitas', '', '')}
   ${row('box:syringe', 'Inyección intramuscular', 'El medicamento está en la casa (refrigerador)', '', '')}
   ${row('box:chat-circle', 'Escribir a Daniela', 'Chat de Cuidapp', '', ic('caret-right'), '', 'toast', 'Mensaje enviado: "Hola, nos vemos mañana a las 08:00".')}</div>
   <div class="sec-t">Receta</div><div class="mt8">${receta(true)}</div>`,
-  foot: () => btn(ic('navigation-arrow', 1) + 'Ir a la dirección', 'R19') });
-
-def({ id: 'R19', name: 'Navegación', kind: 'map', noNav: true, auto: 'R20',
-  map: () => ({ home: G.mama, pro: G.route[0], nav: true, route: G.route, anim: { route: G.route, dur: 14000, tick: k => { const e = $('#nm'); if (e) e.textContent = Math.max(1, Math.round(9 * (1 - k))); } } }),
-  float: () => `<div class="navbanner">${ic('arrow-bend-up-right', 1)}<div><div style="font-size:20px;font-weight:700">300 m</div><div style="opacity:.8;font-size:15px">Gira a la derecha en Av. Irarrázaval</div></div></div>`,
-  body: () => `<div style="display:flex;align-items:center;justify-content:space-between"><div><div class="h-m"><span id="nm" class="num">9</span> min · 2,9 km</div><div class="sm t2 mt4">Llegas 07:58 · Irarrázaval 3450</div></div>${av('RM', 's')}</div>`,
-  foot: () => `${btn('Llegué', 'R20')}<div style="display:flex;gap:8px"><button class="btn sec" data-act="toast" data-arg="Abriendo Waze…">${ic('map-trifold')}Waze</button><button class="btn sec" data-act="toast" data-arg="Llamando a Daniela…">${ic('phone')}Llamar</button></div>` });
+  foot: () => S.proSt === 'camino' ? `${btn(ic('map-pin-simple-area', 1) + 'Llegué', 'R20')}<button class="btn ghost" data-act="set" data-arg="proSt=">Aún no salgo</button>` : abtn(ic('car-simple', 1) + 'Voy en camino', 'proGo') });
 
 def({ id: 'R20', name: 'Código y checklist', kind: 'page', back: true, title: 'Inicia la atención',
   body: () => `<div class="h-m">Pide el código a la paciente</div><div class="code mt16">${[0, 1, 2, 3].map(i => `<span class="${i === S.code.length ? 'f' : ''}">${S.code[i] || ''}</span>`).join('')}</div>
