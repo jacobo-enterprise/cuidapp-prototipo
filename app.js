@@ -47,7 +47,7 @@ const S0 = () => ({
     suero: { on: false, p: 48000, night: 0, nOn: false, dur: 60, inc: { ins: true, pre: true, res: true, edu: false } },
   },
   sh: { h: 12, jor: 'dia', start: 0, rep: { lun: false, mar: true, mie: false, jue: true, vie: false, sab: true, dom: true }, wk: 2, need: { hig: true, ali: true, mov: true, rem: false, com: true } },
-  share: 'res', sharePh: false, shareOk: true, fichaOk: false, fichaChk: false, fm: 'mama', tlF: 'all', note: { hin: '08:02', hout: '08:41', tpl: 'cur', sig: false, add: false, rec: { a: true, b: true, c: true }, al: { a: true, b: true, c: true }, med5: { pac: true, med: true, dos: true, via: true, hor: true }, foto: true, prox: 2 }, bit: { h: 2 }, pushSeen: false, noteSigned: false, wsel: 'w1',
+  share: 'res', sharePh: false, shareOk: true, fichaOk: false, fichaChk: false, fm: 'mama', tlF: 'all', note: { hin: '08:02', hout: '08:41', tpl: 'cur', sig: false, add: false, rec: { a: true, b: true, c: true }, al: { a: true, b: true, c: true }, med5: { pac: true, med: true, dos: true, via: true, hor: true }, h0: '08:00', dur: '3 dosis', foto: true, prox: 2 }, bit: { h: 2 }, pushSeen: false, noteSigned: false, wsel: 'w1',
   edit: 'iny', setup: { pres: true, serv: false, com: false, hor: false },
   com: { prov: true, nun: true, lr: true, lc: false, vit: false, pen: false, stgo: true, mac: false, flo: false, sjo: false },
   week: { lun: true, mar: true, mie: true, jue: true, vie: true, sab: true, dom: false }, gap: 30, antic: 2,
@@ -169,7 +169,7 @@ const SUR = { dom: 0.5, fest: 1.0, noche: 0.25 };
 const FEST = { '31-10': 'Día de las Iglesias Evangélicas', '1-11': 'Todos los Santos', '8-12': 'Inmaculada Concepción' };
 /* iconos 3D de servicios (img/iconos-3d); el resto de la interfaz usa Phosphor */
 const i3k = k => CAT[k] ? (CAT[k].i || IC3[CAT[k].g] || CAT[k].g) : (IC3[k] || k);
-const i3 = (k, c = '') => `<img class="i3d ${c}" src="img/iconos-3d/${i3k(k)}.webp?v=20261026c" alt="" draggable="false">`;
+const i3 = (k, c = '') => `<img class="i3d ${c}" src="img/iconos-3d/${i3k(k)}.webp?v=20261026e" alt="" draggable="false">`;
 const INC = { ins: 'Insumos: jeringa, aguja, tórulas y guantes', pre: 'Control de presión antes y después', res: 'Retiro de residuos clínicos', edu: 'Indicaciones escritas para la familia' };
 /* catálogo del laboratorio aliado: precios fijos, no los pone la profesional */
 const LAB = 'Laboratorio aliado';
@@ -395,7 +395,13 @@ const slotEnd = t => { const [h, m] = t.split(':').map(Number); const x = h * 60
 const whenTxt = () => isT() ? `Desde ${dTxt(addD(SH0, S.sh.start))} · ${shH()} h · ${repTxt()}` : S.when === 'ahora' ? `Hoy, llega en ~${PRO().asap || 30} min` : `${dayShort(S.day)}, ${S.slot} a ${slotEnd(S.slot)}`;
 const whenLong = () => isT() ? `${shiftDates().length} turnos de ${shH()} h (${shRange()}) desde el ${dTxt(addD(SH0, S.sh.start))} · ${repTxt()} · ${S.sh.wk} semana${S.sh.wk > 1 ? 's' : ''}` : S.when === 'ahora' ? `Hoy, llega en ~${PRO().asap || 30} min` : `${DAYS[S.day][3].replace(/^\w/, c => c.toUpperCase())}, llega entre ${S.slot} y ${slotEnd(S.slot)}`;
 const whoTxt = () => ({ mama: 'Rosa Muñoz (mamá)', yo: 'Daniela Fuentes (tú)', papa: 'Luis Fuentes (papá)' })[S.who];
-const FAM = { mama: { n: 'Rosa Muñoz Pérez', c: 'Rosa', r: 'mamá', i: 'RM', e: 78, al: ['Penicilina'], dx: ['Hipertensión arterial', 'Diabetes tipo 2', 'Úlcera venosa pierna izquierda'], meds: [['Losartán 50 mg', '1 en la mañana'], ['Metformina 850 mg', 'Con almuerzo y cena'], ['Neurobionta 5.000', '1 amp. IM cada 48 h · 3 dosis']], dev: ['Bastón', 'Glucómetro'], barthel: 75, braden: 17 }, papa: { n: 'Luis Fuentes Ortiz', c: 'Luis', r: 'papá', i: 'LF', e: 80, al: ['Sin alergias conocidas'], dx: ['Hipertensión arterial', 'Post-operatorio de cadera (oct 2026)'], meds: [['Amlodipino 5 mg', '1 en la mañana'], ['Enoxaparina 40 mg', '1 SC al día · 21 días'], ['Paracetamol 1 g', 'Cada 8 h si hay dolor']], dev: ['Andador', 'Alza baño'], barthel: 55, braden: 15 }, yo: { n: 'Daniela Fuentes Muñoz', c: 'Daniela', r: 'tú', i: 'DF', e: 37, al: ['Sin alergias conocidas'], dx: ['Sin diagnósticos crónicos'], meds: [], dev: [], barthel: 100, braden: 23 } };
+const FAM = { mama: { n: 'Rosa Muñoz Pérez', c: 'Rosa', r: 'mamá', i: 'RM', e: 78, al: ['Penicilina'], dx: ['Hipertensión arterial', 'Diabetes tipo 2', 'Úlcera venosa pierna izquierda'], meds: [
+    { n: 'Losartán 50 mg', d: '1 comprimido', v: 'oral', f: 24, at: ['08:00'], dur: 'Permanente', by: 'Dr. Andrés Valenzuela', x: 'Antes del desayuno' },
+    { n: 'Metformina 850 mg', d: '1 comprimido', v: 'oral', f: 12, at: ['13:00', '20:00'], dur: 'Permanente', by: 'Dr. Andrés Valenzuela', x: 'Con almuerzo y cena' },
+    { n: 'Neurobionta 5.000', d: '1 ampolla', v: 'IM', f: 48, at: ['08:00'], dur: '3 dosis', dn: 2, dt: 3, nx: 'mié 28 oct · 08:00', by: 'Dr. Andrés Valenzuela', x: 'La aplica la enfermera' }], dev: ['Bastón', 'Glucómetro'], barthel: 75, braden: 17 }, papa: { n: 'Luis Fuentes Ortiz', c: 'Luis', r: 'papá', i: 'LF', e: 80, al: ['Sin alergias conocidas'], dx: ['Hipertensión arterial', 'Post-operatorio de cadera (oct 2026)'], meds: [
+    { n: 'Amlodipino 5 mg', d: '1 comprimido', v: 'oral', f: 24, at: ['08:00'], dur: 'Permanente', by: 'Dra. Marcela Ortiz' },
+    { n: 'Enoxaparina 40 mg', d: '1 jeringa', v: 'subcutánea', f: 24, at: ['20:00'], dur: 'Por 21 días', dn: 6, dt: 21, du: 'días', by: 'Dr. Tomás Riquelme', x: 'Abdomen, alternando lados' },
+    { n: 'Paracetamol 1 g', d: '1 comprimido', v: 'oral', f: 'SOS', sos: 'Si hay dolor, mínimo cada 8 h', at: [], dur: 'Por 7 días', by: 'Dr. Tomás Riquelme', x: 'Máximo 3 al día' }], dev: ['Andador', 'Alza baño'], barthel: 55, braden: 15 }, yo: { n: 'Daniela Fuentes Muñoz', c: 'Daniela', r: 'tú', i: 'DF', e: 37, al: ['Sin alergias conocidas'], dx: ['Sin diagnósticos crónicos'], meds: [], dev: [], barthel: 100, braden: 23 } };
 const FM = () => FAM[S.fm] || FAM.mama;
 const first = (p = PRO()) => p.n.split(' ')[0];
 const net = p => Math.round(p * (100 - S.comm) / 100);
@@ -412,7 +418,7 @@ const row = (i, a, b = '', go = '', end = ic('caret-right'), cls = '', act = '',
 const ST_I = { ok: 'check-circle', warn: 'clock', inf: 'clock-countdown', bad: 'x-circle' };
 const st = (k, t, i) => { i = i === '' ? '' : (i || ST_I[k]); return `<span class="st ${k}">${i ? ic(i, 1) : ''}${t}</span>`; };
 const PHOTO = ['CR', 'FA', 'MC', 'PG', 'VM', 'FL', 'DN', 'JS', 'CD', 'IP', 'RS', 'XV', 'MP'];
-const V = '?v=20261026c';
+const V = '?v=20261026e';
 const slug = n => n.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\./g, '').trim().replace(/\s+/g, '-');
 const PACPH = { DF: 'daniela-fuentes', RM: 'rosa-m', LF: 'luis-fuentes' };
 const phSrc = ini => PHOTO.includes(ini) ? `img/pro/${ini.toLowerCase()}.webp${V}` : PACPH[ini] ? `img/pac/${PACPH[ini]}.webp${V}` : '';
@@ -643,8 +649,8 @@ function linksOf(id) {
 }
 window.__links = linksOf;
 const LANES = [
-  ['pac', 'Paciente', [['P01', 'P02', 'P03', 'P04', 'P05'], ['P06', 'P07', 'P08', 'P09'], ['P10', 'P11', 'P36', 'P34'], ['P12', 'P32', 'P33', 'P22'], ['P13', 'P14', 'P15', 'P16'], ['P17', 'P18', 'P19', 'P20'], ['P26', 'P27', 'P30', 'P28', 'P29'], ['P21', 'P23', 'P24', 'P25'], ['P50', 'P51', 'P52', 'P53'], ['P54', 'P55', 'P56', 'P57', 'P58'], ['W01', 'W02', 'W03', 'W04']]],
-  ['pro', 'Profesional', [['R01', 'R02', 'R03'], ['R04', 'R05', 'R06', 'R07'], ['R08', 'R09', 'R10', 'R26'], ['R11', 'R12', 'R13', 'R14', 'R15'], ['R16', 'R17', 'R18'], ['R19', 'R20', 'R21', 'R22'], ['R23', 'R24', 'R25'], ['R27', 'R28', 'R29'], ['R37', 'R38', 'R31', 'R32'], ['R33', 'R34', 'R35', 'R39', 'R36']]],
+  ['pac', 'Paciente', [['P01', 'P02', 'P03', 'P04', 'P05'], ['P06', 'P07', 'P08', 'P09'], ['P10', 'P11', 'P36', 'P34'], ['P12', 'P32', 'P33', 'P22'], ['P13', 'P14', 'P15', 'P16'], ['P17', 'P18', 'P19', 'P20'], ['P26', 'P27', 'P30', 'P28', 'P29'], ['P21', 'P23', 'P24', 'P25'], ['P50', 'P51', 'P52', 'P53'], ['P54', 'P55', 'P56', 'P57', 'P58', 'P59'], ['W01', 'W02', 'W03', 'W04']]],
+  ['pro', 'Profesional', [['R01', 'R02', 'R03'], ['R04', 'R05', 'R06', 'R07'], ['R08', 'R09', 'R10', 'R26'], ['R11', 'R12', 'R13', 'R14', 'R15'], ['R16', 'R17', 'R18'], ['R19', 'R20', 'R21', 'R22'], ['R23', 'R24', 'R25'], ['R27', 'R28', 'R29'], ['R37', 'R38', 'R31', 'R32'], ['R40', 'R41', 'R33', 'R34'], ['R35', 'R39', 'R36']]],
   ['adm', 'Admin', [['A01', 'A02', 'A03'], ['A04', 'A05', 'A07'], ['A06']]],
 ];
 function openFlow() {

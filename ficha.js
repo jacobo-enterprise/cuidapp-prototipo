@@ -34,8 +34,8 @@ const TL = [
   { t: 'vis', d: 'Hoy · 08:41', pro: 'cr', a: 'Inyección IM y curación', b: 'Neurobionta 2ª dosis, glúteo derecho. Úlcera 3,2 × 2,1 cm, mejor que el 24 oct.', go: 'P58', today: true },
   { t: 'sv', d: 'Hoy · 08:10', pro: 'cr', a: 'Signos vitales', b: 'PA 132/80 · FC 76 · T° 36,6 · Sat 96% · Glicemia 142', go: 'P54' },
   { t: 'cur', d: '24 oct · 19:20', pro: 'cr', a: 'Curación avanzada', b: '3,5 × 2,3 cm · lecho 75% granulatorio · exudado escaso', go: 'P53' },
+  { t: 'med', d: '24 oct · 08:00', pro: 'cr', a: 'Inyección IM', b: 'Neurobionta 1ª de 3 dosis · cada 48 h · 5 correctos verificados', go: 'P58' },
   { t: 'cur', d: '22 oct · 18:05', pro: 'vm', a: 'Curación avanzada', b: '3,8 × 2,6 cm · se cambia a espuma con borde', go: 'P53' },
-  { t: 'med', d: '22 oct · 18:00', pro: 'vm', a: 'Inyección IM', b: 'Neurobionta 1ª dosis · 5 correctos verificados', go: 'P58' },
   { t: 'doc', d: '20 oct', pro: '', a: 'Receta · Dr. Andrés Valenzuela', b: 'Neurobionta 5.000, 1 amp. IM cada 48 h, 3 dosis', go: 'P15' },
   { t: 'tur', d: '19 oct · 20:00 a 08:00', pro: 'pg', a: 'Turno de noche · TENS', b: 'Durmió bien. 2 cambios de posición. Entrega de turno sin alertas.', go: 'R36' },
   { t: 'cur', d: '15 oct · 10:30', pro: 'cr', a: 'Primera curación', b: 'Úlcera venosa 4,6 × 3,0 cm · se toma foto con consentimiento', go: 'P53' },
@@ -73,6 +73,17 @@ function woundSvg(w, i = 0) {   // ilustración clínica de la úlcera (no es un
 const wPhoto = (w, i, big) => `<button class="wph ${big ? 'big' : ''} ${S.phView ? '' : 'blur'}" data-act="phView">${woundSvg(w, i)}${S.phView ? '' : `<span class="wlock">${ic('eye-slash')}<span>Foto clínica · toca para ver</span></span>`}<span class="wd">${w.d}</span></button>`;
 
 /* ---------- piezas ---------- */
+/* ---------- posología: dosis · vía · cada X h · horarios · duración · indicado por ---------- */
+const FRQ = [4, 6, 8, 12, 24, 48, 'SOS'];
+const frqTxt = f => f === 'SOS' ? 'SOS' : `cada ${f} h`;
+const autoHrs = (h0, f) => { if (f === 'SOS' || !f) return []; if (f >= 24) return [h0]; const b = +h0.slice(0, 2), out = []; for (let k = 0; k < 24 / f; k++) out.push(String((b + k * f) % 24).padStart(2, '0') + ':00'); return out.sort(); };
+const medProg = m => m.dt ? `<div class="mprog"><span class="pbar"><i style="width:${Math.round(m.dn / m.dt * 100)}%"></i></span><span class="xs t2">${m.du === 'días' ? `Día ${m.dn} de ${m.dt}` : `${m.dn} de ${m.dt} dosis aplicadas`}</span></div>${m.nx ? `<div class="xs t2 mt4">Próxima dosis: <b>${m.nx}</b></div>` : ''}` : '';
+const medCard = (m, o = {}) => `<div class="medp${o.c ? ' c' : ''}"><span class="ri box">${ic(m.v === 'oral' ? 'pill' : 'syringe')}</span><div class="tx">
+  <div class="mh"><b>${m.n}</b><span class="frq${m.f === 'SOS' ? ' sos' : ''}">${frqTxt(m.f)}</span></div>
+  <div class="sm t2">${m.d} · ${m.v} · ${m.dur.toLowerCase()}${m.x && !o.c ? ' · ' + m.x.toLowerCase() : ''}</div>
+  <div class="hrs">${m.f === 'SOS' ? `<span class="sosx">${ic('info')}${m.sos}</span>` : m.at.map(h => `<span>${ic('clock')}${h}</span>`).join('') + (m.f === 48 ? '<em>día por medio</em>' : '')}</div>
+  ${medProg(m)}${o.c ? '' : `<div class="xs t3 mt4">Indicado por ${m.by}</div>`}</div></div>`;
+const medList = (l, o) => l.length ? `<div class="medl">${l.map(m => medCard(m, o)).join('')}</div>` : '<div class="sm t2">No toma remedios de forma permanente.</div>';
 const famHead = (f = FM()) => `<div class="fhead">${av(f.i, 'l')}<div><div class="h-l">${f.c} ${f.n.split(' ')[1]}</div><div class="t2 sm mt4">${f.e} años · ${f.r} · ficha de salud</div></div></div>`;
 const pinAl = (f = FM()) => `<div class="pinal ${f.al[0].startsWith('Sin') ? 'ok' : ''}">${ic(f.al[0].startsWith('Sin') ? 'check-circle' : 'warning', 1)}<div><div class="xs">${ic('push-pin', 1)}Alergias · siempre visible</div><b>${f.al.join(', ')}</b></div></div>`;
 const scale = (n, v, max, txt, d) => `<div class="scl"><div class="scl-h"><span>${n}</span><b class="num">${v}<small>/${max}</small></b></div><div class="bar"><span style="width:${v / max * 100}%"></span></div><div class="xs t2 mt4">${txt} · ${d}</div></div>`;
@@ -82,7 +93,7 @@ const tlItem = (e, pro) => `<button class="tli" data-go="${pro ? (e.go === 'P53'
 const vitGrid = (x = true) => `<div class="vgrid">${[['PA', '132/80', 'mmHg', 'heartbeat'], ['FC', '76', 'lpm', 'heart'], ['T°', '36,6', '°C', 'thermometer-simple'], ['Sat O₂', '96', '%', 'drop'], ['Glicemia', '142', 'mg/dL', 'drop-half'], ['Dolor', '2', '/10', 'smiley-meh']].map(v => `<div class="vg"><span class="xs t2">${ic(v[3])}${v[0]}</span><b class="num">${v[1]}<small>${v[2]}</small></b></div>`).join('')}</div>${x ? '<div class="xs t2 mt8">Glicemia sobre 130 en ayunas: se le avisa a Daniela en las recomendaciones.</div>' : ''}`;
 const REC = { a: 'Mantén la pierna en alto 20 minutos, 3 veces al día.', b: 'No mojes el apósito. Para ducharte, cúbrelo con una bolsa.', c: 'Camina 15 minutos en la mañana y en la tarde, con el bastón.' };
 const ALR = { a: 'Fiebre de 38 °C o más.', b: 'Más dolor, mal olor o pus en la herida.', c: 'Enrojecimiento o hinchazón que se extiende por la pierna.' };
-const PROX = { 2: 'jue 29 oct · curación y 3ª dosis', 3: 'vie 30 oct · curación', 7: 'lun 2 nov · control semanal' };
+const PROX = { 2: 'mié 28 oct · curación y 3ª dosis', 3: 'vie 30 oct · curación', 7: 'lun 2 nov · control semanal' };
 
 /* ---------- paciente: fichas ---------- */
 def({ id: 'P50', name: 'Fichas de salud', kind: 'page', back: true, title: 'Fichas de salud', next: ['P51', 'P57'],
@@ -95,7 +106,7 @@ def({ id: 'P51', name: 'Ficha de salud', kind: 'page', back: true, title: '', ne
   body: () => { const f = FM(), m = S.fm === 'mama'; return `${famHead(f)}<div class="mt16">${pinAl(f)}</div>
   ${m ? `<button class="lastn mt12" data-go="P58">${av('CR', 's')}<span class="tx"><span class="xs t2">Última nota · hoy 08:41</span><span class="a">Camila dejó el resumen de la visita</span><span class="b">Herida 3,2 × 2,1 cm, mejor que el 24 oct</span></span>${ic('caret-right')}</button>` : ''}
   <div class="lbl2">Diagnósticos</div><div class="chips">${f.dx.map(x => `<span class="chip">${x}</span>`).join('')}</div>
-  <div class="lbl2">Medicamentos que toma</div>${f.meds.length ? f.meds.map(x => row('box:pill', x[0], x[1], '', '')).join('') : '<div class="sm t2">No toma remedios de forma permanente.</div>'}
+  <div class="lbl2">Medicamentos que toma</div>${medList(f.meds)}
   <div class="lbl2">Dispositivos y ayudas</div><div class="chips">${f.dev.length ? f.dev.map(x => `<span class="chip">${x}</span>`).join('') : '<span class="sm t2">Ninguno</span>'}</div>
   <div class="lbl2">Escalas</div><div class="scls">${scale('Barthel', f.barthel, 100, barTxt(f.barthel), m ? 'hoy, Camila' : '21 oct')}${scale('Braden', f.braden, 23, bradTxt(f.braden), m ? 'hoy, Camila' : '21 oct')}</div>
   <div class="lbl2">Historial</div>
@@ -105,7 +116,7 @@ def({ id: 'P51', name: 'Ficha de salud', kind: 'page', back: true, title: '', ne
   <div class="lbl2">Privacidad</div>
   ${row('box:eye', 'Quién vio la ficha', m ? '3 profesionales · último acceso hoy 08:41' : 'Registro de accesos', 'P55')}
   ${row('box:lock-simple', 'Accesos y consentimiento', SHARE[S.share][0] + ' por defecto', 'P56')}
-  ${row('box:file-pdf', 'Descargar la ficha en PDF', 'Para llevarla al médico', '', ic('download-simple'), '', 'pdf', '')}`; } });
+  ${row('box:file-pdf', 'Ficha en PDF', 'Para llevarla al médico', 'P59')}`; } });
 
 def({ id: 'P52', name: 'Línea de tiempo', kind: 'page', back: true, title: 'Línea de tiempo',
   body: () => { const l = S.fm === 'mama' ? TL : TL.slice(5, 6).map(e => ({ ...e, a: 'Receta · Dra. Marcela Ortiz', b: 'Enoxaparina 40 mg SC al día, 21 días' })); const fl = l.filter(e => S.tlF === 'all' || e.t === S.tlF);
@@ -140,7 +151,7 @@ def({ id: 'P55', name: 'Quién vio la ficha', kind: 'page', back: true, title: '
 
 def({ id: 'P56', name: 'Accesos y consentimiento', kind: 'page', back: true, title: 'Accesos y consentimiento',
   body: () => `<div class="lbl2" style="margin-top:0">Quién tiene acceso ahora</div>
-  ${[['cr', 'Hasta el 2 nov · cita del jue 29 oct', 'Solo resumen'], ['vm', 'Hasta el 29 oct', 'Todo'], ['pg', 'Terminó el 26 oct', 'Solo resumen']].map(x => `<div class="row">${av(x[0].toUpperCase(), 's')}<span class="tx"><div class="a">${proById(x[0]).n}</div><div class="b">${S.rev && S.rev[x[0]] ? 'Acceso revocado' : x[2] + ' · ' + x[1]}</div></span>${S.rev && S.rev[x[0]] ? st('neu', 'Revocado', '') : `<button class="lk" data-act="revoke" data-arg="${x[0]}" style="color:var(--danger)">Revocar</button>`}</div>`).join('')}
+  ${[['cr', 'Hasta el 2 nov · cita del mié 28 oct', 'Solo resumen'], ['vm', 'Hasta el 29 oct', 'Todo'], ['pg', 'Terminó el 26 oct', 'Solo resumen']].map(x => `<div class="row">${av(x[0].toUpperCase(), 's')}<span class="tx"><div class="a">${proById(x[0]).n}</div><div class="b">${S.rev && S.rev[x[0]] ? 'Acceso revocado' : x[2] + ' · ' + x[1]}</div></span>${S.rev && S.rev[x[0]] ? st('neu', 'Revocado', '') : `<button class="lk" data-act="revoke" data-arg="${x[0]}" style="color:var(--danger)">Revocar</button>`}</div>`).join('')}
   <div class="lbl2">Al agendar, compartir por defecto</div>${Object.keys(SHARE).map(k => radioRow(SHARE[k][0], SHARE[k][1], S.share === k, 'set', 'share=' + k)).join('')}
   <button class="row" data-act="tog" data-arg="sharePh"><span class="tx"><div class="a">Fotos de heridas</div><div class="b">Se piden aparte, en cada cita</div></span><span class="tog ${S.sharePh ? 'on' : ''}"></span></button>
   <div class="mt16 col8">${note('shield-check', 'La profesional solo ve la ficha desde 24 horas antes de la cita y hasta 7 días después. Las alergias siempre se muestran.')}${note('archive', 'La ley obliga a guardar la ficha clínica al menos 15 años. Si revocas, nadie más la ve, pero las notas firmadas se conservan.')}</div>
@@ -162,15 +173,16 @@ def({ id: 'P58', name: 'Resumen de la visita', kind: 'page', back: true, title: 
   <div class="vrow">${ic('syringe')}<div><b>Inyección intramuscular</b><div class="sm t2">Neurobionta 5.000 · 2ª de 3 dosis · glúteo derecho. Sin reacción a los 15 min.</div></div></div>
   <div class="vrow">${ic('bandaids')}<div><b>Curación de la úlcera</b><div class="sm t2">3,2 × 2,1 cm, más chica que el 24 oct (3,5 × 2,3). Lecho rosado y limpio. Apósito de espuma.</div></div></div>
   <div class="lbl2">Signos vitales</div>${vitGrid()}
+  <div class="lbl2">Medicamentos de Rosa</div><div class="xs t2" style="margin:-4px 0 8px">Sin cambios en esta visita. Así le toca cada uno:</div>${medList(FAM.mama.meds)}
   ${S.note.add ? `<div class="lbl2">Addendum</div><div class="note">${ic('note-pencil')}<div><b>Hoy 09:15 · Camila</b><br>Daniela avisó que Rosa ya tomó el losartán. Sin cambios en las indicaciones.</div></div>` : ''}
   <div class="mt16">${note('lock-simple', 'La nota firmada no se puede editar. Si algo cambia, la profesional agrega un addendum con fecha y hora.')}</div>`,
-  foot: () => `${btn('Ver ficha de Rosa', 'P51', '', 'data-act="fm" data-arg="mama"')}<div class="row8"><button class="btn sec" data-act="pdf">${ic('file-pdf')}PDF</button><button class="btn sec" data-go="P22">${ic('chat-circle')}Preguntar</button></div>` });
+  foot: () => `${btn('Ver ficha de Rosa', 'P51', '', 'data-act="fm" data-arg="mama"')}<div class="row8"><button class="btn sec" data-go="P59">${ic('file-pdf')}PDF</button><button class="btn sec" data-go="P22">${ic('chat-circle')}Preguntar</button></div>` });
 
 /* ---------- profesional: antes y durante la visita ---------- */
 def({ id: 'R37', name: 'Resumen antes de la visita', kind: 'page', back: true, title: 'Resumen de la paciente', next: ['R38'],
   body: () => `${famHead(FAM.mama)}<div class="mt8">${st('inf', 'Daniela compartió: ' + SHARE[S.share][0].toLowerCase(), 'lock-simple')}</div><div class="mt12">${pinAl(FAM.mama)}</div>
   <div class="lbl2">Diagnósticos</div><div class="chips">${FAM.mama.dx.map(x => `<span class="chip">${x}</span>`).join('')}</div>
-  <div class="lbl2">Remedios</div>${FAM.mama.meds.map(x => kv(x[0], x[1])).join('')}
+  <div class="lbl2">Medicamentos</div>${medList(FAM.mama.meds, { c: 1 })}
   <div class="lbl2">Funcionalidad</div><div class="scls">${scale('Barthel', 75, 100, barTxt(75), '24 oct')}${scale('Braden', 17, 23, bradTxt(17), '24 oct')}</div>
   <div class="lbl2">Última nota · 24 oct · Camila (tú)</div><div class="note">${ic('note')}<div>Úlcera venosa 3,5 × 2,3 cm, lecho 75% granulatorio, exudado escaso. Espuma con borde. Revisar glicemia: 151 mg/dL.</div></div>
   <div class="lbl2">Dispositivos</div><div class="chips">${FAM.mama.dev.map(x => `<span class="chip">${x}</span>`).join('')}</div>
@@ -179,7 +191,7 @@ def({ id: 'R37', name: 'Resumen antes de la visita', kind: 'page', back: true, t
 
 def({ id: 'R38', name: 'Historial de la paciente', kind: 'page', back: true, title: 'Historial de Rosa',
   body: () => { const full = S.share === 'todo'; return `<div class="mt4">${pinAl(FAM.mama)}</div><div class="mt12">${st(full ? 'ok' : 'inf', full ? 'Acceso completo hasta el 2 nov' : 'Solo resumen · últimas 2 notas', 'lock-simple')}</div>
-  <div class="tl mt16">${(full ? TL : TL.slice(2, 4)).map(e => tlItem(e, true)).join('')}</div>
+  <div class="lbl2">Medicamentos vigentes</div>${medList(FAM.mama.meds, { c: 1 })}<div class="lbl2">Registros</div><div class="tl">${(full ? TL : TL.slice(2, 4)).map(e => tlItem(e, true)).join('')}</div>
   ${full ? '' : `<div class="lockd mt12">${ic('lock-simple')}<div><b>7 registros más</b><div class="sm t2">Daniela compartió solo el resumen. Puedes pedirle acceso al historial.</div></div></div>`}
   <div class="mt16">${note('eye', 'Este acceso queda registrado en la ficha y Daniela lo puede ver.')}</div>`; },
   foot: () => S.share === 'todo' ? btn('Volver a la atención', 'back') : `${abtn('Pedir acceso completo', 'askAcc', '', 'sec')}` });
@@ -187,10 +199,11 @@ def({ id: 'R38', name: 'Historial de la paciente', kind: 'page', back: true, tit
 /* ---------- profesional: nota de la visita ---------- */
 const nStep = n => `<div class="nsteps">${['Visita', 'Procedimientos', 'Indicaciones', 'Firma'].map((t, i) => `<span class="${i < n ? 'done' : i === n ? 'on' : ''}">${t}</span>`).join('')}</div>`;
 def({ id: 'R31', name: 'Nota de la visita', kind: 'page', back: true, title: 'Nota de la visita', next: ['R32', 'R33', 'R34', 'R36', 'R35'],
-  body: () => `${nStep(0)}<div class="nmeta mt16">${kv('Llegada', S.note.hin + ' · con el código de Daniela')}${kv('Salida', S.note.hout + ' · al terminar')}</div>
-  <div class="lbl2">Resumen para la familia</div><div class="field area"><span>Rosa está más animada. La herida se ve más chica y limpia. Inyección sin problemas.</span></div><div class="xs t2 mt4">Escríbelo simple: es lo primero que lee Daniela.</div>
-  <div class="lbl2">Signos vitales</div>${vitGrid(false)}<button class="lk sm mt8" data-act="toast" data-arg="Signos vitales actualizados.">${ic('pencil-simple')}Editar</button>
-  <div class="lbl2">Procedimientos</div>
+  body: () => `${nStep(0)}<button class="dictar mt16" data-act="dictStart" data-arg="all" data-go="R40"><span class="dm">${ic('microphone', 1)}</span><span class="tx"><b>Dictar nota</b><span>Cuéntala con tu voz. La ordenamos y tú la revisas.</span></span>${ic('caret-right')}</button>
+  ${S.vz && S.vz.done ? `<div class="mt8">${st('ok', 'Nota completada desde tu dictado', 'microphone')}</div>` : ''}<div class="nmeta mt16">${kv('Llegada', S.note.hin + ' · con el código de Daniela')}${kv('Salida', S.note.hout + ' · al terminar')}</div>
+  <div class="lbl2 lmic">Resumen para la familia<button class="micb" data-act="dictStart" data-arg="res" data-go="R40" aria-label="Dictar">${ic('microphone')}</button></div><div class="field area"><span>Rosa está más animada. La herida se ve más chica y limpia. Inyección sin problemas.</span></div><div class="xs t2 mt4">Escríbelo simple: es lo primero que lee Daniela.</div>
+  <div class="lbl2 lmic">Signos vitales<button class="micb" data-act="dictStart" data-arg="sv" data-go="R40" aria-label="Dictar">${ic('microphone')}</button></div>${vitGrid(false)}<button class="lk sm mt8" data-act="toast" data-arg="Signos vitales actualizados.">${ic('pencil-simple')}Editar</button>
+  <div class="lbl2 lmic">Procedimientos<button class="micb" data-act="dictStart" data-arg="proc" data-go="R40" aria-label="Dictar">${ic('microphone')}</button></div>
   ${row('box:bandaids', 'Curación · plantilla', 'Herida H1 · medidas, lecho, exudado y foto', 'R32', st('ok', 'Completa'))}
   ${row('box:pill', 'Medicamentos · 5 correctos', 'Neurobionta 5.000 IM', 'R33', st('ok', 'Completa'))}
   ${row('box:moon', 'Bitácora de turno', 'Para turnos de TENS y cuidadoras', 'R36')}
@@ -210,13 +223,22 @@ def({ id: 'R32', name: 'Plantilla de curación', kind: 'page', back: true, title
   foot: () => btn('Guardar curación', 'back') });
 
 def({ id: 'R33', name: 'Medicamentos · 5 correctos', kind: 'page', back: true, title: 'Medicamento',
-  body: () => `<div class="medc">${ic('syringe')}<div><b>Neurobionta 5.000</b><div class="sm t2">1 ampolla · intramuscular · dosis 2 de 3</div></div></div>
+  body: () => { const n = S.note, f = n.frq, hs = autoHrs(n.h0, f); return `<div class="medc">${ic('syringe')}<div><b>Neurobionta 5.000</b><div class="sm t2">1 ampolla · intramuscular · dosis 2 de 3</div></div></div>
+  <div class="lbl2">Indicación</div>
+  <div class="m2">${field('', '1 ampolla (3 ml)')}${field('', 'Intramuscular')}</div>
+  <div class="lbl2 req">Cada cuántas horas <span class="xs t2">obligatorio</span></div>
+  <div class="chips frqp">${FRQ.map(x => chip(x === 'SOS' ? 'SOS' : x + ' h', f === x, 'nset', 'frq=' + x)).join('')}</div>
+  ${f ? '' : `<div class="xs t2 mt4">${ic('file-text')} La receta dice: cada 48 h, 3 dosis</div>`}
+  ${f && f !== 'SOS' ? `<div class="lbl2">Primera hora</div><div class="chips">${['08:00', '09:00', '18:00', '20:00'].map(h => chip(h, n.h0 === h, 'nset', 'h0=' + h)).join('')}</div>
+  <div class="hrsbox mt12"><div class="xs t2">Horarios que verá la familia</div><div class="hrs big">${hs.map(h => `<span>${ic('clock')}${h}</span>`).join('')}${f === 48 ? '<em>día por medio</em>' : ''}</div></div>` : f === 'SOS' ? `<div class="mt12">${field('info', 'Si hay dolor · mínimo cada 8 h · máximo 3 al día')}</div>` : ''}
+  <div class="lbl2">Duración</div><div class="chips">${['3 dosis', '7 días', 'Permanente'].map(d => chip(d, n.dur === d, 'nset', 'dur=' + d)).join('')}</div>
+  <div class="xs t2 mt8">Indicado por Dr. Andrés Valenzuela · receta del 20 oct</div>
   <div class="lbl2">Los 5 correctos</div>
-  ${[['pac', 'Paciente correcto', 'Rosa Muñoz Pérez · RUT revisado'], ['med', 'Medicamento correcto', 'Coincide con la receta del Dr. Valenzuela'], ['dos', 'Dosis correcta', '1 ampolla de 3 ml'], ['via', 'Vía correcta', 'Intramuscular · glúteo derecho'], ['hor', 'Hora correcta', '48 h desde la 1ª dosis (22 oct 18:00)']].map(x => checkRow(x[1], S.note.med5[x[0]], 'ntog', 'med5.' + x[0], x[2])).join('')}
+  ${[['pac', 'Paciente correcto', 'Rosa Muñoz Pérez · RUT revisado'], ['med', 'Medicamento correcto', 'Coincide con la receta del Dr. Valenzuela'], ['dos', 'Dosis correcta', '1 ampolla de 3 ml'], ['via', 'Vía correcta', 'Intramuscular · glúteo derecho'], ['hor', 'Hora correcta', 'Cada 48 h · 1ª dosis sáb 24 oct 08:00 · hoy 08:10']].map(x => checkRow(x[1], S.note.med5[x[0]], 'ntog', 'med5.' + x[0], x[2])).join('')}
   <div class="lbl2">Lote y vencimiento</div><div class="m2">${field('', 'L-24K118')}${field('', '08/2027')}</div>
   <div class="lbl2">Después de inyectar</div>${field('check-circle', 'Sin reacción a los 15 minutos')}
-  <div class="mt12">${note('warning', '<b>Alergia a penicilina.</b> Este medicamento no la contiene.', 'warn')}</div>`,
-  foot: () => abtn('Guardar', 'toast', 'Medicamento registrado.', '', 'back', !Object.values(S.note.med5).every(Boolean)) });
+  <div class="mt12">${note('warning', '<b>Alergia a penicilina.</b> Este medicamento no la contiene.', 'warn')}</div>`; },
+  foot: () => abtn(S.note.frq ? 'Guardar' : 'Elige cada cuántas horas', 'toast', 'Medicamento registrado.', '', 'back', !S.note.frq || !Object.values(S.note.med5).every(Boolean)) });
 
 def({ id: 'R34', name: 'Indicaciones para la familia', kind: 'page', back: true, title: 'Indicaciones',
   body: () => `${nStep(2)}<div class="lbl2">Recomendaciones de cuidado</div>${Object.keys(REC).map(k => checkRow(REC[k], S.note.rec[k], 'ntog', 'rec.' + k)).join('')}
@@ -229,7 +251,7 @@ def({ id: 'R35', name: 'Revisar y firmar', kind: 'page', back: true, title: 'Rev
   body: () => `${nStep(3)}<div class="t2 sm mt16">Así la verá Daniela en la ficha de Rosa:</div>
   <div class="prev mt8"><div class="b-m">Rosa está más animada. La herida se ve más chica y limpia.</div>
   ${kv('Visita', `${S.note.hin} a ${S.note.hout}`)}${kv('Procedimientos', 'Inyección IM · curación')}${kv('Signos vitales', 'PA 132/80 · Glicemia 142')}${kv('Recomendaciones', Object.values(S.note.rec).filter(Boolean).length)}${kv('Señales de alarma', Object.values(S.note.al).filter(Boolean).length)}${kv('Próximo control', PROX[S.note.prox].split(' · ')[0])}${kv('Foto de la herida', S.sharePh ? 'Sí, con permiso' : 'No')}</div>
-  <div class="mt16">${note('lock-simple', 'Al firmar, la nota queda en la ficha con tu nombre y registro SIS, y ya no se puede editar. Si algo cambia, agregas un addendum.')}</div>`,
+  ${S.vz && S.vz.done ? `<div class="mt12">${note('microphone', 'Creada desde tu dictado y revisada por ti. ' + (S.vz.keep ? 'El audio queda guardado en la ficha.' : 'El audio ya se borró.'))}</div>` : ''}<div class="mt16">${note('lock-simple', 'Al firmar, la nota queda en la ficha con tu nombre y registro SIS, y ya no se puede editar. Si algo cambia, agregas un addendum.')}</div>`,
   foot: () => abtn(ic('signature') + 'Firmar nota', 'sign', '', '', 'R39') });
 
 def({ id: 'R39', name: 'Nota firmada', kind: 'page', title: '', next: ['R22'],
@@ -244,3 +266,12 @@ def({ id: 'R36', name: 'Bitácora de turno', kind: 'page', back: true, title: 'B
   <button class="lk sm mt8" data-act="bitAdd">${ic('plus')}Agregar registro</button>
   <div class="lbl2">Entrega de turno</div><div class="handoff">${kv('Cómo está', 'Estable, durmió 6 h')}${kv('Pendientes', 'Losartán 08:00 · curación jue')}${kv('Alertas', 'Tos leve de noche')}</div>`,
   foot: () => abtn('Entregar turno y firmar', 'handoff', '', '', 'back') });
+
+def({ id: 'P59', name: 'Ficha en PDF', kind: 'page', back: true, title: 'Ficha en PDF',
+  body: () => { const p = FM(); return `<div class="t2 sm">Así se ve el PDF que llevas al médico.</div>
+  <div class="pdfp mt12"><div class="pdh"><div><b>Ficha de salud · ${p.n}</b><div>${p.e} años · Cuidapp</div></div><div style="text-align:right">26/10/2026</div></div>
+  <div class="ps"><b>Alergias:</b> ${p.al.join(', ')}</div><div class="ps"><b>Diagnósticos:</b> ${p.dx.join(' · ')}</div>
+  <div class="pt">Medicamentos</div>${p.meds.length ? `<table><tr><th>Medicamento</th><th>Dosis y vía</th><th>Frecuencia</th><th>Horarios</th><th>Duración</th></tr>${p.meds.map(m => `<tr><td><b>${m.n}</b><div>${m.by}</div></td><td>${m.d}<div>${m.v}</div></td><td><b>${m.f === 'SOS' ? 'SOS' : 'Cada ' + m.f + ' h'}</b>${m.f === 'SOS' ? `<div>${m.sos.toLowerCase()}</div>` : ''}</td><td>${m.at.join('<br>') || '—'}</td><td>${m.dur}${m.dt ? `<div>${m.dn}/${m.dt}${m.du === 'días' ? ' días' : ' dosis'}</div>` : ''}</td></tr>`).join('')}</table>` : '<div class="ps">No toma remedios de forma permanente.</div>'}
+  <div class="pt">Signos vitales · última visita</div><div class="ps">PA 132/80 mmHg · FC 76 lpm · T° 36,6 °C · Sat O₂ 96% · Glicemia 142 mg/dL</div>
+  <div class="pf">Generado por Cuidapp · notas firmadas por profesionales con registro SIS</div></div>`; },
+  foot: () => abtn(ic('download-simple') + 'Descargar PDF', 'pdf') });

@@ -930,3 +930,70 @@ table .ri.box{flex:none;min-width:40px}
 .handoff{padding:6px 14px;border-radius:14px;background:var(--s2)}
 .okc i.ph-fill{font-size:inherit}
 .wstrip .wlock span{display:none}.wstrip .wlock i{font-size:16px}
+
+/* ===== nota por voz ===== */
+.dictar{display:flex;gap:14px;align-items:center;width:100%;padding:14px 16px;border-radius:18px;background:#111;color:#fff;text-align:left}
+.dictar .dm{width:44px;height:44px;border-radius:22px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex:none}.dictar .dm i{font-size:22px;color:#fff}
+.dictar .tx{flex:1;display:flex;flex-direction:column;gap:2px}.dictar .tx b{font-size:17px;font-weight:600}.dictar .tx span{font-size:13px;color:rgba(255,255,255,.72)}.dictar > i{color:rgba(255,255,255,.6)}
+.lmic{display:flex;align-items:center;justify-content:space-between}
+.micb{width:32px;height:32px;border-radius:16px;background:var(--acc-soft);display:flex;align-items:center;justify-content:center}.micb i{font-size:17px;color:var(--acc-text)}
+.vz-top{display:flex;justify-content:space-between;align-items:center;gap:8px}.vz-mode{display:inline-flex;gap:4px;align-items:center;font-size:12px;color:var(--t2)}.vz-mode i{font-size:14px}
+.vz-rec{display:flex;flex-direction:column;align-items:center;margin-top:22px;gap:4px}
+.vz-dot{width:12px;height:12px;border-radius:6px;background:#E5484D;box-shadow:0 0 0 6px rgba(229,72,77,.15);animation:vzp 1.2s ease-in-out infinite}
+.vz-rec.pause .vz-dot,.vz-rec.done .vz-dot{background:var(--t3);box-shadow:none;animation:none}
+@keyframes vzp{50%{box-shadow:0 0 0 12px rgba(229,72,77,.05)}}
+.vz-time{font-size:44px;line-height:52px;font-weight:700;letter-spacing:-.02em}
+.wave{display:flex;align-items:center;justify-content:center;gap:4px;height:64px;margin-top:10px}
+.wave i{width:5px;border-radius:3px;background:var(--accent);transition:height .22s ease}
+.wave.pause i,.wave.done i{background:var(--s3,#DAD8E6)}
+.vz-tx{padding:14px;border-radius:16px;background:var(--s2);font-size:15px;line-height:22px;min-height:96px;max-height:200px;overflow:auto}
+.vz-int{color:var(--t2)}
+.vz-ctl{display:flex;justify-content:center;align-items:center;gap:28px}
+.vz-b{width:52px;height:52px;border-radius:26px;display:flex;align-items:center;justify-content:center;background:var(--s2)}.vz-b i{font-size:22px}
+.vz-b.main{width:72px;height:72px;border-radius:36px;background:var(--accent);color:#fff}.vz-b.main i{font-size:30px;color:#fff}
+.vz-b.stop{background:#111;color:#fff}.vz-b.stop i{color:#fff}
+.vz-lab{display:flex;justify-content:center;gap:28px;font-size:12px;color:var(--t2);margin-top:6px}.vz-lab span{width:72px;text-align:center}
+.vzu{display:flex;gap:12px;padding:14px;border-radius:14px;background:var(--warn-soft);color:var(--warn);margin-top:12px}.vzu > i{font-size:22px;flex:none}.vzu .tx{flex:1}.vzu b{color:#5C3D00}.vzu .sm{color:#7A5A1A}
+.vzu.ok{background:var(--acc-soft);color:var(--acc-text)}.vzu.ok b{color:var(--text)}.vzu.ok .sm{color:var(--t2)}
+.btn.sm{height:36px;font-size:14px;padding:0 14px}
+.vzf{padding:14px;border-radius:16px;box-shadow:0 0 0 1px var(--border);margin-top:12px;background:linear-gradient(0deg,#fff,#fff) padding-box}
+.vzf-h{display:flex;align-items:center;gap:8px;margin-bottom:8px}.vzf-l{font-weight:600;flex:1}
+.vzd{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;color:var(--acc-text);background:var(--acc-soft);border-radius:999px;padding:2px 8px}.vzd i{font-size:12px}
+.vzv{font-size:15px;line-height:22px}
+.hl{background:var(--acc-soft);border-radius:6px;padding:0 4px;font-weight:600}.hl-u{background:var(--warn-soft);color:#5C3D00;border-radius:6px;padding:0 4px;font-weight:600;box-shadow:inset 0 -2px 0 #E8B54A}
+.vg.unc{background:var(--warn-soft);box-shadow:inset 0 0 0 1.5px #E8B54A}
+.vz-miss{font-size:13px;color:var(--warn);font-weight:600}
+.vzo{display:flex;gap:12px;align-items:center;width:100%;padding:14px 0;text-align:left;margin-top:8px}.vzo > i:first-child{font-size:24px;color:var(--accent)}.vzo .tx{flex:1;display:flex;flex-direction:column}
+/* posología */
+.medl{display:flex;flex-direction:column;gap:8px}
+.medp{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid var(--line,#ECEBF3);border-radius:16px;background:#fff}
+.medp .ri{flex:none}
+.medp .tx{flex:1;min-width:0}
+.medp .mh{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.medp .mh b{font-size:15px;font-weight:600}
+.frq{flex:none;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;background:#EDEDFD;color:#4B4DC4;white-space:nowrap}
+.frq.sos{background:#FFF3DA;color:#8A5A00}
+.hrs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:8px}
+.hrs span{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;padding:4px 9px;border-radius:8px;background:#F4F4F8}
+.hrs span svg,.hrs span i{width:13px;height:13px;font-size:13px;color:#7A7CF0}
+.hrs em{font-style:normal;font-size:12px;color:var(--t2,#6B6B78)}
+.hrs .sosx{background:#FFF8E8;font-weight:500;color:#6B4A00}
+.hrs.big span{font-size:15px;padding:6px 11px}
+.hrsbox{padding:12px 14px;border-radius:14px;background:#F7F7FB}
+.mprog{display:flex;align-items:center;gap:8px;margin-top:8px}
+.mprog .pbar{flex:none;width:64px;height:6px;border-radius:3px;background:#ECEBF3;overflow:hidden}
+.mprog .pbar i{display:block;height:100%;background:#7A7CF0;border-radius:3px}
+.medp.c{padding:10px 12px}
+.medp.c .mh b{font-size:14px}
+.lbl2.req .xs{font-weight:400;margin-left:6px}
+.frqp .chip{min-width:52px;justify-content:center}
+.pdfp{background:#FBFBF8;border:1px solid #E2E2DC;border-radius:8px;padding:14px;font-size:11px;line-height:15px;color:#3A3A38}
+.pdfp .pdh{display:flex;justify-content:space-between;border-bottom:1px solid #DDD;padding-bottom:8px;margin-bottom:8px}
+.pdfp .pdh b{font-size:12px}
+.pdfp .ps{margin:3px 0}
+.pdfp .pt{font-weight:700;font-size:11.5px;margin:12px 0 6px;color:#2A2A55}
+.pdfp table{width:100%;border-collapse:collapse;font-size:10px;line-height:13px}
+.pdfp th{text-align:left;font-weight:600;color:#6B6B68;border-bottom:1px solid #DDD;padding:4px 3px}
+.pdfp td{vertical-align:top;border-bottom:1px solid #EEE;padding:5px 3px}
+.pdfp td div{color:#77776F}
+.pdfp .pf{margin-top:12px;font-size:9.5px;color:#8A8A84}
