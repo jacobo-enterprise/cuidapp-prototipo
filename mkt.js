@@ -17,7 +17,10 @@ const PROFS = [
   { k: 'tO', n: 'Terapeuta ocupacional', i: 'hand-heart' },
 ];
 const profOf = p => PROFS.find(x => x.k === p.k) || PROFS[0];
-const profRow = () => `<div class="shd mt24"><h3>Buscar por profesional</h3></div><div class="prfr">${PROFS.map(f => `<button class="prf ${f.on ? '' : 'dim'}" data-act="${f.on ? 'profGo' : 'profAv'}" data-arg="${f.k}" ${f.on ? 'data-go="P07"' : ''}><span class="pri">${ic(f.i)}</span><span class="prn">${f.n}</span>${f.on ? `<span class="xs t3">${PROS.filter(p => p.k === f.k).length} cerca</span>` : `<span class="pr soonb">${S.profAv[f.k] ? 'Te avisamos' : 'Muy pronto'}</span>`}</button>`).join('')}</div>`;
+/* tarjetas de «Buscar por profesional»: ilustración 3D de color (img/profesionales, Fluent Emoji 3D), fondo suave por profesión,
+   disponibilidad real del prototipo (profesionales cercanas con foto); las que aún no están muestran «Muy pronto» discreto */
+const PRFX = { enf: '#FDE7EE', tens: '#E3F2FD', kin: '#FFF1D6', psi: '#FCE4F3', med: '#E3F4FB', nut: '#FFE9D6', mat: '#EDE7FD', fon: '#FFF4D2', tO: '#E6F6E4' };
+const profRow = () => `<div class="shd mt24"><h3>Buscar por profesional</h3></div><div class="prfr">${PROFS.map(f => { const ps = PROS.filter(p => p.k === f.k), av3 = ps.slice(0, 3); return `<button class="prf ${f.on ? '' : 'dim'}" style="--pc:${PRFX[f.k] || '#F1F1FE'}" data-act="${f.on ? 'profGo' : 'profAv'}" data-arg="${f.k}" ${f.on ? 'data-go="P07"' : ''}><span class="pri"><img src="img/profesionales/${f.k}.webp?v=prf1" alt="" draggable="false"></span><span class="prn">${f.n}</span>${f.on ? `<span class="prm"><span class="cav xs">${av3.map(p => av(p.i, 'xs')).join('')}</span><span class="xs t2">${ps.length} cerca</span></span>` : `<span class="prm pws${S.profAv[f.k] ? ' ok' : ''}">${S.profAv[f.k] ? `${ic('bell-ringing')}Te avisamos` : 'Muy pronto'}</span>`}</button>`; }).join('')}</div>`;
 
 /* ---------- Laboratorios (ficticios) ---------- */
 const LABS = [
