@@ -29,7 +29,7 @@ const LABS = [
 const labOf = id => LABS.find(l => l.id === id) || LABS[0];
 const labHas = (l, k) => !l.no.includes(k);
 const mkOf = (l, k) => { const m = S.mkL[l.id] || {}; return (m.ex && m.ex[k] != null) ? m.ex[k] : (m.g != null ? m.g : S.mkG); };
-const lcost = (l, k) => Math.round(EXAMS[k][1] * l.f / 1.1 / 10) * 10; /* precio del laboratorio (Excel) · solo Admin */
+const lcost = (l, k) => Math.round(EXAMS[k][1] * l.f / 1.15 / 10) * 10; /* precio del laboratorio (Excel) · solo Admin */
 const lpp = (l, k) => Math.round(lcost(l, k) * (1 + mkOf(l, k) / 100) / 10) * 10; /* precio a la paciente */
 const MODN = { dom: 'A domicilio', pre: 'Presencial' };
 const labLogo = (l, cls = '') => `<span class="lbl-lg ${cls}" style="background:${l.c};color:${l.fg}">${ic('flask', 1)}<b>${l.ini}</b></span>`;
@@ -85,8 +85,8 @@ Object.assign(ACT, {
   mueChk: k => { S.mue[k] = !S.mue[k]; },
   mueDone: () => { S.mue.done = true; toast('Muestra entregada. Avisamos a Daniela que está en el laboratorio.'); },
   aLab: id => { S.aLab = id; },
-  aMk: d => { const m = S.mkL[S.aLab] || (S.mkL[S.aLab] = {}); m.g = Math.max(10, Math.min(60, (m.g != null ? m.g : S.mkG) + (+d))); },
-  aMkEx: a => { const [k, d] = a.split(':'), m = S.mkL[S.aLab] || (S.mkL[S.aLab] = {}); m.ex = m.ex || {}; const cur = m.ex[k] != null ? m.ex[k] : mkOf(labOf(S.aLab), k); m.ex[k] = Math.max(10, Math.min(60, cur + (+d))); },
+  aMk: d => { const m = S.mkL[S.aLab] || (S.mkL[S.aLab] = {}); m.g = Math.max(15, Math.min(60, (m.g != null ? m.g : S.mkG) + (+d))); },
+  aMkEx: a => { const [k, d] = a.split(':'), m = S.mkL[S.aLab] || (S.mkL[S.aLab] = {}); m.ex = m.ex || {}; const cur = m.ex[k] != null ? m.ex[k] : mkOf(labOf(S.aLab), k); m.ex[k] = Math.max(15, Math.min(60, cur + (+d))); },
   aMkRs: k => { const m = S.mkL[S.aLab]; if (m && m.ex) delete m.ex[k]; },
   aFreq: f => { labOf(S.aLab).freq = f; toast(`Liquidación ${f} con ${labOf(S.aLab).n}.`); },
   aImp: () => { S.aImp = !S.aImp; },
@@ -287,7 +287,7 @@ def({ id: 'A12', name: 'Configurar laboratorio', kind: 'adm', side: 'labs', back
     ${S.aImp ? `<div class="abox mt16"><div class="b-m">Vista previa · precios_${l.id}_oct2026.xlsx</div><div class="t2 sm mt4">412 filas · 409 coinciden con el catálogo · 3 nuevas · 7 cambian de precio</div>
     <table class="t mt12"><tr><th>Código</th><th>Examen</th><th>Precio lab. actual</th><th>Precio lab. nuevo</th><th>Cambio</th><th>Precio paciente nuevo</th></tr>${ex.slice(0, 5).map((k, i) => { const c = lcost(l, k), n = Math.round(c * (i % 2 ? 1.04 : 1) / 10) * 10; return `<tr><td class="num t2">${EXAMS[k][5] || '—'}</td><td>${EXAMS[k][0]}</td><td class="num">${clp(c)}</td><td class="num">${clp(n)}</td><td>${n === c ? st('neu', 'Sin cambio') : st('warn', '+4 %', 'arrow-up')}</td><td class="num">${clp(Math.round(n * (1 + mkOf(l, k) / 100) / 10) * 10)}</td></tr>`; }).join('')}</table>
     <div class="row8 mt12"><button class="btn" style="width:auto;padding:0 18px" data-act="aImpOk">Publicar precios</button><button class="btn sec" style="width:auto;padding:0 18px" data-act="aImp">Cancelar</button></div></div>` : ''}
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px" class="mt24"><div class="abox"><div class="b-m">Recargo global (margen Cuidapp)</div><div class="t2 sm mt4">Mínimo 10% sobre el precio del laboratorio (puede ser mayor). Es el precio que paga la paciente.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px" class="mt24"><div class="abox"><div class="b-m">Recargo global (margen Cuidapp)</div><div class="t2 sm mt4">Mínimo 15% sobre el precio del laboratorio (puede ser mayor). Es el precio que paga la paciente.</div>
     <div class="mkst mt12"><button class="pill" data-act="aMk" data-arg="-1">${ic('minus')}</button><b class="num">${g} %</b><button class="pill" data-act="aMk" data-arg="1">${ic('plus')}</button></div></div>
     <div class="abox"><div class="b-m">Liquidación</div><div class="t2 sm mt4">Cada cuánto Cuidapp le paga a este laboratorio, según el convenio.</div><div class="chips mt12">${FREQ.map(f => chip(f[1], l.freq === f[0], 'aFreq', f[0])).join('')}</div></div></div>
     <div class="h-m mt32">Recargo por examen</div><div class="t2 sm mt4">Si no defines uno, se usa el global.</div>
@@ -299,12 +299,12 @@ def({ id: 'A13', name: 'Liquidaciones de laboratorios', kind: 'adm', side: 'liq'
     const paid = id => S.liqPaid[per + id] || per === 'sep';
     return `<div class="ahd"><div><h1 class="h-xl">Liquidaciones</h1><div class="t2 sm mt4">Exámenes realizados por período. Cuidapp paga a cada laboratorio según su frecuencia; la profesional solo entrega las muestras.</div></div><button class="btn sec" style="width:auto;padding:0 18px" data-act="toast" data-arg="Exportado: liquidaciones_${per}.xlsx">${ic('download-simple')}Exportar Excel</button></div>
     <div class="chips mt16">${[['oct2', '16–31 oct 2026'], ['oct1', '1–15 oct 2026'], ['sep', 'Septiembre 2026']].map(p => chip(p[1], per === p[0], 'aPer', p[0])).join('')}</div>
-    <div class="kpis mt16">${[[T.n, 'Exámenes realizados'], [clp(T.c), 'Costo laboratorios'], [clp(T.p), 'Cobrado a pacientes'], [clp(T.m), 'Margen exámenes (10%)']].map(t => `<div class="kpi"><b class="num">${t[0]}</b><span>${t[1]}</span></div>`).join('')}</div>
+    <div class="kpis mt16">${[[T.n, 'Exámenes realizados'], [clp(T.c), 'Costo laboratorios'], [clp(T.p), 'Cobrado a pacientes'], [clp(T.m), 'Margen exámenes (15%)']].map(t => `<div class="kpi"><b class="num">${t[0]}</b><span>${t[1]}</span></div>`).join('')}</div>
     <table class="t mt16"><tr><th>Laboratorio</th><th>Frecuencia</th><th>Exámenes</th><th>Costo laboratorio</th><th>Precio paciente</th><th>Margen</th><th>%</th><th>Estado</th><th></th></tr>
     ${rows.map(r => `<tr><td><b style="font-weight:600">${r.l.n}</b></td><td>${FREQ.find(f => f[0] === r.l.freq)[1]}</td><td class="num">${r.n}</td><td class="num">${clp(r.c)}</td><td class="num">${clp(r.p)}</td><td class="num">${clp(r.m)}</td><td class="num t2">${Math.round(r.m / r.c * 100)}%</td><td>${paid(r.l.id) ? st('ok', 'Pagada', 'check-circle') : st('warn', 'Pendiente', 'clock')}</td><td>${paid(r.l.id) ? '' : `<button class="pill" data-act="aPaid" data-arg="${r.l.id}">Marcar pagada</button>`}</td></tr>`).join('')}</table>
     <div class="h-m mt32">Profesionales · comisión ${S.comm}%</div><div class="t2 sm mt4">Cuidapp cobra a la paciente y abona el resto a la Billetera de cada profesional, que retira cuando quiere. Comisión sobre el precio base más sus recargos.</div>
     <table class="t mt12"><tr><th>Profesional</th><th>Atenciones</th><th>Base</th><th>Recargos</th><th>Cobrado</th><th>Comisión ${S.comm}%</th><th>Abonado a Billetera</th><th>Estado</th></tr>${PROS.slice(0, 5).map((p, i) => { const n = [14, 9, 11, 6, 8][i], b = n * (priceOf(p, 'iny') || 18000), rcg = Math.round(b * [0.06, 0.1, 0.04, 0, 0.08][i] / 100) * 100, t = b + rcg, c = Math.round(t * S.comm / 100); return `<tr><td><b style="font-weight:600">${p.n}</b></td><td class="num">${n}</td><td class="num">${clp(b)}</td><td class="num">${clp(rcg)}</td><td class="num">${clp(t)}</td><td class="num">${clp(c)}</td><td class="num">${clp(t - c)}</td><td>${st('ok', 'Abonado', 'check-circle')}</td></tr>`; }).join('')}</table>
-    <div class="h-m mt32">Costo por servicio · ${S.svcP}%</div><div class="t2 sm mt4">Lo paga la paciente sobre el total del pedido (servicios y exámenes, después de CUIDA15, sin la gestión de reembolso). Aparte de la comisión de profesionales y el margen de exámenes.</div>
+    <div class="h-m mt32">Costo por servicio · ${S.svcP}%</div><div class="t2 sm mt4">Lo paga la paciente sobre el total del pedido (servicios y exámenes, después de CUIDAPP15, sin la gestión de reembolso). Aparte de la comisión de profesionales y el margen de exámenes.</div>
     <div class="kpis mt12">${[[412, 'Pedidos del período'], [clp(9864000), 'Total pedidos'], [clp(Math.round(9864000 * S.svcP / 100)), `Ingreso por costo ${S.svcP}%`]].map(t => `<div class="kpi"><b class="num">${t[0]}</b><span>${t[1]}</span></div>`).join('')}</div>
     <div class="h-m mt32">Gestión de reembolsos</div><div class="t2 sm mt4">${clp(RB_FEE)} por cada reembolso automático enviado a una Isapre.</div>
     <div class="kpis mt12">${[[38, 'Reembolsos gestionados'], [clp(38 * RB_FEE), 'Ingreso por gestión'], [31, 'Pagados por la Isapre']].map(t => `<div class="kpi"><b class="num">${t[0]}</b><span>${t[1]}</span></div>`).join('')}</div>

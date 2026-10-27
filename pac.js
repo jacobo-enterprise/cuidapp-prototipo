@@ -10,7 +10,7 @@ Object.assign(ACT, {
   exq: q => { S.exq = q; },
   kinAv: () => { S.kinAv = !S.kinAv; toast(S.kinAv ? 'Listo. Te avisaremos cuando Kinesiología abra en tu comuna.' : 'Ya no te avisaremos.'); },
   promo: k => { S.promo = k; },
-  code: () => toast('Código CUIDA15 copiado: 15% hasta $20.000.'),
+  code: () => toast('Código CUIDAPP15 copiado: 15% hasta $20.000.'),
   medAv: () => { S.medAv = !S.medAv; toast(S.medAv ? 'Listo. Te avisaremos cuando Medicamentos abra en tu comuna.' : 'Ya no te avisaremos.'); },
   kin: () => toast('Kinesiología llega muy pronto. Te avisamos cuando abra en tu comuna.'),
   pick: a => { const [pro, d, t] = a.split('|'); S.pro = pro; S.when = 'prog'; if (!S.item || !priceOf(PRO(), S.item)) S.item = svcsOf(PRO())[0]; if (d !== undefined && d !== '') { S.day = +d; S.slot = t; } else { const x = nextOf(PRO()); if (x) { S.day = x[0]; S.slot = x[1]; } } S.pday = S.day; },
@@ -203,13 +203,13 @@ def({ id: 'P05', name: 'Dirección de atención', kind: 'page', noNav: true, bac
 /* ---------- promociones (ejemplos del prototipo) ---------- */
 const PROMO = {
   kin: { cls: 'dark', eb: 'Muy pronto en Cuidapp', t: 'Kinesiología a domicilio', d: 'Motora y respiratoria, en tu casa.', ic: 'kin' },
-  first: { cls: 'lav', eb: 'Primera atención', t: '15% de descuento', d: 'Con el código CUIDA15 · hasta $20.000', ic: 'iny' },
+  first: { cls: 'lav', eb: 'Primera atención', t: '15% de descuento', d: 'Con el código CUIDAPP15 · hasta $20.000', ic: 'iny' },
   lab: { cls: 'neu', eb: 'Exámenes a domicilio', t: '20% de descuento en tu primer pedido', d: 'En exámenes sobre $30.000 · hasta $20.000', ic: 'mue' },
 };
-const PSUB = { kin: 'Motora y respiratoria', first: 'CUIDA15 · hasta $20.000', lab: 'Exámenes sobre $30.000 · hasta $20.000' };
+const PSUB = { kin: 'Motora y respiratoria', first: 'CUIDAPP15 · hasta $20.000', lab: 'Exámenes sobre $30.000 · hasta $20.000' };
 const PT = { kin: 'Kinesiología', first: '15% de descuento', lab: '20% en tu primer pedido' };
 const promoEnd = k => k === 'kin' ? `<button class="pcta ${S.kinAv ? 'on' : ''}" data-act="kinAv">${S.kinAv ? ic('check', 0).replace('ph ', 'ph-bold ') + 'Avisado' : 'Avísame'}</button>`
-  : k === 'first' ? `<button class="pcta" data-act="code">CUIDA15</button>` : `<span class="pchev">${ic('caret-right')}</span>`;
+  : k === 'first' ? `<button class="pcta" data-act="code">CUIDAPP15</button>` : `<span class="pchev">${ic('caret-right')}</span>`;
 const promoCard = k => { const p = PROMO[k]; return `<div class="pslim ${p.cls}" data-act="promo" data-arg="${k}" data-go="P45" role="button"><span class="ps-ic">${i3(p.ic)}</span><span class="ps-tx"><span class="ps-eb">${p.eb}</span><b class="ps-t">${PT[k]}</b><span class="ps-d">${PSUB[k]}</span></span>${promoEnd(k)}</div>`; };
 window.pdots = el => { const n = Math.round(el.scrollLeft / (el.firstElementChild.offsetWidth + 8)); el.nextElementSibling.querySelectorAll('i').forEach((d, i) => d.classList.toggle('on', i === n)); };
 const promoCar = () => `<div class="pcar" onscroll="pdots(this)">${Object.keys(PROMO).map(promoCard).join('')}</div><div class="pdots"><i class="on"></i><i></i><i></i></div>`;
@@ -350,7 +350,7 @@ def({ id: 'P13', name: 'Elegir servicio, día y hora', kind: 'page', back: true,
   <div class="lbl2">Hora de llegada · ${DAYS[S.day][3].replace('hoy ', '')}</div>
   ${groups(l).map(g => `<div class="sgrp"><div class="sg-t">${g[0]}</div><div class="slots3">${g[1].map(t => `<button class="slot ${S.slot === t ? 'on' : ''}" data-act="set" data-arg="slot=${t}">${t}${rcTag(p, S.day, t)}</button>`).join('')}</div></div>`).join('')}
   <div class="mt16 col8">${rcLines(p, priceOf(p, S.item), S.day, S.slot, false).map(x => note(x[0].includes('nocturno') ? 'moon' : 'calendar-star', `${x[0]}: +${clp(x[1])}. Lo define ${first()}.`)).join('')}${S.slot ? `<div class="lbl2">Resumen</div>${price().L.filter(l => l[0] !== 'Gestión de reembolso').map(bkv).join('')}${kv('Total', clp(price().L.filter(l => l[0] !== 'Gestión de reembolso').reduce((x, y) => x + y[1], 0)), 'tot')}<div class="xs t3 mt4">Si pides el reembolso automático se suma la gestión (${clp(RB_FEE)}).</div>` : ''}${note('calendar-check', `Llega entre ${S.slot} y ${slotEnd(S.slot)}. Cancelación gratis hasta 12 horas antes.`)}</div>`; },
-  foot: () => `<div class="fbar"><div class="fb-l"><b class="num">${clp(price().total)}</b><span>${isT() ? `${shiftDates().length} turnos · ${shH()} h` : `${dayLbl(S.day)} · ${S.slot}`} ${price().disc ? ` · CUIDA15 −${clp(price().disc)}` : ''}</span></div><button class="btn fbtn" data-act="set" data-arg="addrNext=P14" data-go="P14">Continuar</button></div>` });
+  foot: () => `<div class="fbar"><div class="fb-l"><b class="num">${clp(price().total)}</b><span>${isT() ? `${shiftDates().length} turnos · ${shH()} h` : `${dayLbl(S.day)} · ${S.slot}`} ${price().disc ? ` · −${clp(price().disc)} dto.` : ''}</span></div><button class="btn fbtn" data-act="set" data-arg="addrNext=P14" data-go="P14">Continuar</button></div>` });
 
 const shiftForm = (p = PRO(), k = S.item, d = false) => { const c = CAT[k], hs = Object.keys(c.tp).map(Number), sc = shiftCalc(p, k);
   const st = [...Array(7)].map((_, i) => addD(SH0, i));
@@ -395,7 +395,7 @@ def({ id: 'P15', name: 'Receta médica', kind: 'page', back: true, title: 'Recet
 const bkv = l => l[2] === 'dsc' ? `<div class="kv dsc"><span class="k">${ic('tag')}${l[0]}</span><span class="num">−${clp(-l[1])}</span></div>` : kv(l[0], clp(l[1]));
 const breakdown = () => { const p = price(); if (S.item === 'mue' && !isT()) return `${p.L.map(l => l[0].startsWith('Exámenes') ? `${bkv(l)}<div class="exsub">${examList().map(e => `<span>${e[0]}</span><span class="num">${clp(e[1])}</span>`).join('')}</div>` : bkv(l)).join('')}${p.pend ? kv('Exámenes (laboratorio)', 'Por confirmar') : ''}${kv(p.pend ? 'Total por ahora' : 'Total', clp(p.total), 'tot')}`;
   return `${p.L.map(bkv).join('')}${kv('Total', clp(p.total), 'tot')}`; };
-const cuidaRow = () => { const p = price(), svcN = isT() ? 'de los turnos' : 'del servicio'; return S.cuida ? row('box:tag', 'CUIDA15 aplicado', p.disc ? `Primera atención · −${clp(p.disc)} (15% ${svcN}, hasta $20.000)` : 'Primera atención · 15% hasta $20.000', '', '<span class="lk sm">Quitar</span>', '', 'set', 'cuida=0') : row('box:tag', 'Tienes un código', 'CUIDA15 · 15% en tu primera atención, hasta $20.000', '', '<span class="lk sm">Aplicar</span>', '', 'set', 'cuida=1'); };
+const cuidaRow = () => { const p = price(), svcN = isT() ? 'de los turnos' : 'del servicio'; return S.cuida ? row('box:tag', 'CUIDAPP15 aplicado', p.disc ? `Primera atención · −${clp(p.disc)} (15% ${svcN}, hasta $20.000)` : 'Primera atención · 15% hasta $20.000', '', '<span class="lk sm">Quitar</span>', '', 'set', 'cuida=0') : row('box:tag', 'Tienes un código', 'CUIDAPP15 · 15% en tu primera atención, hasta $20.000', '', '<span class="lk sm">Aplicar</span>', '', 'set', 'cuida=1'); };
 
 def({ id: 'P17', name: 'Revisa y paga', kind: 'page', back: true, title: 'Revisa y paga',
   body: () => `${steps(2)}<div class="rvw mt16"><div class="rvw-h">${pav(PRO(), '', true)}<div><div class="b-m">${CAT[S.item].n}</div><div class="sm t2">con ${PRO().n} · ${rate(PRO(), false)}</div></div></div>
@@ -430,7 +430,7 @@ def({ id: 'P20', name: 'Cita confirmada', kind: 'page', next: ['P27'],
   body: () => `<div class="okc mt24">${ic('check', 0).replace('ph ', 'ph-bold ')}</div>
   <div class="h-l mt16">¡Listo! ${first()} confirmó tu cita</div><div class="t2 mt8">${whenLong()}</div>
   <div class="rvw mt24"><div class="rvw-h">${pav(PRO(), '', true)}<div><div class="b-m">${PRO().n}</div><div class="sm t2">${PRO().t} · ${PRO().tel}</div></div></div>
-  <div class="rvw-r">${ic(CAT[S.item].ic)}<span>${CAT[S.item].n} · ${whoTxt()}</span></div><div class="rvw-r">${ic('map-pin')}<span>${P().full}</span></div><div class="rvw-r">${ic('lock-simple')}<span>Retuvimos ${clp(price().total)} en Mercado Pago · se cobra al terminar</span></div><div class="rvw-r">${ic('receipt')}<span>Incluye costo por servicio (${S.svcP}%) ${clp(price().sf)}${price().L.some(l => l[0] === 'Gestión de reembolso') ? ` y gestión de reembolso ${clp(RB_FEE)}` : ''}</span></div>${price().disc ? `<div class="rvw-r">${ic('tag')}<span>Incluye descuento primera atención (CUIDA15) −${clp(price().disc)}</span></div>` : ''}</div>
+  <div class="rvw-r">${ic(CAT[S.item].ic)}<span>${CAT[S.item].n} · ${whoTxt()}</span></div><div class="rvw-r">${ic('map-pin')}<span>${P().full}</span></div><div class="rvw-r">${ic('lock-simple')}<span>Retuvimos ${clp(price().total)} en Mercado Pago · se cobra al terminar</span></div><div class="rvw-r">${ic('receipt')}<span>Incluye costo por servicio (${S.svcP}%) ${clp(price().sf)}${price().L.some(l => l[0] === 'Gestión de reembolso') ? ` y gestión de reembolso ${clp(RB_FEE)}` : ''}</span></div>${price().disc ? `<div class="rvw-r">${ic('tag')}<span>Incluye descuento primera atención (CUIDAPP15) −${clp(price().disc)}</span></div>` : ''}</div>
   ${S.item === 'mue' ? `<div class="lbl2">Cómo prepararte</div>${prepRows()}` : ''}
   <div class="mt12">${note('envelope-simple', 'Te enviamos el comprobante por correo. El día antes te recordamos la cita con una notificación push.')}</div>
   ${acts([['chat-circle', `Escribirle a ${first()}`, '', '', 'P22'], ['calendar-plus', 'Agregar a mi calendario', 'toast', 'Agregado a tu calendario.'], ['share-network', 'Compartir con la familia', 'toast', 'Link copiado. Mándalo por WhatsApp.']])}`,
@@ -495,7 +495,7 @@ def({ id: 'P26', name: 'Mis citas', kind: 'page', tab: 'citas',
 def({ id: 'P27', name: 'Detalle de la cita', kind: 'page', back: true, title: 'Detalle de la cita', next: ['P23', 'P13', 'P42'],
   body: () => S.det === 'next' ? `<div class="h-l">${CAT[S.item].n}</div><div class="t2 mt4">${whenLong()}</div><div class="mt8">${st('ok', 'Confirmada', 'check-circle')}</div>${etaCard()}
   <div class="rvw mt16"><div class="rvw-h" data-act="pick" data-arg="${S.pro}|" data-go="P12" role="button">${pav(PRO(), '', true)}<div style="flex:1"><div class="b-m">${PRO().n}</div><div class="sm t2">${PRO().t} · ${rate(PRO(), false)}</div></div>${ic('caret-right')}</div>
-  <div class="rvw-r">${ic('map-pin')}<span>${P().full}</span></div><div class="rvw-r">${ic('user')}<span>${whoTxt()}</span></div><div class="rvw-r">${ic('lock-simple')}<span>${clp(price().total)} retenido · se cobra al terminar</span></div>${price().disc ? `<div class="rvw-r">${ic('tag')}<span>Descuento primera atención (CUIDA15) −${clp(price().disc)}</span></div>` : ''}</div>
+  <div class="rvw-r">${ic('map-pin')}<span>${P().full}</span></div><div class="rvw-r">${ic('user')}<span>${whoTxt()}</span></div><div class="rvw-r">${ic('lock-simple')}<span>${clp(price().total)} retenido · se cobra al terminar</span></div>${price().disc ? `<div class="rvw-r">${ic('tag')}<span>Descuento primera atención (CUIDAPP15) −${clp(price().disc)}</span></div>` : ''}</div>
   ${S.item === 'mue' ? `<div class="lbl2">Exámenes</div>${byOrder() ? row('box:file-text', 'Según orden médica', 'El laboratorio confirma el precio', '', '') : examList().map(e => kv(e[0], clp(e[1]))).join('')}${byOrder() ? '' : prepRows()}${row('box:file-pdf', 'Resultados', 'Los recibes en PDF en la app', '', st('neu', 'Pendiente', ''))}` : ''}
   ${acts([['chat-circle', `Chat con ${first()}`, '', '', 'P22'], ['calendar-blank', 'Cambiar día u hora', '', '', 'P13'], ['calendar-plus', 'Agregar a mi calendario', 'toast', 'Agregado a tu calendario.']])}
   <div class="mt16">${note('calendar-x', 'Cancelación gratis hasta 12 horas antes. Después se cobra $5.000 por el traslado.')}</div>
@@ -519,7 +519,7 @@ def({ id: 'P42', name: 'Resultados de exámenes', kind: 'page', back: true, titl
 def({ id: 'P45', name: 'Promoción', kind: 'page', back: true, title: '', next: ['P40', 'P10'],
   body: () => { const k = S.promo, p = PROMO[k];
     const det = k === 'kin' ? `<div class="mt16">${row('box:person-simple-walk', 'Kinesiología motora', 'Después de una cirugía, caídas o reposo largo', '', '')}${row('box:wind', 'Kinesiología respiratoria', 'Para niños y adultos mayores', '', '')}${row('box:map-pin', 'Primero en Ñuñoa y Providencia', 'Te avisamos por correo cuando abra', '', '')}</div>`
-      : k === 'first' ? `<button class="codebox mt16" data-act="code"><span><span class="xs t2">Tu código</span><b>CUIDA15</b></span><span class="lk">${ic('copy')}Copiar</span></button>
+      : k === 'first' ? `<button class="codebox mt16" data-act="code"><span><span class="xs t2">Tu código</span><b>CUIDAPP15</b></span><span class="lk">${ic('copy')}Copiar</span></button>
         <div class="lbl2">Condiciones</div><div class="sm t2" style="line-height:21px">15% en tu primera atención en Cuidapp, hasta $20.000 de descuento. Vale para cualquier servicio y profesional. No aplica a los exámenes del laboratorio. Válido hasta el 30 nov 2026.</div>`
       : `<div class="mt16">${row('box:test-tube', 'Elige exámenes por $30.000 o más', 'En tu primer pedido de exámenes', '', '')}${row('box:percent', '20% de descuento en los exámenes', 'Hasta $20.000. Se descuenta solo en el resumen', '', '')}${row('box:file-pdf', 'Resultados en PDF', 'Los recibes en el detalle de tu cita', '', '')}</div>
         <div class="xs t3 mt12">Ejemplo: ${['hemo', 'lip', 'bioq', 'tsh', 'hba'].map(k => EXAMS[k][0].toLowerCase()).join(' + ')} = ${clp(['hemo', 'lip', 'bioq', 'tsh', 'hba'].reduce((a, k) => a + EXAMS[k][1], 0))}.</div>`;
