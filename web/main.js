@@ -1,11 +1,12 @@
 (function(){
 var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 var nav=document.querySelector('.nav');
-function onS(){nav.classList.toggle('scrolled',scrollY>40)}addEventListener('scroll',onS,{passive:true});onS();
+function onS(){nav.classList.toggle('scrolled',scrollY>40);var hq=document.getElementById('q');if(hq){nav.classList.toggle('cmp',hq.getBoundingClientRect().bottom<nav.getBoundingClientRect().bottom+4)}}addEventListener('scroll',onS,{passive:true});onS();
+var nq=document.getElementById('nq');
 var q=document.getElementById('q');var ex=['Una inyección de vitamina B12','Curación a domicilio en Ñuñoa','Hemograma y perfil lipídico','Una enfermera para mi mamá','Toma de muestras en casa'];
 if(q&&!reduce){var ei=0,ci=ex[0].length,del=true,hold=26;(function tick(){if(document.activeElement===q||q.value){setTimeout(tick,400);return}
 var w=ex[ei];if(hold>0){hold--}else if(del){ci--;if(ci<=0){del=false;ei=(ei+1)%ex.length;w=ex[ei]}}else{ci++;if(ci>=w.length){del=true;hold=30}}
-q.setAttribute('placeholder',w.slice(0,Math.max(ci,0))+(hold>0?'':'|'));setTimeout(tick,del&&hold<=0?28:62)})()}
+var ph=w.slice(0,Math.max(ci,0))+(hold>0?'':'|');q.setAttribute('placeholder',ph);if(nq&&document.activeElement!==nq&&!nq.value)nq.setAttribute('placeholder',ph);setTimeout(tick,del&&hold<=0?28:62)})()}
 if(reduce||!window.gsap){document.documentElement.classList.remove('motion');return}
 window.__cuidaReady=true;
 gsap.registerPlugin(ScrollTrigger);
