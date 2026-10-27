@@ -3,9 +3,6 @@ body.plat{background:#fff;overflow:hidden}
 .plat .tb{display:none}
 .plat .stage{top:0;display:block}
 .plat .scaler{width:100%;height:100%;transform:none!important}
-.plat-load{height:100%;display:flex;align-items:center;justify-content:center}
-.plat-load img{height:34px;animation:pl 1.2s ease-in-out infinite alternate}
-@keyframes pl{from{opacity:.35}to{opacity:1}}
 
 /* ---------- escritorio ---------- */
 .plat .desk{width:100%;height:100%;height:100dvh;border-radius:0;box-shadow:none}

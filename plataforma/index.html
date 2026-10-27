@@ -7,17 +7,26 @@
 <meta name="theme-color" content="#FFFFFF">
 <title>Cuidapp · Enfermeras y TENS a domicilio</title>
 <meta name="description" content="Busca, compara y agenda enfermeras y TENS a domicilio con precio y reseñas a la vista. Exámenes, Mi salud y reembolsos en un solo lugar.">
+<style>
+html,body{margin:0;height:100%;background:#fff}
+.plat-load{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font:500 14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;color:#5F5E6B}
+.plat-load a{color:#5557D9}
+.thk{display:flex;justify-content:center;align-items:flex-end;gap:12px;height:68px}
+.thk img{width:40px;height:40px;display:block;animation:thkhop 1.4s cubic-bezier(.3,.7,.4,1) infinite;animation-delay:calc(var(--i) * .15s);filter:drop-shadow(0 4px 6px rgba(40,30,100,.16))}
+@keyframes thkhop{0%,55%,100%{transform:none}28%{transform:translateY(-20px) scale(1.14) rotate(-7deg)}42%{transform:translateY(0) scale(.96)}}
+@media (prefers-reduced-motion:reduce){.thk img{animation:none}.thk img:nth-child(2n){opacity:.75}}
+</style>
 <link rel="icon" href="logo/favicon-nm.svg">
 <link rel="apple-touch-icon" href="logo/apple-touch-icon.png">
 </head>
 <body class="plat">
 <div id="tb" class="tb"></div>
-<div id="stage" class="stage"><div class="plat-load"><img src="logo/cuidapp-horizontal-nm.svg" alt="Cuidapp"></div></div>
+<div id="stage" class="stage"><div class="plat-load" role="status" aria-label="Cargando"><div class="thk"><img src="web/assets/emoji/iny.webp?v=20261026t1" alt="" style="--i:0" draggable="false"><img src="web/assets/emoji/vit.webp?v=20261026t1" alt="" style="--i:1" draggable="false"><img src="web/assets/emoji/cur.webp?v=20261026t1" alt="" style="--i:2" draggable="false"><img src="web/assets/emoji/mue.webp?v=20261026t1" alt="" style="--i:3" draggable="false"><img src="web/assets/emoji/cron.webp?v=20261026t1" alt="" style="--i:4" draggable="false"><img src="web/assets/emoji/sig.webp?v=20261026t1" alt="" style="--i:5" draggable="false"><img src="web/assets/emoji/heart.webp?v=20261026t1" alt="" style="--i:6" draggable="false"></div><div id="pl-t">Buscando para ti…</div></div></div>
 <script>
 /* Carga los mismos estilos y scripts del prototipo (index.html de la raíz), en orden,
    y luego la capa de plataforma web. Así la web siempre queda al día con el prototipo. */
 (function () {
-  var PV = '20261026p7';
+  var PV = '20261026p8';
   function css(h) { var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = h; document.head.appendChild(l); }
   function js(list, done) {
     if (!list.length) return done();
@@ -34,6 +43,7 @@
     js(srcs.concat(['plataforma/plat.js?v=' + PV]), function () { window.__platReady = true; });
   });
 })();
+setTimeout(function () { if (!window.__platReady) { var t = document.getElementById('pl-t'); if (t) t.innerHTML = 'Esto está tardando más de lo normal. <a href="">Reintentar</a>'; } }, 9000);
 </script>
 </body>
 </html>

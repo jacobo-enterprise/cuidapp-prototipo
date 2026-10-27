@@ -398,8 +398,10 @@ def({ id: 'P18', name: 'Métodos de pago', kind: 'page', back: true, title: 'Pag
   <div class="mt16">${note('shield-check', 'Pagas con Mercado Pago: tarjetas de crédito, débito o saldo Mercado Pago. Cuidapp no guarda los números de tu tarjeta.')}</div>`,
   foot: () => btn('Listo', 'back') });
 
+/* estado «pensando»: iconos 3D saltando (thinking.css) */
+const THK = '<div class="thk" role="status" aria-label="Esperando respuesta"><img src="web/assets/emoji/iny.webp?v=20261026t1" alt="" style="--i:0" draggable="false"><img src="web/assets/emoji/vit.webp?v=20261026t1" alt="" style="--i:1" draggable="false"><img src="web/assets/emoji/cur.webp?v=20261026t1" alt="" style="--i:2" draggable="false"><img src="web/assets/emoji/mue.webp?v=20261026t1" alt="" style="--i:3" draggable="false"><img src="web/assets/emoji/cron.webp?v=20261026t1" alt="" style="--i:4" draggable="false"><img src="web/assets/emoji/sig.webp?v=20261026t1" alt="" style="--i:5" draggable="false"></div>';
 def({ id: 'P19', name: 'Esperando confirmación', kind: 'page', auto: 'P20', autoAct: () => { S.booked = true; },
-  body: () => `<div class="center" style="margin-top:32px">${pav(PRO(), 'xl', true)}</div><div class="h-l mt24 center">Le enviamos tu solicitud a ${first()}</div>
+  body: () => `<div class="center" style="margin-top:32px">${pav(PRO(), 'xl', true)}</div><div class="mt24">${THK}</div><div class="h-l mt16 center">Le enviamos tu solicitud a ${first()}</div>
   <div class="t2 mt8 center">Suele responder en ${PRO().resp}. Si no puede, te avisamos y eliges a otra.</div>
   <div class="progress bar-anim mt24"><span></span></div>
   <div class="mt16">${row('box:check', 'Solicitud enviada', `${CAT[S.item].n} · ${whenTxt()}`, '', '')}${row('box:hourglass-medium', `${first()} revisa tu solicitud`, S.item === 'iny' ? 'También revisa la receta' : 'Y confirma la hora', '', st('inf', 'En curso'))}${row('box:lock-simple', 'Aún no te cobramos nada', `Retenemos ${clp(price().total)} cuando confirme`, '', '')}</div>`,

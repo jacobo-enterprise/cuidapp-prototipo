@@ -1,0 +1,5 @@
+/* Estado «pensando»: iconos 3D de servicios que saltan en ola (reemplaza el logo gigante / barra fija). */
+.thk{display:flex;justify-content:center;align-items:flex-end;gap:12px;height:68px}
+.thk img{width:40px;height:40px;display:block;animation:thkhop 1.4s cubic-bezier(.3,.7,.4,1) infinite;animation-delay:calc(var(--i) * .15s);filter:drop-shadow(0 4px 6px rgba(40,30,100,.16));will-change:transform}
+@keyframes thkhop{0%,55%,100%{transform:none}28%{transform:translateY(-20px) scale(1.14) rotate(-7deg)}42%{transform:translateY(0) scale(.96)}}
+@media (prefers-reduced-motion:reduce){.thk img{animation:none}.thk img:nth-child(2n){opacity:.75}}
