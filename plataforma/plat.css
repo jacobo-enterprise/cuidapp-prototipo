@@ -284,3 +284,10 @@ body.phome .dpage .upc{max-width:560px}
 .pdh .psearch{opacity:0;visibility:hidden;transform:translateY(-8px) scale(.97);pointer-events:none;transition:opacity .25s ease,transform .3s cubic-bezier(.2,.7,.2,1),visibility 0s .25s,background .15s,box-shadow .15s}
 .pdh.cmp .psearch{opacity:1;visibility:visible;transform:none;pointer-events:auto;transition:opacity .25s ease .05s,transform .3s cubic-bezier(.2,.7,.2,1) .05s,visibility 0s,background .15s,box-shadow .15s}
 @media (prefers-reduced-motion:reduce){.pdh .plogo > span,.pdh .psearch{transition:none!important}}
+
+/* v5 · inicio: el encabezado arriba toma el color del hero (sin barra blanca, borde ni sombra); al pasar el buscador se vuelve blanco */
+.pdh{transition:background-color .3s ease,border-color .3s ease,box-shadow .3s ease,backdrop-filter .3s ease}
+body.phome .pdh:not(.cmp){background:#F4F1FE;backdrop-filter:none;-webkit-backdrop-filter:none;border-bottom-color:transparent;box-shadow:none}
+body.phome .desk.scrolled .pdh:not(.cmp){border-bottom-color:transparent;box-shadow:none}
+body.phome .pdh:not(.cmp) nav button:not(.on):hover{background:rgba(255,255,255,.7)}
+body.phome .pdh.cmp{background:rgba(255,255,255,.96);border-bottom-color:var(--border);box-shadow:0 6px 24px -18px rgba(42,31,102,.35)}
