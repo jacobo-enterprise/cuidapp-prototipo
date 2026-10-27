@@ -103,8 +103,10 @@ const homeChips = () => `<div class="scopes hq">${[['test-tube', 'Exámenes', 's
 /* estado vacío amable: ícono, qué pasó y qué hacer ahora */
 const emptyS = (i, t, sub, acts = '') => `<div class="empty">${ic(i)}<div class="b-m mt8">${t}</div><div class="sm t2 mt4">${sub}</div>${acts}</div>`;
 const scopeRow = (go = '') => `<div class="scopes">${SCOPES.map(s => `<button class="chip ${S.scope === s[0] ? 'on' : ''}" data-act="${go ? 'scopeGo' : 'scope'}" data-arg="${s[0]}" ${go ? `data-go="${go}"` : ''}>${s[1]}</button>`).join('')}</div>`;
-/* Recomendadas cerca de ti: primero las con «Destacado» pagado (con su etiqueta); el resto por cercanía y, a igual distancia, por nota */
-const featured = () => PROS.filter(p => priceOf(p, '')).sort((a, b) => (isDest(b) ? 1 : 0) - (isDest(a) ? 1 : 0) || a.km - b.km || b.rn - a.rn).slice(0, 5);
+/* Inicio, dos secciones: «Destacadas» (solo con Destacado pagado, con etiqueta) y «Recomendadas cerca de ti» (el resto, sin repetir, por cercanía y luego por nota) */
+const byNear = (a, b) => a.km - b.km || b.rn - a.rn;
+const destacadas = () => PROS.filter(p => priceOf(p, '') && isDest(p)).sort(byNear).slice(0, 5);
+const featured = () => PROS.filter(p => priceOf(p, '') && !isDest(p)).sort(byNear).slice(0, 5);
 const topRated = () => PROS.slice().sort((a, b) => b.rn - a.rn || b.rv - a.rv).slice(0, 3);
 const range = l => { const ps = l.map(p => priceOf(p, S.item)); return ps.length ? [Math.min(...ps), Math.max(...ps)] : [0, 0]; };
 const nFilt = () => (S.f.enf && S.f.tens && S.f.cuid ? 0 : 1) + (S.fmax ? 1 : 0) + (S.fday !== 'all' ? 1 : 0) + (S.frat ? 1 : 0) + (S.fgen ? 1 : 0) + (S.fcom ? 1 : 0);
@@ -240,6 +242,8 @@ def({ id: 'P06', name: 'Servicios (inicio)', kind: 'page', tab: 'servicios', bod
   ${S.booked && !S.hecho ? `<button class="upc mt16" data-act="set" data-arg="det=next" data-go="P27"><span class="db"><span>${DAYS[S.day][0]}</span><b>${DAYS[S.day][1]}</b></span><span class="tx"><span class="xs t2">Tu próxima cita</span><b>${CAT[S.item].n}</b><span class="sm t2">${S.slot} · ${PRO().n}</span></span>${ic('caret-right')}</button>` : ''}
   <div class="mt16">${promoCar()}</div>
   <div class="mt24">${shd('Servicios')}${catGrid()}</div>${typeof profRow === 'function' ? profRow() + cotBanner() : ''}
+  ${destacadas().length ? `${shd('Destacadas', 'P10', 'svc', '')}
+  <div class="hcar">${destacadas().map(fcard).join('')}</div>` : ''}
   ${shd('Recomendadas cerca de ti', 'P10', 'svc', '')}
   <div class="hcar">${featured().map(fcard).join('')}</div>
   ${typeof consejos === 'function' ? consejos() : ''}
@@ -584,6 +588,7 @@ def({ id: 'W01', name: 'Servicios (web)', kind: 'dfree', dtab: 'servicios', shee
   <div class="chips mt16">${['iny', 'vneu', 'vd', 'mue', 'cur', 'cuid'].map(k => `<button class="chip" data-act="svc" data-arg="${k}" data-go="${k === 'mue' ? 'P40' : 'W02'}">${k === 'mue' ? 'Exámenes de laboratorio' : k === 'iny' ? CAT[k].n : CAT[k].s}</button>`).join('')}</div></div></section>
   <section class="wsec wpromo"><div class="wprow">${Object.keys(PROMO).map(promoCard).join('')}</div></section>
   <section class="wsec"><div class="shd"><h2 class="h-l">Explora por categoría</h2><button class="lk" data-go="P33">Ver todas · Kinesiología y Medicamentos muy pronto</button></div><div class="wcats mt24">${GK.map(k => { const [n, mn] = grpStats(k); return `<button class="wcat" data-act="grp" data-arg="${k}" data-go="${grpGo(k)}"><span class="ci">${i3(k)}</span><b>${GRP[k].n}</b><span class="sm t2">${GRP[k].l.length > 1 ? GRP[k].l.slice(0, 4).map(x => CAT[x].s).join(' · ') + (GRP[k].l.length > 4 ? ' y más' : '') : k === 'mue' ? 'Precio del laboratorio + toma' : nPro(n) + ' · desde ' + clp(mn)}</span></button>`; }).join('')}</div></section>
+  ${destacadas().length ? `<section class="wsec"><div class="shd"><h2 class="h-l">Destacadas</h2><button class="lk" data-act="svc" data-arg="" data-go="W02">Ver todas</button></div><div class="wfeat mt24">${destacadas().slice(0, 4).map(fcard).join('')}</div></section>` : ''}
   <section class="wsec"><div class="shd"><h2 class="h-l">Recomendadas cerca de ti</h2><button class="lk" data-act="svc" data-arg="" data-go="W02">Ver todas</button></div><div class="wfeat mt24">${featured().slice(0, 4).map(fcard).join('')}</div></section>
   <section class="wsec last"><h2 class="h-l">Cómo funciona</h2><div class="wsteps mt24">${[['magnifying-glass', 'Busca el servicio', 'Inyección, curación, exámenes, turnos de cuidadora o TENS.'], ['users-three', 'Compara', 'Precio, qué incluye, reseñas reales y próxima hora libre.'], ['calendar-check', 'Agenda y listo', 'Pagas en la app. Se cobra solo al terminar la atención.']].map((s, i) => `<div class="wst"><span class="n">${i + 1}</span>${ic(s[0])}<b>${s[1]}</b><span class="t2">${s[2]}</span></div>`).join('')}</div></section>` });
 
