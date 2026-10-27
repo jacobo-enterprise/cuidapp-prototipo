@@ -18,7 +18,7 @@ const exSub = k => { const e = EXAMS[k]; return [e[7], ayLbl(e[3]), plLbl(k), fo
 /* preparación y entrega de lo que lleva la paciente: filas reutilizadas en selección, resumen, pago y confirmación */
 const prepRows = () => {
   if (byOrder()) return row('box:file-text', 'Ayuno y entrega según tu orden', 'Te los confirmamos cuando revisemos tu orden', '', '');
-  const ks = examKeys(), a = ayAgg(ks), p = plAgg(ks), n = ks.length > 1 ? ' (el mayor entre tus exámenes)' : '';
+  const ks = allExKeys(), a = ayAgg(ks), p = plAgg(ks), n = ks.length > 1 ? ' (el mayor entre todos los exámenes)' : '';
   return row('box:' + (a.h > 0 ? 'fork-knife' : a.pend ? 'question' : 'coffee'), a.txt, a.h > 0 ? `Solo agua${n}${a.pend ? ' · ' + a.pend + ' por confirmar' : ''}` : a.pend ? 'Te confirmamos antes de la toma si algún examen pide ayuno' : 'Puedes comer y tomar normal', '', '')
     + row('box:clock', p.txt, ks.length > 1 && p.plazo ? 'Todos tus resultados, contando desde la toma' + (p.pend ? ' · ' + p.pend + ' por confirmar' : '') : 'Contando desde la toma · te avisamos cuando estén', '', '');
 };
@@ -156,23 +156,23 @@ const pvBlock = w => { const p = S.pv[w];
   ${radioRow('Isapre', p.t === 'isapre' && p.is ? p.is : 'Elige tu isapre', p.t === 'isapre', 'pvT', w + '|isapre', 'buildings')}${p.t === 'isapre' ? `<div class="chips sub">${ISAPRES.map(t => chip(t, p.is === t, 'pvIs', w + '|' + t)).join('')}</div>` : ''}
   ${radioRow('Particular', 'Sin previsión o prefiero no usarla', p.t === 'part', 'pvT', w + '|part', 'wallet')}`; };
 def({ id: 'P64', name: 'Previsión de salud', kind: 'page', back: true, title: 'Previsión de salud',
-  body: () => { const w = pvW(); return `<div class="t2 sm">${patN(w)} · RUT ${RUTS[w]}</div><div class="mt12">${pvBlock(w)}</div>${S.pv[w].t === 'isapre' ? `<div class="mt12">${S.isa[w] ? row('box:link', `${S.isa[w].is} vinculada`, 'Reembolso automático activo', 'P82', st('ok', 'Activa'), '', 'lkW', w) : row('box:link', 'Reembolso automático', `Vincula ${S.pv[w].is || 'tu Isapre'} una vez y te ayudamos a enviar los reembolsos`, 'P78', '<span class="lk">Vincular</span>', '', 'lkW', w)}</div>` : ''}
+  body: () => { const w = pvW(); return `<div class="t2 sm">${patN(w)} · RUT ${RUTS[w]} · cada integrante tiene su propia previsión</div><div class="mt12">${pvBlock(w)}</div>${S.pv[w].t === 'isapre' ? `<div class="mt12">${S.isa[w] ? row('box:link', `${S.isa[w].is} vinculada`, 'Reembolso automático activo', 'P82', st('ok', 'Activa'), '', 'lkW', w) : row('box:link', 'Reembolso automático', `Vincula la Isapre de ${FAM[w].c} una vez y presentamos sus reembolsos`, 'P78', '<span class="lk">Vincular</span>', '', 'lkW', w)}</div>` : ''}
   <div class="mt12">${row('box:chart-bar', 'Cotiza tu Isapre', 'Asesores de Isapre comparan planes para ti', 'P89')}</div>
   <div class="mt16">${note('receipt', 'La usamos para emitir tus boletas para reembolso: van con tu RUT, tu previsión y los códigos Fonasa de cada examen.')}</div>`; },
   foot: () => btn('Guardar', 'back') });
 
 /* ---------- Documentos para reembolso ---------- */
 const reembolsoBlock = () => { const m = S.item === 'mue';
-  return `<div class="rmb mt8"><div class="rmb-h">${ic('receipt')}<b>Boleta para reembolso</b></div>
+  return `<div class="rmb mt8"><div class="rmb-h">${ic('receipt')}<b>Boletas y reembolso</b></div>
   <div class="rmb-r"><span>Paciente</span><b>${patN(S.who)} · RUT ${RUTS[S.who]}</b></div><div class="rmb-r"><span>Previsión</span><b>${pvTxt()}</b></div>
   ${m ? `<div class="rmb-r"><span>Exámenes</span><b>${examList().length ? examKeys().slice(0, 3).map(k => EXAMS[k][6] || EXAMS[k][5]).join(', ') + (examKeys().length > 3 ? ` y ${examKeys().length - 3} más` : '') : 'Se agregan al confirmar la orden'}</b></div>` : ''}
-  <div class="rmb-r"><span>${m ? 'Toma de muestra' : 'Atención'}</span><b>Boleta de Cuidapp · pago con Mercado Pago</b></div>
-  <button class="lk mt8" data-go="P65">${ic('file-pdf')}Ver documentos para reembolso</button></div>`; };
+  <div class="rmb-r"><span>Boletas</span><b>${m ? 'Laboratorio, honorarios y Cuidapp' : 'Honorarios y Cuidapp'}</b></div>
+  <button class="lk mt8" data-go="P65">${ic('file-pdf')}Ver mis boletas y documentos</button></div>`; };
 def({ id: 'P65', name: 'Documentos para reembolso', kind: 'page', back: true, title: 'Para tu reembolso',
   body: () => { const m = S.item === 'mue', w = S.who, pr = PRO(), p = price(); const toma = m ? p.pro : p.total;
-    return `${(S.pv[w] || {}).t === 'isapre' ? `<div class="mb12">${S.isa[w] ? row('box:lightning', 'Reembolso automático', `Te ayudamos a enviarlo a ${S.isa[w].is}`, 'P80', st('ok', 'Activo')) : row('box:link', 'Envío asistido', `Vincula ${S.pv[w].is} y te dejamos todo listo para enviar`, 'P78', '<span class="lk">Vincular</span>', '', 'lkW', w)}</div>` : ''}<div class="pdfp"><div class="pdh"><div><b>Cuidapp</b><div class="xs t2">Documentos para reembolso · ${DAYS[S.day][3].replace(/^(hoy )?\S+ /, '')} 2026</div></div>${ic('file-pdf', 1)}</div>
+    return `${(S.pv[w] || {}).t === 'isapre' ? `<div class="mb12">${S.isa[w] ? row('box:lightning', 'Reembolso automático', `Presentamos el reembolso en ${S.isa[w].is}`, 'P80', st('ok', 'Activo')) : row('box:link', 'Reembolso automático', `Vincula ${S.pv[w].is} y presentamos el reembolso por ti`, 'P78', '<span class="lk">Vincular</span>', '', 'lkW', w)}</div>` : ''}<div class="pdfp"><div class="pdh"><div><b>Cuidapp</b><div class="xs t2">Documentos para reembolso · ${DAYS[S.day][3].replace(/^(hoy )?\S+ /, '')} 2026</div></div>${ic('file-pdf', 1)}</div>
     <div class="xs t2 mt8">Paciente: <b style="color:var(--text)">${patN(w)}</b> · RUT ${RUTS[w]} · ${pvTxt(w)}</div>
-    <div class="rmbs mt12"><b>1. Boleta de Cuidapp por tu pago</b><div class="xs t2 mt4">Cuidapp la emite por el pago que hiciste con Mercado Pago.</div><table class="rtab mt8"><tr><td>Pagado con</td><td>Mercado Pago</td></tr><tr><td>Total pagado</td><td class="num">${clp(p.total)}</td></tr></table></div>
+    ${docsBlock()}<table class="rtab mt8"><tr><td>Pagado con</td><td>Mercado Pago</td></tr><tr><td>Total pagado</td><td class="num">${clp(p.total)}</td></tr></table>
     ${m ? `<div class="rmbs mt12"><b>2. Exámenes</b><table class="rtab mt8"><tr><th>Código</th><th>Examen</th><th>Valor</th></tr>${examKeys().map(k => `<tr><td class="num">${EXAMS[k][6] || EXAMS[k][5] || 's/c'}</td><td>${EXAMS[k][0]}</td><td class="num">${clp(EXAMS[k][1])}</td></tr>`).join('')}<tr><td></td><td><b>Total</b></td><td class="num"><b>${clp(examSum())}</b></td></tr></table>${examKeys().some(k => !EXAMS[k][6]) ? '<div class="xs t3 mt4">Sin código Fonasa: consulta con tu previsión si lo cubre.</div>' : ''}</div>` : ''}
     <div class="rmbs mt12"><b>${m ? '3' : '2'}. Detalle de la atención</b><table class="rtab mt8"><tr><td>Profesional</td><td>${pr.n} · ${pr.t}</td></tr><tr><td>RUT</td><td class="num">${PRUT[pr.id] || PRUT.cr}</td></tr><tr><td>Prestación</td><td>${m ? 'Toma de muestra venosa a domicilio · cód. 0307011' : CAT[S.item].n + ' a domicilio'}</td></tr><tr><td>Valor</td><td class="num">${clp(toma)}</td></tr></table></div>
     ${m ? `<div class="rmbs mt12"><b>${m ? '4' : '3'}. Orden médica</b><div class="xs t2 mt4">${S.orden === 'si' ? 'Foto de tu orden · Dra. Marcela Ortiz R.' : S.needOrd ? 'Gestionada por Cuidapp · se adjunta al emitirla' : 'Si tu previsión la pide, podemos gestionarla por ti.'}</div></div>` : ''}</div>

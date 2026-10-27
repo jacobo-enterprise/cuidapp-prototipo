@@ -13,9 +13,9 @@ const S0 = () => ({
   item: 'iny', addr: 'mama', who: 'mama', when: 'prog', pro: 'cr', day: 1, slot: '08:00', sort: 'rel', ptab: 'serv', det: 'next',
   f: { enf: true, tens: true, cuid: true }, fmax: 0, fday: 'all', frat: 0, fgen: '', fcom: '',
   fav: { cr: true, pg: true }, q: '', typed: false, sheet: '', ctab: 'next', revF: 'all', revSort: 'rec', resp: { cr4: 'Gracias, Francisco. Ese día me pilló un taco en Grecia, por eso te avisé. ¡Nos vemos en el próximo control!' }, replyTo: 'cr1', rtxt: false, rcrit: {}, pday: 1, svcFrom: '',
-  hasMed: true, receta: false, orden: '', mmode: 'cat', pack: '', exq: '', kinAv: false, medAv: false, promo: 'kin', exFirst: true, exams: {}, needOrd: false, ord: '', ordSel: null, ordFrom: false, help: '', exPage: 0, exLim: 20, scope: '', aexq: '', aexPage: 0, aord: 0, aordSel: {}, aordDone: [], pv: { mama: { t: 'fonasa', tr: 'B', is: '' }, papa: { t: 'isapre', tr: '', is: 'Colmena' }, yo: { t: 'isapre', tr: '', is: 'Banmédica' } }, isaOpen: false, blog: 'b12', blogF: '', bm: 'hba', bF: 'all', bSis: '', crit: false, incVis: false, shr: { cr: false, pg: true, lf: false }, shrLink: false, resShared: false, eduRes: false, pk: 'gen', pkOpen: '', ctl: { 0: true, 1: true, 2: false, 3: true }, lk: { w: 'yo', is: '', c1: false, c2: false, car: false, bank: false }, isa: {}, rbAuto: false, rbSel: 'r2', rbList: null, profAv: {}, labId: 'la', lbMode: 'dom', lbSuc: 0, lbEx: [], lbDay: '', lbHr: '', lbSort: '', lbDone: false, cq: { age: '', r: null, dep: 0, is: '' }, ase: 'mi', aseSent: {}, qa: { is: ['Colmena'], plan: 'free', plus: false, paid: false }, unl: {}, aseOk: {}, dest: { vm: true }, pz: { unl: 9990, mem: 59990, plus: 19990, pdest: 9990 }, lead: 0, leadSt: {}, mue: { up: false, rot: true, ord: true, fri: true, done: false }, aLab: 'la', mkG: 15, mkL: { bl: { g: 15, ex: { vitd: 18 } } }, aImp: false, aImpDone: {}, aPer: 'oct2', liqPaid: {}, cuida: true, proSt: '', svcP: 2, rbAsk: '', lkNext: '', rc: RC0(), rcMax: 100, rcEd: '', rbDocs: false, tensNeeds: { hig: true, mov: true, sig: true, com: false },
+  hasMed: true, receta: false, orden: '', mmode: 'cat', pack: '', exq: '', kinAv: false, medAv: false, promo: 'kin', exFirst: true, exams: {}, needOrd: false, ord: '', ordSel: null, ordFrom: false, help: '', exPage: 0, exLim: 20, scope: '', aexq: '', aexPage: 0, aord: 0, aordSel: {}, aordDone: [], pv: { mama: { t: 'fonasa', tr: 'B', is: '' }, papa: { t: 'isapre', tr: '', is: 'Colmena' }, yo: { t: 'isapre', tr: '', is: 'Banmédica' }, tomas: { t: 'isapre', tr: '', is: 'Banmédica' } }, mem: ['yo', 'mama', 'papa', 'tomas'], co: [], exCo: {}, coFor: '', nm: {}, prepOk: false, emb: {}, clv: {}, isaOpen: false, blog: 'b12', blogF: '', bm: 'hba', bF: 'all', bSis: '', crit: false, incVis: false, shr: { cr: false, pg: true, lf: false }, shrLink: false, resShared: false, eduRes: false, pk: 'gen', pkOpen: '', ctl: { 0: true, 1: true, 2: false, 3: true }, lk: { w: 'yo', is: '', c1: false, c2: false, car: false, bank: false }, isa: {}, rbAuto: false, rbSel: 'r2', rbList: null, profAv: {}, labId: 'la', lbMode: 'dom', lbSuc: 0, lbEx: [], lbDay: '', lbHr: '', lbSort: '', lbDone: false, cq: { age: '', r: null, dep: 0, is: '' }, ase: 'mi', aseSent: {}, qa: { is: ['Colmena'], plan: 'free', plus: false, paid: false }, unl: {}, aseOk: {}, dest: { vm: true }, pz: { unl: 9990, mem: 59990, plus: 19990, pdest: 9990 }, lead: 0, leadSt: {}, mue: { up: false, rot: true, ord: true, fri: true, done: false }, aLab: 'la', mkG: 15, mkL: { bl: { g: 15, ex: { vitd: 18 } } }, aImp: false, aImpDone: {}, aPer: 'oct2', liqPaid: {}, cuida: true, proSt: '', svcP: 2, rbAsk: '', lkNext: '', rc: RC0(), rcMax: 100, rcEd: '', rbDocs: false, tensNeeds: { hig: true, mov: true, sig: true, com: false },
   pay: 'visa', prev: 'fonasa', consent: false, rating: 0, tags: {}, tip: 0, chat: [], phase: 'llego', cancelFrom: 'P27', booked: false, hecho: false, cr: 0,
-  docs: { carnet: false, selfie: false, titulo: false, antec: false, banco: false }, prof: 'enf',
+  docs: { carnet: false, selfie: false, titulo: false, antec: false, banco: false, sii: false }, prof: 'enf',
   online: false, code: '', chk: { id: false, rec: false, ale: false }, earn: 186405, done: 9, wd: 0, wAmt: 0, wdL: [], pRating: 0, pTags: {}, paid: false,
   my: {
     vneu: { on: true, p: 18000, night: 0, nOn: false, dur: 30, inc: { ins: true, pre: true, res: true, edu: false } },
@@ -224,10 +224,16 @@ EXDB.forEach(r => { EXAMS[r[0]] = [r[1], r[2], r[7] || r[6] || 'Según indicaci�
 const QRES = {};   // listas de resultados que se actualizan al escribir (lab.js)
 const EXPOP = ['hemo', 'lip', 'gli', 'bioq', 'ori', 'uro', 'tsh', 't4', 'hba', 'cre', 'vitd', 'pcr'];
 const examKeys = () => Object.keys(EXAMS).filter(k => S.exams[k]);
+/* más personas en la misma visita: cada una con sus exámenes; la toma se cobra una sola vez por visita */
+const coKeys = () => (S.co || []).filter(k => k !== S.who && FAM[k]);
+const coEx = k => Object.keys(EXAMS).filter(x => ((S.exCo || {})[k] || {})[x]);
+const coGross = k => coEx(k).reduce((a, x) => a + EXAMS[x][1], 0);
+const coSum = () => coKeys().reduce((a, k) => a + coGross(k), 0);
+const allExKeys = () => [...new Set([...examKeys(), ...coKeys().flatMap(coEx)])];
 const examList = () => examKeys().map(k => EXAMS[k]);
 const examGross = () => examList().reduce((a, e) => a + e[1], 0);
 const EXD_P = 20, EXD_MIN = 30000, EXD_MAX = 20000; /* primer pedido de exámenes sobre $30.000: 20% de descuento, tope $20.000 (como CUIDAPP15). Lo paga Cuidapp (adquisición) */
-const exDiscOf = () => S.exFirst && typeof byOrder === 'function' && !byOrder() && examSum() >= EXD_MIN ? Math.min(EXD_MAX, Math.round(examSum() * EXD_P / 100 / 10) * 10) : 0;
+const exDiscOf = () => { const t = examSum() + coSum(); return S.exFirst && typeof byOrder === 'function' && !byOrder() && t >= EXD_MIN ? Math.min(EXD_MAX, Math.round(t * EXD_P / 100 / 10) * 10) : 0; };
 const examSum = () => examGross() - (typeof pkD === 'function' ? pkD() : 0); /* neto: con descuento de pack */
 const byOrder = () => S.mmode === 'orden' && S.ord !== 'ok';
 /* Ayuno y entrega de resultados. EXAMS[k][3] = horas de ayuno (0 = sin ayuno, 4, 8, 12; -1 = por confirmar con el laboratorio; el Excel del laboratorio no trae ayuno: viene de fuentes públicas chilenas, o por tipo de examen). EXAMS[k][10] = origen del ayuno (0 pendiente, 1 referencia por tipo, 2 fuente pública, 3 fuente pública con fuentes en desacuerdo). EXAMS[k][8] = plazo informado por el laboratorio. */
@@ -417,7 +423,7 @@ function price() {
   const p = priceOf(pr, S.item);
   const rc = rcLines(pr, p, S.when === 'prog' ? S.day : 0, S.when === 'prog' ? S.slot : '', S.when !== 'prog'), rs = rc.reduce((a, b) => a + b[1], 0);
   const fee = typeof isaOf === 'function' && isaOf(S.who) && S.rbAuto ? [['Gestión de reembolso', RB_FEE]] : [];
-  if (S.item === 'mue') { L.push([`Toma a domicilio · ${first(pr)}`, p], ...rc); if (!byOrder()) { L.push([`Exámenes (laboratorio) · ${examList().length}`, examGross()]); if (pkD()) L.push([`Descuento pack ${pkAct()[1]}`, -pkD(), 'dsc']); } const exd = exDiscOf(); if (exd) L.push([`Descuento primer pedido de exámenes (${EXD_P}%)`, -exd, 'dsc']); const svc = p + rs; L.push(...cuidaLine(svc)); const W = withFee(L, fee); return { L: W.L, total: W.L.reduce((a, b) => a + b[1], 0), pro: p + rs, lab: byOrder() ? 0 : examSum(), pend: byOrder(), disc: cuidaOf(svc), sf: W.sf }; }
+  if (S.item === 'mue') { L.push([`Toma a domicilio · ${first(pr)}${coKeys().length ? ' (una vez por visita)' : ''}`, p], ...rc); if (!byOrder()) { L.push([`Exámenes${coKeys().length ? ' de ' + FAM[S.who].c : ' (laboratorio)'} · ${examList().length}`, examGross()]); if (pkD()) L.push([`Descuento pack ${pkAct()[1]}`, -pkD(), 'dsc']); coKeys().forEach(k => { if (coEx(k).length) L.push([`Exámenes de ${FAM[k].c} · ${coEx(k).length}`, coGross(k)]); }); } const exd = exDiscOf(); if (exd) L.push([`Descuento primer pedido de exámenes (${EXD_P}%)`, -exd, 'dsc']); const svc = p + rs; L.push(...cuidaLine(svc)); const W = withFee(L, fee); return { L: W.L, total: W.L.reduce((a, b) => a + b[1], 0), pro: p + rs, lab: byOrder() ? 0 : examSum() + coSum(), pend: byOrder(), disc: cuidaOf(svc), sf: W.sf }; }
   L.push([CAT[S.item].n, p], ...rc, ...cuidaLine(p + rs)); const W = withFee(L, fee);
   return { L: W.L, total: W.L.reduce((a, b) => a + b[1], 0), pro: p + rs, rc: rs, disc: cuidaOf(p + rs), sf: W.sf };
 }
@@ -451,7 +457,7 @@ const durT = (pr, k) => CAT[k].turno ? `Turno de ${Object.keys(CAT[k].tp).join('
 const slotEnd = t => { const [h, m] = t.split(':').map(Number); const x = h * 60 + m + 30; return String(Math.floor(x / 60)).padStart(2, '0') + ':' + String(x % 60).padStart(2, '0'); };
 const whenTxt = () => isT() ? `Desde ${dTxt(addD(SH0, S.sh.start))} · ${shH()} h · ${repTxt()}` : S.when === 'ahora' ? `Hoy, llega en ~${PRO().asap || 30} min` : `${dayShort(S.day)}, ${S.slot} a ${slotEnd(S.slot)}`;
 const whenLong = () => isT() ? `${shiftDates().length} turnos de ${shH()} h (${shRange()}) desde el ${dTxt(addD(SH0, S.sh.start))} · ${repTxt()} · ${S.sh.wk} semana${S.sh.wk > 1 ? 's' : ''}` : S.when === 'ahora' ? `Hoy, llega en ~${PRO().asap || 30} min` : `${DAYS[S.day][3].replace(/^\w/, c => c.toUpperCase())}, llega entre ${S.slot} y ${slotEnd(S.slot)}`;
-const whoTxt = () => ({ mama: 'Rosa Muñoz (mamá)', yo: 'Daniela Fuentes (tú)', papa: 'Luis Fuentes (papá)' })[S.who];
+const whoTxt = (w = S.who) => { const f = FAM[w] || FAM.yo; return f.n.split(' ').slice(0, 2).join(' ') + ' (' + (w === 'yo' ? 'tú' : f.r) + ')'; };
 const FAM = { mama: { n: 'Rosa Muñoz Pérez', c: 'Rosa', r: 'mamá', i: 'RM', e: 78, al: ['Penicilina'], dx: ['Hipertensión arterial', 'Diabetes tipo 2', 'Úlcera venosa pierna izquierda'], meds: [
     { n: 'Losartán 50 mg', d: '1 comprimido', v: 'oral', f: 24, at: ['08:00'], dur: 'Permanente', by: 'Dr. Andrés Valenzuela', x: 'Antes del desayuno' },
     { n: 'Metformina 850 mg', d: '1 comprimido', v: 'oral', f: 12, at: ['13:00', '20:00'], dur: 'Permanente', by: 'Dr. Andrés Valenzuela', x: 'Con almuerzo y cena' },
@@ -480,8 +486,8 @@ const V = '?v=20261026s';
 const slug = n => n.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\./g, '').trim().replace(/\s+/g, '-');
 const PACPH = { DF: 'daniela-fuentes', RM: 'rosa-m', LF: 'luis-fuentes', MIb: 'isabel-montt', RVa: 'rodrigo-vial', CHe: 'valeria-cortes', FAr: 'francisco-lagos', JCa: 'soledad-rios' };
 const phSrc = ini => ini === 'CR' && typeof S !== 'undefined' && S.proPh ? S.proPh : PHOTO.includes(ini) ? `img/pro/${ini.toLowerCase()}.webp${V}` : PACPH[ini] ? `img/pac/${PACPH[ini]}.webp${V}` : '';
-const avIn = ini => phSrc(ini) ? `<img class="avp" src="${phSrc(ini)}" alt="" loading="lazy">` : ini;
-const av = (ini, cls = '', ver = false) => `<span class="av ${cls}${phSrc(ini) ? ' hasp' : ''}">${avIn(ini)}${ver ? `<span class="vb">${ic('check', 0).replace('ph ', 'ph-bold ')}</span>` : ''}</span>`;
+const avIn = ini => phSrc(ini) ? `<img class="avp" src="${phSrc(ini)}" alt="" loading="lazy">` : String(ini).startsWith('+') ? '<i class="ph-fill ph-user"></i>' : ini;
+const av = (ini, cls = '', ver = false) => `<span class="av ${cls}${phSrc(ini) ? ' hasp' : String(ini).startsWith('+') ? ' addph' : ''}">${avIn(ini)}${ver ? `<span class="vb">${ic('check', 0).replace('ph ', 'ph-bold ')}</span>` : ''}</span>`;
 const kv = (k, v, cls = '') => `<div class="kv ${cls}"><span class="k">${k}</span><span class="num">${v}</span></div>`;
 const note = (i, t, k = '') => `<div class="note ${k}">${ic(i)}<div>${t}</div></div>`;
 const chip = (t, on, act, arg) => `<button class="chip ${on ? 'on' : ''}" data-act="${act}" data-arg="${arg}">${t}</button>`;
@@ -571,8 +577,8 @@ function frameD0(s) {
 }
 function sideA(on) {
   const n = 6 - S.aprob.length - S.rech.length;
-  const it = [['A02', 'identification-card', 'Verificación', 'ver', n], ['A04', 'calendar-check', 'Reservas de hoy', 'hoy'], ['A06', 'users-three', 'Profesionales', 'pro'], ['A09', 'file-text', 'Órdenes por revisar', 'ord', 3 - S.aordDone.length], ['A05', 'list-checks', 'Catálogo y comisión', 'tar'], ['A08', 'test-tube', 'Catálogo de exámenes', 'lab'], ['A11', 'flask', 'Laboratorios', 'labs'], ['A13', 'receipt', 'Liquidaciones', 'liq'], ['A14', 'megaphone', 'Planes y destacados', 'pln']];
-  return `<div class="side">${logoImg('horizontal-nm', 28)}${it.map(t => `<button class="${t[3] === on ? 'on' : ''}" data-go="${t[0]}">${ic(t[1], t[3] === on)}${t[2]}${t[4] ? `<span class="cnt num">${t[4]}</span>` : ''}</button>`).join('')}<div class="who">Operaciones<br>operaciones@cuidapp.cl</div><button data-go="A01">${ic('sign-out')}Salir</button></div>`;
+  const it = [['A02', 'identification-card', 'Verificación', 'ver', n], ['A04', 'calendar-check', 'Reservas de hoy', 'hoy'], ['A06', 'users-three', 'Profesionales', 'pro'], ['A09', 'file-text', 'Órdenes por revisar', 'ord', 3 - S.aordDone.length], ['A05', 'list-checks', 'Catálogo y comisión', 'tar'], ['A08', 'test-tube', 'Catálogo de exámenes', 'lab'], ['A11', 'flask', 'Laboratorios', 'labs'], ['A13', 'receipt', 'Liquidaciones', 'liq'], ['A14', 'megaphone', 'Planes y destacados', 'pln'], ['A16', 'receipt', 'Boletas por emitir', 'bol'], ['A15', 'shield-check', 'Registro de reembolsos', 'rbl']];
+  return `<div class="side">${logoImg('horizontal-nm', 28)}${it.map(t => `<button class="${t[3] === on ? 'on' : ''}" data-go="${t[0]}">${ic(t[1], t[3] === on)}${t[2]}${t[4] ? `<span class="cnt num">${t[4]}</span>` : ''}</button>`).join('')}<div class="who">Operaciones<br>operaciones@cuidapp.io</div><button data-go="A01">${ic('sign-out')}Salir</button></div>`;
 }
 
 function render() {
@@ -707,9 +713,9 @@ function linksOf(id) {
 }
 window.__links = linksOf;
 const LANES = [
-  ['pac', 'Paciente', [['S00', 'S01'], ['P01', 'P02', 'P03', 'P04', 'P05'], ['P06', 'P07', 'P08', 'P09'], ['P10', 'P11', 'P36', 'P34'], ['P12', 'P32', 'P33', 'P22'], ['P13', 'P14', 'P15', 'P16'], ['P17', 'P18', 'P19', 'P20'], ['P26', 'P27', 'P30', 'P28', 'P29'], ['P23', 'P24', 'P25'], ['P50', 'P51', 'P52', 'P53'], ['P54', 'P55', 'P56', 'P57', 'P58', 'P59'], ['P40', 'P60', 'P61', 'P62', 'P63'], ['P16', 'P64', 'P65'], ['P66', 'P67'], ['P93', 'P70', 'P71', 'P72', 'P73'], ['P74', 'P75', 'P76', 'P77'], ['P78', 'P79', 'P80', 'P81', 'P82', 'P94'], ['P83', 'P84', 'P85', 'P86', 'P87', 'P88'], ['P89', 'P90', 'P91', 'P92'], ['W01', 'W02', 'W03']]],
-  ['pro', 'Profesional', [['R01', 'R02', 'R03'], ['R04', 'R05', 'R06', 'R07'], ['R08', 'R09', 'R10', 'R26'], ['R11', 'R12', 'R13', 'R14', 'R15'], ['R16', 'R17', 'R18'], ['R20', 'R21', 'R22'], ['R23', 'R24', 'R25'], ['R27', 'R28', 'R29'], ['R37', 'R38', 'R31', 'R32'], ['R40', 'R41', 'R33', 'R34'], ['R35', 'R39', 'R36', 'R42', 'R43', 'R44', 'R45']]],
-  ['adm', 'Admin', [['A01', 'A02', 'A03'], ['A04', 'A05', 'A07'], ['A06', 'A08'], ['A09', 'A10'], ['A11', 'A12', 'A13', 'A14']]],
+  ['pac', 'Paciente', [['S00', 'S01'], ['P01', 'P02', 'P03', 'P04', 'P05'], ['P06', 'P07', 'P08', 'P09'], ['P10', 'P11', 'P36', 'P34'], ['P12', 'P32', 'P33', 'P22'], ['P13', 'P14', 'P15', 'P16'], ['P17', 'P18', 'P19', 'P20'], ['P26', 'P27', 'P30', 'P28', 'P29'], ['P23', 'P24', 'P25'], ['P50', 'P51', 'P52', 'P53'], ['P54', 'P55', 'P56', 'P57', 'P58', 'P59'], ['P40', 'P60', 'P61', 'P62', 'P63'], ['P16', 'P64', 'P65'], ['P66', 'P67'], ['P93', 'P70', 'P71', 'P72', 'P73'], ['P74', 'P75', 'P76', 'P77'], ['P78', 'P79', 'P97', 'P80', 'P81', 'P82', 'P94'], ['P96', 'P57', 'P98', 'P99'], ['P83', 'P84', 'P85', 'P86', 'P87', 'P88'], ['P89', 'P90', 'P91', 'P92'], ['W01', 'W02', 'W03']]],
+  ['pro', 'Profesional', [['R01', 'R02', 'R03'], ['R04', 'R05', 'R06', 'R07', 'R50'], ['R08', 'R09', 'R10', 'R26'], ['R11', 'R12', 'R13', 'R14', 'R15'], ['R16', 'R17', 'R18'], ['R20', 'R21', 'R22'], ['R23', 'R24', 'R25'], ['R27', 'R28', 'R29'], ['R37', 'R38', 'R31', 'R32'], ['R40', 'R41', 'R33', 'R34'], ['R35', 'R39', 'R36', 'R42', 'R43', 'R44', 'R45']]],
+  ['adm', 'Admin', [['A01', 'A02', 'A03'], ['A04', 'A05', 'A07'], ['A06', 'A08'], ['A09', 'A10'], ['A11', 'A12', 'A13', 'A14'], ['A15', 'A16']]],
   ['ase', 'Asesor de Isapre', [['Q01', 'Q02', 'Q03', 'Q04', 'Q05']]],
 ];
 function openFlow() {

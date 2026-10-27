@@ -98,18 +98,18 @@ const PROX = { 2: 'mié 28 oct · curación y 3ª dosis', 3: 'vie 30 oct · cura
 /* ---------- paciente: fichas ---------- */
 def({ id: 'P50', name: 'Fichas de salud', kind: 'page', back: true, title: 'Fichas de salud', next: ['P51', 'P57'],
   body: () => `<div class="t2 sm">Una ficha por persona. La escriben las profesionales después de cada visita y tú decides quién la ve.</div>
-  <div class="mt16">${['mama', 'papa', 'yo'].filter(k => k !== 'papa' || S.fichaOk || true).map(k => { const f = FAM[k]; return `<button class="famc" data-act="fm" data-arg="${k}" data-go="P51">${av(f.i, '')}<span class="tx"><span class="a">${f.c} ${f.n.split(' ')[1]} · ${f.r}</span><span class="b">${f.al[0].startsWith('Sin') ? f.dx[0] : 'Alergia a ' + f.al[0].toLowerCase()}</span><span class="xs t2">${k === 'mama' ? '9 registros · última nota hoy' : k === 'papa' ? '3 registros · última nota 21 oct' : 'Sin registros todavía'}</span></span>${k === 'mama' ? `<span class="st inf">Nueva nota</span>` : ic('caret-right')}</button>`; }).join('')}</div>
-  ${row('box:plus', 'Crear ficha para otra persona', 'Hijo, pareja o alguien a quien cuidas', 'P57')}
+  <div class="mt16">${S.mem.map(k => { const f = FAM[k]; return `<button class="famc" data-act="fm" data-arg="${k}" data-go="P51">${av(f.i, '')}<span class="tx"><span class="a">${f.c} ${f.n.split(' ')[1]} · ${f.r}</span><span class="b">${f.al[0].startsWith('Sin') ? f.dx[0] : 'Alergia a ' + f.al[0].toLowerCase()}</span><span class="xs t2">${k === 'mama' ? '9 registros · última nota hoy' : k === 'papa' ? '3 registros · última nota 21 oct' : 'Sin registros todavía'} · ${f.e} años</span></span>${k === 'mama' ? `<span class="st inf">Nueva nota</span>` : ic('caret-right')}</button>`; }).join('')}</div>
+  ${row('box:plus', 'Agregar integrante', 'Nombre, RUT, nacimiento, sexo y previsión', 'P57', '', '', 'nmNew', '')}
   <div class="mt16">${note('lock-simple', 'Tus fichas son privadas. Cada vez que una profesional la abre, queda registrado en «Quién vio la ficha».')}</div>` });
 
 def({ id: 'P51', name: 'Ficha de salud', kind: 'page', back: true, title: '', next: ['P52', 'P53', 'P54', 'P55', 'P56'],
-  body: () => { const f = FM(), m = S.fm === 'mama'; return `${famHead(f)}<div class="mt16">${pinAl(f)}</div>${S.pv[S.fm] ? `<div class="mt8">${row('box:shield-check', 'Previsión de salud', pvTxt(S.fm) + ' · RUT ' + RUTS[S.fm], 'P64', '<span class="lk">Cambiar</span>', '', 'pvFor', S.fm)}</div>` : ''}
+  body: () => { const f = FM(), m = S.fm === 'mama'; return `${famHead(f)}<div class="mt8">${row('box:identification-badge', 'Datos, antecedentes y peso', f.e + ' años · ' + (f.sx === 'F' ? 'mujer' : 'hombre'), 'P96', '', '', 'msFm', S.fm)}</div><div class="mt16">${pinAl(f)}</div>${S.pv[S.fm] ? `<div class="mt8">${row('box:shield-check', 'Previsión de salud', pvTxt(S.fm) + ' · RUT ' + RUTS[S.fm], 'P64', '<span class="lk">Cambiar</span>', '', 'pvFor', S.fm)}</div>` : ''}
   ${m ? `<button class="lastn mt12" data-go="P58">${av('CR', 's')}<span class="tx"><span class="xs t2">Última nota · hoy 08:41</span><span class="a">Camila dejó el resumen de la visita</span><span class="b">Herida 3,2 × 2,1 cm, mejor que el 24 oct</span></span>${ic('caret-right')}</button>` : ''}
   <div class="lbl2">Diagnósticos</div><div class="chips">${f.dx.map(x => `<span class="chip">${x}</span>`).join('')}</div>
   <div class="lbl2">Medicamentos que toma</div>${medList(f.meds)}
   <div class="lbl2">Dispositivos y ayudas</div><div class="chips">${f.dev.length ? f.dev.map(x => `<span class="chip">${x}</span>`).join('') : '<span class="sm t2">Ninguno</span>'}</div>
   <div class="lbl2">Escalas</div><div class="scls">${scale('Barthel', f.barthel, 100, barTxt(f.barthel), m ? 'hoy, Camila' : '21 oct')}${scale('Braden', f.braden, 23, bradTxt(f.braden), m ? 'hoy, Camila' : '21 oct')}</div>
-  <div class="lbl2">Exámenes</div>${m ? `${row('box:chart-line-up', 'Resultados y biomarcadores', '24 oct · 4 valores para revisar', 'P70', st('warn', '4 para revisar', 'arrows-down-up'))}${row('box:bell-ringing', 'Controles', 'Próximo: hemoglobina glicosilada · 24 ene', 'P77')}` : row('box:chart-line-up', 'Resultados y biomarcadores', 'Aún no hay exámenes', 'P74', '<span class="lk">Ver packs</span>')}
+  <div class="lbl2">Exámenes</div>${RES[S.fm] ? `${row('box:chart-line-up', 'Resultados y biomarcadores', '24 oct · datos de ejemplo', 'P70', '', '', 'msFm', S.fm)}${row('box:bell-ringing', 'Controles', 'Próximo: hemoglobina glicosilada · 24 ene', 'P77')}` : row('box:chart-line-up', 'Resultados y biomarcadores', 'Aún no hay exámenes', 'P74', '<span class="lk">Ver packs</span>')}
   <div class="lbl2">Historial</div>
   ${row('box:list', 'Línea de tiempo', m ? '9 registros desde el 4 oct' : 'Visitas, remedios y documentos', 'P52')}
   ${m ? row('box:bandaids', 'Evolución de la herida', 'Úlcera venosa · −51% de área en 11 días', 'P53') : ''}
@@ -157,12 +157,6 @@ def({ id: 'P56', name: 'Accesos y consentimiento', kind: 'page', back: true, tit
   <button class="row" data-act="tog" data-arg="sharePh"><span class="tx"><div class="a">Fotos de heridas</div><div class="b">Se piden aparte, en cada cita</div></span><span class="tog ${S.sharePh ? 'on' : ''}"></span></button>
   <div class="mt16 col8">${note('shield-check', 'La profesional solo ve la ficha desde 24 horas antes de la cita y hasta 7 días después. Las alergias siempre se muestran.')}${note('archive', 'La ley obliga a guardar la ficha clínica al menos 15 años. Si revocas, nadie más la ve, pero las notas firmadas se conservan.')}</div>
   <button class="btn ghost mt8" style="color:var(--danger)" data-act="revokeAll">Revocar todos los accesos</button>` });
-
-def({ id: 'P57', name: 'Crear ficha de salud', kind: 'page', back: true, title: 'Nueva ficha de salud',
-  body: () => `<div class="i3hero">${i3('edu')}</div><div class="h-l">Una ficha para cuidarle mejor</div><div class="t2 mt8">Las enfermeras, TENS y cuidadoras que agendes escriben aquí lo que hicieron. Así la siguiente ya sabe cómo va.</div>
-  <div class="mt16">${[['notebook', 'Qué guarda', 'Alergias, diagnósticos, remedios, notas de cada visita, signos vitales y fotos de heridas.'], ['eye', 'Quién la ve', 'Solo tú y las profesionales que autorices en cada cita. Nunca otras empresas.'], ['clock-counter-clockwise', 'Cuánto dura', 'Mínimo 15 años, como exige la ley. Puedes descargarla y revocar accesos.']].map(x => row('box:' + x[0], x[1], x[2], '', '')).join('')}</div>
-  ${checkRow('Acepto que Cuidapp guarde estos datos de salud para coordinar la atención', S.fichaChk, 'fichaChk', '', 'Puedo retirar el consentimiento cuando quiera')}`,
-  foot: () => abtn('Crear ficha', 'fichaNew', '', '', 'P51', !S.fichaChk) });
 
 def({ id: 'P58', name: 'Resumen de la visita', kind: 'page', back: true, title: 'Resumen de la visita', next: ['P51'],
   body: () => `<div class="sgn">${av('CR', '')}<div><div class="b-m">Camila Rojas · Enfermera</div><div class="xs t2">${ic('seal-check', 1)} Firmado hoy 08:41 · Reg. SIS 482.317</div></div></div>

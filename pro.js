@@ -47,14 +47,15 @@ def({ id: 'R02', name: 'Datos de la profesional', kind: 'page', back: true, noNa
   <div class="mt16">${note('lock-simple', 'Tu celular no se muestra a las pacientes hasta que confirmas una reserva.')}</div>`,
   foot: () => btn('Continuar', 'R03') });
 
-def({ id: 'R03', name: 'Documentos', kind: 'page', back: true, noNav: true, title: 'Paso 2 de 2', next: ['R06', 'R48'],
+def({ id: 'R03', name: 'Documentos', kind: 'page', back: true, noNav: true, title: 'Paso 2 de 2', next: ['R06', 'R48', 'R50'],
   body: () => `<div class="h-l">Sube tus documentos</div><div class="t2 mt8 sm">Los revisamos en menos de 48 horas hábiles.</div>
-  <div class="progress mt16"><span style="width:${Object.values(S.docs).filter(Boolean).length * 20}%"></span></div><div class="mt8">
+  <div class="progress mt16"><span style="width:${Math.round(Object.values(S.docs).filter(Boolean).length / Object.keys(S.docs).length * 100)}%"></span></div><div class="mt8">
   ${docRow('carnet', 'identification-card', 'Carnet de identidad', 'Ambos lados', 'R04')}
   ${docRow('selfie', 'user-focus', 'Selfie', 'Para comparar con tu carnet', 'R05')}
   ${S.prof === 'cuid' ? docRow('titulo', 'hand-heart', 'Experiencia y referencias', '6 años · 2 referencias', 'R48') : docRow('titulo', 'graduation-cap', 'Título y registro SIS', 'Registro 482.317', 'R06')}
   ${docRow('antec', 'file-text', 'Certificado de antecedentes', 'Descargado del Registro Civil', '', 'antec')}
-  ${docRow('banco', 'bank', 'Cuenta para retiros', 'BancoEstado CuentaRUT', 'R07')}</div>`,
+  ${docRow('banco', 'bank', 'Cuenta para retiros', 'BancoEstado CuentaRUT', 'R07')}
+  ${docRow('sii', 'seal-check', 'Autoriza a Cuidapp para emitir tus boletas', 'Autorización SII cargada', 'R50')}</div>`,
   foot: () => abtn('Enviar a revisión', '', '', '', 'R08', !docsOk()) });
 
 def({ id: 'R04', name: 'Foto del carnet', kind: 'page', back: 'x', noNav: true, title: 'Carnet de identidad',
@@ -219,10 +220,10 @@ def({ id: 'R23', name: 'Billetera', kind: 'page', tab: 'ganancias', next: ['R46'
     return `<div class="sm t2 mt8">Saldo disponible</div><div class="price mt4" style="font-size:40px;line-height:46px">${clp(sd)}</div><div class="t2 sm mt4">Lo retiras cuando quieras, sin esperar a un día de pago.</div>
   <div class="mt16">${abtn(ic('arrow-up-right') + 'Retirar', '', '', '', 'R46', sd <= 0)}</div>
   <div class="mt8">${row('box:bank', 'Cuenta de retiro', 'BancoEstado CuentaRUT ••••3442', 'R07')}</div>
-  <div class="mt8">${note('receipt', 'Cuidapp cobra a la paciente con Mercado Pago y abona tu parte en la Billetera. Cuidapp gestiona la boleta de honorarios de cada pago.')}</div>
+  <div class="mt8">${note('receipt', 'Cuidapp cobra a la paciente con Mercado Pago y abona tu parte en la Billetera. Tu boleta de honorarios a la paciente se emite automáticamente con tu autorización del SII.')}</div>
   <div class="sec-t">Movimientos</div>
   ${S.wdL.map(w => row('box:arrow-up-right', 'Retiro a BancoEstado ••••3442', w[0], '', `<span class="num">−${clp(w[1])}</span>`)).join('')}${WMOV().map(m => row('box:' + m[0], m[1], m[2], 'R47', money(m[3]))).join('')}${row('box:arrow-up-right', 'Retiro a BancoEstado ••••3442', 'Lun 19 oct', '', `<span class="num">−${clp(140000)}</span>`)}
-  <div class="mt8">${row('box:receipt', 'Boletas de honorarios', 'Las gestiona Cuidapp en cada pago', 'R47')}</div>
+  <div class="mt8">${row('box:receipt', 'Boletas de honorarios', `${bheN().p} por emitir · se emiten automáticamente`, 'R47')}${row('box:seal-check', 'Autorización SII', siiOk() ? `Vigente hasta ${SIIFIN}` : 'Pendiente de cargar', 'R50')}</div>
   <div class="sec-t">Esta semana · 20 al 26 oct</div><div class="t2 sm mt4">${S.done} atenciones</div>
   <div class="bars mt16">${d.map((x, i) => `<div class="${i === 6 ? 'on' : ''}"><span style="height:${Math.max(4, x[1] / mx * 100)}%"></span>${x[0]}</div>`).join('')}</div>
   <div class="mt16">${kv('Cobrado a pacientes', clp(gross))}${kv(`Comisión Cuidapp (${S.comm}%, incluye recargos)`, '−' + clp(gross - S.earn))}${kv('Abonado a tu Billetera', clp(S.earn), 'tot')}</div>
@@ -236,10 +237,30 @@ def({ id: 'R46', name: 'Retirar de la Billetera', kind: 'page', back: true, titl
   <div class="mt16">${note('info', 'Retiras cuando quieras. La cuenta debe estar a tu nombre.')}</div>`; },
   foot: () => { const sd = S.earn - S.wd, a = Math.min(S.wAmt || sd, sd); return abtn(`Retirar ${clp(a)}`, 'wdo', '', '', 'R23', a <= 0); } });
 
+const SIIFIN = '26/10/2027';
+const siiOk = () => !S.siiOff;
+const BHE_ST = { 'Hoy 08:14 · Rosa M.': 'pend', 'Hoy 19:45 · Jorge T.': 'pend', 'Dom 25 oct · Carmen V.': 'fail', 'Sáb 24 oct · Pedro S.': 'emi' };
+const bheS = m => (S.bheFix || {})[m[2]] || BHE_ST[m[2]] || 'emi';
+const bheN = () => { const L = WMOV(); return { p: L.filter(m => bheS(m) === 'pend').length, f: L.filter(m => bheS(m) === 'fail').length }; };
+const ppmEst = () => Math.round(WMOV().filter(m => bheS(m) === 'emi').reduce((a, m) => a + m[3], 0) * 0.1 / 10) * 10;
+Object.assign(ACT, { bheFix: m => { S.bheFix = { ...(S.bheFix || {}), [m]: 'emi' }; toast('Emitiste tu boleta de honorarios. Queda registrada en tu Billetera.'); },
+  siiChk: () => { S.siiChk = !S.siiChk; }, siiUp: () => { S.siiUp = !S.siiUp; } });
 def({ id: 'R47', name: 'Boletas de honorarios', kind: 'page', back: true, title: 'Boletas de honorarios',
-  body: () => `<div class="sm t2 mt8">Cuidapp gestiona la boleta de honorarios de cada pago.</div>
-  <div class="mt8">${WMOV().map(m => row('box:' + m[0], m[1], m[2], '', `<span class="num">${clp(m[3])}</span>${st('ok', 'Gestionada')}`)).join('')}</div>
-  <div class="mt16">${note('info', 'Aquí verás el estado de cada boleta. Te avisamos si necesitamos algo de ti.')}</div>` });
+  body: () => `<div class="sm t2 mt8">Cuidapp emite automáticamente tu boleta de honorarios a la paciente por tu parte de cada atención, con tu autorización del SII.</div>
+  <div class="mt12">${row('box:seal-check', siiOk() ? `Autorización SII vigente hasta ${SIIFIN}` : 'Falta tu autorización SII', siiOk() ? 'Te avisamos 30 días antes para renovarla. Se renueva una vez al año.' : 'Sin ella no podemos emitir tus boletas.', 'R50', siiOk() ? st('ok', 'Vigente', 'check-circle') : st('warn', 'Pendiente'))}</div>
+  <div class="mt8">${WMOV().map(m => { const e = bheS(m); return row('box:' + m[0], m[1], m[2] + (e === 'fail' ? ' · no pudimos emitirla' : ''), '', `<span class="num">${clp(m[3])}</span>${e === 'emi' ? st('ok', 'Emitida') : e === 'fail' ? st('bad', 'Falló') : st('warn', 'Pendiente')}`); }).join('')}</div>
+  ${WMOV().filter(m => bheS(m) === 'fail').map(m => `<div class="mt12">${note('warning', 'No pudimos emitir una de tus boletas: la autorización del SII venció o falló. Puedes emitirla tú con un enlace guiado y renovar la autorización.')}<div class="mt8"><button class="btn sec" data-act="bheFix" data-arg="${m[2]}">${ic('arrow-square-out')}Emitir yo misma · enlace guiado</button></div></div>`).join('')}
+  <div class="mt16">${kv('Boletas emitidas este mes', clp(WMOV().filter(m => bheS(m) === 'emi').reduce((a, m) => a + m[3], 0)))}${kv('PPM estimado del mes', clp(ppmEst()))}</div>
+  <div class="xs t3 mt4">Estimación de ejemplo con una tasa de 10%, por confirmar. La retención la hace quien emite la boleta y el PPM lo declaras tú en tu F29. Nunca te pedimos la clave del SII.</div>` });
+
+def({ id: 'R50', name: 'Autoriza a Cuidapp para emitir tus boletas', kind: 'page', back: true, noNav: true, title: 'Autoriza tus boletas',
+  body: () => `<div class="h-l">Autoriza a Cuidapp para emitir tus boletas</div><div class="t2 mt8 sm">Así tu boleta de honorarios a cada paciente sale sola, con su nombre y RUT, por el monto de tu atención. Lo haces una vez al año y lo revisas tú.</div>
+  <div class="mt16">${checkRow('Tengo inicio de actividades en 2ª categoría', S.siiChk, 'siiChk', '', 'Es un requisito. Enfermeras, TENS y cuidadoras lo hacen en sii.cl')}</div>
+  <div class="lbl2">En 3 pasos, en sii.cl</div>
+  <div class="sii3">${[['Entra a sii.cl con tu clave', 'La pones tú en el SII. Cuidapp nunca te pide tu clave del SII.'], ['Ve a Boletas de Honorarios > Emisor', 'Elige «Delegar emisión a un usuario autorizado».'], ['Agrega el RUT de Cuidapp SpA', 'Te lo mostramos aquí cuando esté definido. Descarga el comprobante en PDF.']].map((t, i) => `<div class="s3"><span>${i + 1}</span><div><b>${t[0]}</b><div class="xs t2">${t[1]}</div></div></div>`).join('')}</div>
+  <div class="lbl2">Sube el comprobante</div>${row('box:file-pdf', S.siiUp ? 'comprobante-autorizacion-sii.pdf' : 'Subir comprobante (PDF)', S.siiUp ? 'Cargado hoy · vigente por 1 año' : 'El que descargas del SII al autorizar', '', S.siiUp ? st('ok', 'Cargado', 'check-circle') : ic('upload-simple'), '', 'siiUp')}
+  <div class="mt16">${note('arrows-clockwise', 'La autorización dura 1 año. Te avisamos 30 días antes para renovarla. Si alguna vez falla la emisión, te enviamos un enlace guiado para que emitas tú esa boleta.')}</div>`,
+  foot: () => abtn('Guardar autorización', 'doc', 'sii', '', 'R03', !(S.siiChk && S.siiUp)) });
 
 def({ id: 'R48', name: 'Experiencia y referencias', kind: 'page', back: true, noNav: true, title: 'Experiencia y referencias',
   body: () => `${lbl('Años de experiencia como cuidadora')}${field('', '6 años')}
