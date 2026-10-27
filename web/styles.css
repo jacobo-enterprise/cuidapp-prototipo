@@ -1,4 +1,4 @@
-@font-face{font-family:"Inter Tight";src:url(assets/fonts/InterTight.ttf?v=20261026v16) format("truetype");font-weight:100 900;font-display:swap}
+@font-face{font-family:"Inter Tight";src:url(assets/fonts/InterTight.ttf?v=20261026v17) format("truetype");font-weight:100 900;font-display:swap}
 :root{--ink:#111;--ink2:#5F5E6B;--ink3:#8B8A97;--lav:#7A7CF0;--lavt:#5557D9;--ind:#2A1F66;--pink:#FFA8CD;--w:#FBFBFC;--g:#F3F3F6;--line:rgba(17,17,17,.08);--e:cubic-bezier(.22,1,.36,1)}
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
@@ -123,3 +123,19 @@ a.li:hover .chev{transform:translateX(4px)}
 }
 @media (max-width:380px){.hl{font-size:28px}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+/* sugerencias del buscador (mismo aspecto que P07 de la plataforma) */
+.nsearch,.ask{position:relative}.ask{z-index:30}
+.nsearch{overflow:visible}
+.sgg{position:absolute;left:0;right:0;top:calc(100% + 8px);z-index:60;max-height:min(70vh,440px);overflow-y:auto;overscroll-behavior:contain;background:#fff;border-radius:18px;box-shadow:0 0 0 1px var(--line),0 18px 44px rgba(17,17,17,.16);padding:4px 16px 10px;text-align:left;color:#111}
+.sgg[hidden]{display:none}
+.sgg .lbl2{font-size:13px;font-weight:600;color:var(--ink2);margin:14px 0 4px;letter-spacing:.1px}
+.sgg .srow{display:flex;align-items:center;gap:14px;padding:10px 0;width:100%;text-align:left;border:0;background:none;cursor:pointer;color:inherit;border-radius:10px}
+.sgg .srow+.srow{border-top:1px solid #EDEDF0}
+.sgg .srow:hover,.sgg .srow.on{background:#F5F5F7;box-shadow:-8px 0 0 #F5F5F7,8px 0 0 #F5F5F7}
+.sgg .si{width:40px;height:40px;border-radius:12px;background:#F5F5F7;display:flex;align-items:center;justify-content:center;flex:none;font-size:20px}
+.sgg .si.av{border-radius:50%;font-size:14px;font-weight:700}
+.sgg .tx{flex:1;display:flex;flex-direction:column;min-width:0}.sgg .a{font-size:16px;font-weight:400}.sgg .a b{font-weight:700}
+.sgg .b{font-size:13px;color:var(--ink2)}
+.sgg .srow svg{width:14px;height:14px;color:var(--ink3);flex:none}
+.sgg .empty{padding:18px 0 10px;display:flex;flex-direction:column;gap:2px}.sgg .empty span{font-size:13px;color:var(--ink2)}
+.foot-l{flex-wrap:wrap}

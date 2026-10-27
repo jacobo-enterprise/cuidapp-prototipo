@@ -159,6 +159,16 @@ delete TO_D.P06;
   view = platNarrow() ? 'm' : 'd';
   history.replaceState({ plat: 1, d: 0 }, '', PLAT_URL + location.hash);
   go(SC[h] ? h : 'P06', false);
+  // Entrada desde el buscador de la web (/web/): abre la misma pantalla que el buscador de la app (P07) al tocar una sugerencia.
+  try {
+    const j = sessionStorage.getItem('cuidapp:go');
+    if (j) {
+      sessionStorage.removeItem('cuidapp:go');
+      const o = JSON.parse(j);
+      if (o.q) { S.q = String(o.q).slice(0, 80); go('P07'); }
+      else { if (o.act && ACT[o.act]) ACT[o.act](o.arg); if (o.go && SC[o.go]) go(o.go); else render(); }
+    }
+  } catch (e) {}
   window.addEventListener('hashchange', () => { const x = location.hash.replace('#/', ''); if (SC[x] && x !== cur) go(x); });
 })();
 
