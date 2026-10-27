@@ -11,6 +11,13 @@ function exFind(q, lim = 9999) {
   out.sort((x, y) => x[1] - y[1] || EXAMS[x[0]][0].length - EXAMS[y[0]][0].length);
   return out.slice(0, lim).map(x => x[0]);
 }
+/* Electro y procedimientos: lo del catálogo que no es un análisis de sangre u orina (sin muestra ni tubo). x654 Electrocardiograma, x142 y x143 Toma de muestra venosa, x472 Jarabe de glucosa (insumo de la curva) */
+const EXPROC = ['x654', 'x142', 'x143', 'x472'];
+const isProc = k => EXPROC.includes(k);
+const EXTABS = [['ex', 'Exámenes'], ['pk', 'Packs'], ['pr', 'Electro y procedimientos']];
+const exTabs = () => { const t = S.exTab || 'ex', n = { ex: Object.keys(EXAMS).length - EXPROC.length, pk: PACKS.length, pr: EXPROC.length }; return `<div class="qtabs extabs" role="tablist">${EXTABS.map(x => `<button class="chip ${t === x[0] ? 'on' : ''}" role="tab" aria-selected="${t === x[0]}" data-act="set" data-arg="exTab=${x[0]}">${x[1]} <span class="num">${n[x[0]]}</span></button>`).join('')}</div>`; };
+/* selección visible en las tres pestañas */
+const exSelBar = () => { const k = examKeys(); return k.length ? `<div class="exsel mt16"><div class="xs t2">Tu selección · ${k.length} · <b class="num">${clp(examSum())}</b></div><div class="chips mt8">${k.map(x => `<button class="chip on" data-act="ex" data-arg="${x}">${EXAMS[x][0]} · ${clp(EXAMS[x][1])} ${ic('x')}</button>`).join('')}</div><button class="lk sm mt8" data-act="lbFrom" data-go="P88">${ic('flask')}Ver en qué laboratorios · por separado</button></div>` : ''; };
 const exF = q => exFind(q, 1)[0];
 const ptag = k => EXAMS[k][4] === 'c' ? '<span class="ptag c">Costo + recargo</span>' : '<span class="ptag p">Particular + recargo</span>';
 const fon = k => EXAMS[k][6] ? `Fonasa ${EXAMS[k][6]}` : `Cód. ${EXAMS[k][5] || 's/c'}`;
@@ -35,14 +42,13 @@ const qin = (k, res, ph, reset = '') => `<label class="qin">${ic('magnifying-gla
 
 QRES.exres = () => {
   const q = S.exq || '';
-  if (!q.trim()) { const sel = examKeys().filter(k => !EXPOP.includes(k));
-    return `${sel.length ? `<div class="lbl2">Elegidos</div><div class="exl">${sel.map(k => exRow(k)).join('')}</div>` : ''}<div class="lbl2">Más pedidos</div><div class="exl">${EXPOP.map(k => exRow(k)).join('')}</div>
-    <div class="xs t3 mt12">${Object.keys(EXAMS).length} exámenes en el catálogo. Busca por nombre, parte del nombre o código Fonasa.</div>`; }
-  const r = exFind(q), selK = examKeys();
-  const selBar = selK.length ? `<div class="exsel mt12"><div class="xs t2">Elegidos · ${selK.length} · <b class="num">${clp(examSum())}</b></div><div class="chips mt8">${selK.map(k => `<button class="chip on" data-act="ex" data-arg="${k}">${EXAMS[k][0]} · ${clp(EXAMS[k][1])} ${ic('x')}</button>`).join('')}</div><button class="lk sm mt8" data-act="lbFrom" data-go="P88">${ic('flask')}Ver en qué laboratorios · por precio o distancia</button></div>` : '';
-  if (!r.length) return selBar + `<div class="empty mt16">${ic('magnifying-glass')}<div class="b-m mt8">No encontramos «${q.replace(/</g, '')}»</div><div class="sm t2 mt4">Prueba con otra palabra o sube la foto de tu orden y lo buscamos por ti.</div>${btn('Subir foto de mi orden', 'P60', 'sec', 'data-act="mmode" data-arg="orden"')}</div>`;
+  if (!q.trim()) return `<div class="lbl2">Más pedidos</div><div class="exl">${EXPOP.map(k => exRow(k)).join('')}</div>
+    <div class="xs t3 mt12">${Object.keys(EXAMS).length - EXPROC.length} exámenes en el catálogo. Busca por nombre, parte del nombre o código Fonasa.</div>`;
+  const all = exFind(q), r = all.filter(k => !isProc(k)), np = all.length - r.length;
+  const hint = np ? `<button class="lk sm mt12" data-act="set" data-arg="exTab=pr">${ic('heartbeat')}${np} resultado${np > 1 ? 's' : ''} en Electro y procedimientos</button>` : '';
+  if (!r.length) return `${hint}<div class="empty mt16">${ic('magnifying-glass')}<div class="b-m mt8">No encontramos «${q.replace(/</g, '')}»</div><div class="sm t2 mt4">Prueba con otra palabra o sube la foto de tu orden y lo buscamos por ti.</div>${btn('Subir foto de mi orden', 'P60', 'sec', 'data-act="mmode" data-arg="orden"')}</div>`;
   const lim = S.exLim || 20;
-  return `${selBar}<div class="xs t2 mt12">${r.length} resultado${r.length > 1 ? 's' : ''}</div><div class="exl">${r.slice(0, lim).map(k => exRow(k, q)).join('')}</div>${r.length > lim ? `<button class="btn sec mt12" data-act="exMore">Ver ${Math.min(20, r.length - lim)} más</button>` : ''}`;
+  return `<div class="xs t2 mt12">${r.length} resultado${r.length > 1 ? 's' : ''}</div><div class="exl">${r.slice(0, lim).map(k => exRow(k, q)).join('')}</div>${r.length > lim ? `<button class="btn sec mt12" data-act="exMore">Ver ${Math.min(20, r.length - lim)} más</button>` : ''}${hint}`;
 };
 
 /* sugerencias por motivo (ayúdame a elegir) */
@@ -92,6 +98,10 @@ Object.assign(ACT, {
 
 /* ---------- P40 · Exámenes: tres caminos ---------- */
 const pathCard = (p, i, t, d, on, go = '') => `<button class="pathc ${on ? 'on' : ''}" ${go ? `data-go="${go}"` : `data-act="path" data-arg="${p}"`}><span class="pi">${ic(i, on)}</span><span class="tx"><b>${t}</b><span>${d}</span></span></button>`;
+const exPane = () => { const t = S.exTab || 'ex';
+  if (t === 'pk') return `<div class="sm t2 mt16">Exámenes que se piden juntos, a menor precio que por separado. En tu primer pedido de exámenes sobre $30.000 tienes 20% de descuento (hasta $20.000).</div><div class="pkl2 mt12">${PACKS.map(p => pkCard(p)).join('')}</div><div class="xs t3 mt12">Consulta a tu médico qué exámenes necesitas. Packs de ejemplo.</div>`;
+  if (t === 'pr') return `<div class="sm t2 mt16">Electrocardiograma y otras prestaciones del catálogo que no son un análisis de sangre u orina.</div><div class="exl mt8">${EXPROC.map(k => exRow(k)).join('')}</div>`;
+  return `<div class="lbl2">Buscar exámenes</div><div>${qin('exq', 'exres', 'Busca: hemograma, vitamina D, 0301045…', 'exLim')}</div><div id="exres">${QRES.exres()}</div>`; };
 def({ id: 'P40', name: 'Exámenes de laboratorio', kind: 'page', back: true, title: 'Exámenes de laboratorio', next: ['P16', 'P60', 'P61', 'P62', 'P63'],
   prep: () => { S.item = 'mue'; },
   body: () => {
@@ -106,11 +116,12 @@ def({ id: 'P40', name: 'Exámenes de laboratorio', kind: 'page', back: true, tit
       return `${head}<div class="mt16">${note('sparkle', 'Sube una foto de tu orden y nuestro equipo marca los exámenes por ti. Tú confirmas los precios antes de pagar.', 'ok')}</div>${stt ? `<div class="mt16">${stt}</div>` : `<div class="lbl2">Cómo funciona</div>${[['camera', 'Sacas una foto a la orden', 'Papel o PDF, la de cualquier médico'], ['magnifying-glass', 'La revisamos en menos de 30 min', 'En horario hábil, con el catálogo del laboratorio'], ['check-circle', 'Confirmas los exámenes y el precio', 'Puedes editar antes de pagar']].map(t => row('box:' + t[0], t[1], t[2], '', '')).join('')}`}`;
     }
     return `${head}<div class="mt16">${note('check-circle', 'No necesitas orden: nosotros la gestionamos por ti.', 'ok')}</div>
+    <div class="mt16">${exTabs()}</div>
     ${pkAct() ? `<div class="pkon mt16"><span class="ri box">${ic('package')}</span><span class="tx"><b>Pack ${pkAct()[1]}</b><span class="xs t2">${pkAct()[4].length} exámenes · ahorras ${clp(pkD())}</span></span><button class="lk sm" data-act="pkOff">Quitar</button></div>` : S.pack ? `<div class="mt16">${note('info', 'Quitaste un examen del pack, así que ahora se cobran por separado.')}</div>` : ''}
-    ${pkSec()}
+    ${exSelBar()}
+    ${exPane()}
+    ${examKeys().length ? `<div class="lbl2">Preparación de tu selección</div>${prepRows()}` : ''}
     <div class="soonr mt24"><button class="soonc" data-go="P83"><span class="ri box">${ic('storefront')}</span><span class="tx"><b>Agendar directo en un laboratorio</b><span class="xs t2">Elige laboratorio, día y si vas tú o te visitan</span></span><span class="pr soonb">Muy pronto</span></button></div>
-    ${examKeys().length ? `<div class="lbl2">Tu selección</div>${prepRows()}` : ''}
-    <div class="lbl2">Buscar exámenes</div><div>${qin('exq', 'exres', 'Busca: hemograma, vitamina D, 0301045…', 'exLim')}</div><div id="exres">${QRES.exres()}</div>
     <div class="lbl2">Orden médica</div>${checkRow('Necesito orden médica', S.needOrd, 'tog', 'needOrd', 'La gestionamos con un médico · precio por confirmar')}
 `;
   },

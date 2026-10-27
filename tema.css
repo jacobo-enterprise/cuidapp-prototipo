@@ -101,3 +101,9 @@ h1,h2,.h-xl,.h-xxl,.h-l,.h-s,.promo .pr-t,.pslim .ps-t,.nav .t{font-weight:700;l
 .empty > i{width:64px;height:64px;border-radius:32px;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--t2);margin-bottom:4px}
 .empty .lk{align-self:center}
 @media (min-width:700px){body.plat .scopes.hq{display:flex;flex-wrap:wrap}body.plat .scopes.hq .chip{width:auto;padding:0 18px}}
+/* Exámenes: pestañas (Exámenes · Packs · Electro y procedimientos) y selección visible en todas */
+.extabs{margin-top:0}
+.extabs .chip{height:36px}
+.exsel{padding:12px 14px;border-radius:16px;background:var(--acc-soft)}
+.cats.hm{grid-template-columns:repeat(3,1fr);gap:18px 8px}
+body.plat .cats.hm{grid-template-columns:repeat(3,1fr)}

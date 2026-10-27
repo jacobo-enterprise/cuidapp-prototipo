@@ -150,7 +150,7 @@ body.plat{background:#fff;overflow:hidden}
 .px-fc b{margin-bottom:4px}
 .px-fc button{color:#55556a}.px-fc button:hover{color:#111;text-decoration:underline}
 .px-legal{margin-top:32px}
-.plat .wcats{grid-template-columns:repeat(7,1fr)}
+.plat .wcats{grid-template-columns:repeat(4,1fr)}
 .plat .wcat{transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s}
 .plat .wcat:hover{transform:translateY(-3px)}
 .plat .fcard{transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s}
@@ -233,7 +233,7 @@ body.phome .dpage .hero .locrow{max-width:none}
 body.phome .dpage .pcar{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:0;padding:0;overflow:visible}
 body.phome .dpage .pslim{width:auto;height:84px}
 body.phome .dpage .pdots{display:none}
-body.phome .dpage .cats{grid-template-columns:repeat(8,1fr);gap:16px}
+body.phome .dpage .cats{grid-template-columns:repeat(9,1fr);gap:16px}
 body.phome .dpage .prfr{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:12px 0 0;padding:6px 0 0;overflow:visible}
 body.phome .dpage .prf{width:auto;display:grid;grid-template-columns:40px 1fr;grid-template-rows:1fr 1fr;column-gap:12px;align-items:center;padding:8px 16px;min-height:0;height:64px;border-radius:16px}
 body.phome .dpage .prf::after{right:-20px;top:-26px;width:60px;height:60px}
@@ -251,7 +251,7 @@ body.phome .dpage .llist .lcard{border-top:1px solid var(--border)}
 body.phome .dpage .llist .lcard:nth-child(-n+2){border-top:0}
 body.phome .dpage .upc{max-width:560px}
 @media (max-width:1120px){
- body.phome .dpage .cats{grid-template-columns:repeat(4,1fr)}
+ body.phome .dpage .cats{grid-template-columns:repeat(5,1fr)}
  body.phome .dpage .hcar.bcar{grid-template-columns:repeat(2,1fr)}
  body.phome .dpage .recent{grid-template-columns:1fr}
 }
