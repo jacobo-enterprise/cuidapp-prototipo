@@ -37,7 +37,9 @@ headerD = function (s) {
   const r = roleOf(s.id), on = navOn(s);
   const nav = s.noNav ? '' : `<nav>${navItems(r).filter(t => SC[t[2]]).map(t => `<button class="${t[3] === on ? 'on' : ''}" data-go="${t[2]}">${ic(t[0], t[3] === on)}<span>${t[1]}</span></button>`).join('')}</nav>`;
   const srch = r === 'pac' && !s.noNav && s.id !== 'P07' ? `<button class="psearch" data-act="set" data-arg="scope=" data-go="P07" aria-label="Buscar">${ic('magnifying-glass')}<span>Inyección, vitaminas, exámenes…</span></button>` : '';
-  return `<header class="dh pdh"><button class="plogo" data-go="${r === 'pro' ? 'R16' : r === 'ase' ? 'Q03' : 'P06'}" aria-label="Inicio">${logoImg('simbolo-nm', 36)}</button>${r === 'pro' ? '<span class="tag">Profesionales</span>' : r === 'ase' ? '<span class="tag">Asesores</span>' : ''}<span class="psp">${srch}</span><span class="pnv">${nav}</span></header>`;
+  /* inicio (P06): arriba logo completo y sin buscador (ya está el de la pantalla); al pasar el buscador, símbolo + buscador. Resto de pantallas: siempre símbolo + buscador */
+  const cmp = s.id === 'P06' ? '' : ' cmp';
+  return `<header class="dh pdh${cmp}"><button class="plogo" data-go="${r === 'pro' ? 'R16' : r === 'ase' ? 'Q03' : 'P06'}" aria-label="Inicio"><span class="lg-f">${logoImg('horizontal-nm', 30)}</span><span class="lg-s">${logoImg('simbolo-nm', 36)}</span></button>${r === 'pro' ? '<span class="tag">Profesionales</span>' : r === 'ase' ? '<span class="tag">Asesores</span>' : ''}<span class="psp">${srch}</span><span class="pnv">${nav}</span></header>`;
 };
 
 /* ---------- escritorio: el pie de la app (total + botón) pasa a una tarjeta fija a la derecha ---------- */
@@ -105,6 +107,7 @@ render = function () {
   if (s.map) { const el = stage.querySelector('[data-map]'); if (el) mkMap(el, s.map()); }
   if (s.enter) s.enter();
   platReveal(stage);
+  platCmp();
   document.title = `${(s.dtitle || s.title || s.name || '').replace(/<[^>]+>/g, '') || 'Inicio'} · Cuidapp`;
   window.__rendered = (window.__rendered || 0) + 1;
 };
@@ -120,7 +123,14 @@ function platReveal(root) {
 document.addEventListener('scroll', e => {
   const t = e.target; if (!(t instanceof Element) || !t.matches('.dpage,.dfree,.acont')) return;
   const d = t.closest('.desk'); if (d) d.classList.toggle('scrolled', t.scrollTop > 4);
+  platCmp();
 }, true);
+/* P06: el encabezado se compacta cuando el buscador grande sale de la vista */
+function platCmp() {
+  if (cur !== 'P06') return;
+  const h = document.querySelector('.pdh'), sb = document.querySelector('.dpage .hero .sbig'); if (!h || !sb) return;
+  h.classList.toggle('cmp', sb.getBoundingClientRect().bottom < h.getBoundingClientRect().bottom + 4);
+}
 
 /* pasos que en la vida real dependen de otra persona (confirmación, término de la atención…) */
 const AUTO_L = { P19: 'Simular: la profesional confirma', P23: 'Simular: termina la atención', P61: 'Simular: orden revisada', R08: 'Simular: cuenta aprobada', R17: 'Simular: aceptar solicitud', R20: 'Simular: checklist completo', R40: 'Simular: terminar dictado' };

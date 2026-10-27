@@ -276,3 +276,14 @@ body.phome .dpage .upc{max-width:560px}
 .pdh{grid-template-columns:minmax(40px,1fr) minmax(220px,440px) minmax(max-content,1fr)}
 .pdh .pnv{min-width:max-content;display:flex;justify-content:flex-end}
 .pdh .pnv nav{display:flex;min-width:max-content}
+
+/* v4 · símbolo + buscador solo cuando corresponde (transición suave) */
+.pdh .plogo{position:relative;width:104px;height:38px;justify-content:flex-start}
+.pdh .plogo > span{display:flex;align-items:center;position:absolute;left:0;top:0;height:100%;transition:opacity .25s ease,transform .3s cubic-bezier(.2,.7,.2,1)}
+.pdh .plogo .lg-f img{height:30px;width:auto}
+.pdh .plogo .lg-s{opacity:0;transform:scale(.85)}
+.pdh.cmp .plogo .lg-f{opacity:0;transform:translateX(-6px)}
+.pdh.cmp .plogo .lg-s{opacity:1;transform:none}
+.pdh .psearch{opacity:0;visibility:hidden;transform:translateY(-8px) scale(.97);pointer-events:none;transition:opacity .25s ease,transform .3s cubic-bezier(.2,.7,.2,1),visibility 0s .25s,background .15s,box-shadow .15s}
+.pdh.cmp .psearch{opacity:1;visibility:visible;transform:none;pointer-events:auto;transition:opacity .25s ease .05s,transform .3s cubic-bezier(.2,.7,.2,1) .05s,visibility 0s,background .15s,box-shadow .15s}
+@media (prefers-reduced-motion:reduce){.pdh .plogo > span,.pdh .psearch{transition:none!important}}
