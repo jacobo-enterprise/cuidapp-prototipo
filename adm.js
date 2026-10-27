@@ -74,7 +74,7 @@ def({ id: 'A07', name: 'Editar servicio del catálogo', kind: 'adm', side: 'tar'
   ${lbl('Descripción para pacientes')}${field('', CAT[k].d)}
   ${lbl('Duración sugerida')}${field('', CAT[k].dt)}</div><div>
   ${lbl('Quién puede ofrecerlo')}<div class="chips">${chip('Enfermera/o', CAT[k].who.includes('enf'), 'toast', 'Requiere revisión clínica antes de cambiarlo.')}${chip('TENS', CAT[k].who.includes('tens'), 'toast', 'Requiere revisión clínica antes de cambiarlo.')}${chip('Cuidadora', CAT[k].who.includes('cuid'), 'toast', 'Requiere revisión clínica antes de cambiarlo.')}</div>
-  ${lbl('Requisitos')}<button class="row" data-act="tog" data-arg="aRec"><span class="tx"><div class="a">Pedir receta médica</div><div class="b">La paciente sube foto antes de agendar</div></span><span class="tog ${S.aRec ? 'on' : ''}"></span></button>
+  ${lbl('Requisitos')}<button class="row" data-act="tog" data-arg="aRec"><span class="tx"><div class="a">Recomendar receta médica</div><div class="b">La paciente puede subirla al agendar (opcional)</div></span><span class="tog ${S.aRec ? 'on' : ''}"></span></button>
   ${lbl('Lo mínimo que debe incluir')}${checkRow(INC.ins, true, 'toast', 'Obligatorio para todas.')}${checkRow(INC.res, true, 'toast', 'Obligatorio para todas.')}</div></div>
   <div class="mt24" style="width:220px">${abtn('Guardar', 'toast', 'Mínimo actualizado. Avisamos a las profesionales bajo el mínimo.', '', 'A05')}</div>`; } });
 
