@@ -1,4 +1,4 @@
-@font-face{font-family:"Inter Tight";src:url(assets/fonts/InterTight.ttf?v=20261026v15) format("truetype");font-weight:100 900;font-display:swap}
+@font-face{font-family:"Inter Tight";src:url(assets/fonts/InterTight.ttf?v=20261026v16) format("truetype");font-weight:100 900;font-display:swap}
 :root{--ink:#111;--ink2:#5F5E6B;--ink3:#8B8A97;--lav:#7A7CF0;--lavt:#5557D9;--ind:#2A1F66;--pink:#FFA8CD;--w:#FBFBFC;--g:#F3F3F6;--line:rgba(17,17,17,.08);--e:cubic-bezier(.22,1,.36,1)}
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
