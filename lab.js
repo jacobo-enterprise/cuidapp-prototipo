@@ -3,21 +3,24 @@
 const exN = t => norm(String(t || '')).replace(/\bvit(?:\.\s*|\s+)(?=[a-z0-9])/g, 'vitamina ').replace(/\bfe\b/g, 'hierro').replace(/\s+/g, ' ').trim();
 /* palabras de uso común que no aparecen en el nombre técnico */
 const EXKW = [[/tiro|tsh|\bt3\b|\bt4/, 'tiroides'], [/hiv/, 'vih sida'], [/gonadotrofina corionica/, 'embarazo beta hcg'], [/glicemia|glucosa|hemoglobina glicosilada|insulina|homa/, 'azucar diabetes'], [/colesterol|lipid|triglic/, 'colesterol grasas'], [/fierro|hierro|ferritina/, 'hierro fierro anemia'], [/hemograma/, 'sangre completo anemia'], [/creatinina|nitrogeno ureico|urea/, 'rinon renal'], [/transaminasa|bilirrubina|hepatico/, 'higado'], [/antigeno prostatico/, 'psa prostata'], [/covid|coronavirus/, 'covid pcr']];
+/* Cargos internos: no se muestran a la paciente. La toma venosa ya va en la tarifa de toma a domicilio por paciente y el jarabe de glucosa va incluido en el costo de la curva/tolerancia. Solo se ven en el catálogo de Admin («Insumo/cargo interno») */
+const EXHID = ['x142', 'x143', 'x472'];
 const EXIDX = Object.keys(EXAMS).map(k => { const e = EXAMS[k], n = exN(e[9] + ' ' + e[0]); return [k, exN(e[0]), exN([e[9], e[7], e[5], e[6]].join(' ')) + ' ' + EXKW.filter(x => x[0].test(n)).map(x => x[1]).join(' ')]; });
-function exFind(q, lim = 9999) {
+function exFind(q, lim = 9999, all = false) {
   const t = exN(q).split(' ').filter(Boolean); if (!t.length) return [];
   const out = [], ph = t.some(w => w.length < 3) ? t.join(' ') : '';
-  for (const [k, a, b] of EXIDX) { const s = a + ' ' + b; if (t.every(w => hasW(s, w)) && (!ph || (' ' + s + ' ').includes(' ' + ph))) out.push([k, plV(t[0]).some(x => a.startsWith(x)) ? 0 : t.every(w => hasW(a, w)) ? 1 : 2]); }
+  for (const [k, a, b] of EXIDX) { if (!all && EXHID.includes(k)) continue; const s = a + ' ' + b; if (t.every(w => hasW(s, w)) && (!ph || (' ' + s + ' ').includes(' ' + ph))) out.push([k, plV(t[0]).some(x => a.startsWith(x)) ? 0 : t.every(w => hasW(a, w)) ? 1 : 2]); }
   out.sort((x, y) => x[1] - y[1] || EXAMS[x[0]][0].length - EXAMS[y[0]][0].length);
   return out.slice(0, lim).map(x => x[0]);
 }
-/* Electro y procedimientos: lo del catálogo que no es un análisis de sangre u orina (sin muestra ni tubo). x654 Electrocardiograma, x142 y x143 Toma de muestra venosa, x472 Jarabe de glucosa (insumo de la curva) */
-const EXPROC = ['x654', 'x142', 'x143', 'x472'];
+/* Electro y procedimientos: lo del catálogo que no es un análisis de sangre u orina (sin muestra ni tubo). Hoy: x654 Electrocardiograma */
+const EXPROC = ['x654'];
 const isProc = k => EXPROC.includes(k);
 const EXTABS = [['ex', 'Exámenes'], ['pk', 'Packs'], ['pr', 'Electro y procedimientos']];
-const exTabs = () => { const t = S.exTab || 'ex', n = { ex: Object.keys(EXAMS).length - EXPROC.length, pk: PACKS.length, pr: EXPROC.length }; return `<div class="qtabs extabs" role="tablist">${EXTABS.map(x => `<button class="chip ${t === x[0] ? 'on' : ''}" role="tab" aria-selected="${t === x[0]}" data-act="set" data-arg="exTab=${x[0]}">${x[1]} <span class="num">${n[x[0]]}</span></button>`).join('')}</div>`; };
+const exTabs = () => { const t = S.exTab || 'ex', n = { ex: nPat() - EXPROC.length, pk: PACKS.length, pr: EXPROC.length }; return `<div class="qtabs extabs" role="tablist">${EXTABS.map(x => `<button class="chip ${t === x[0] ? 'on' : ''}" role="tab" aria-selected="${t === x[0]}" data-act="set" data-arg="exTab=${x[0]}">${x[1]} <span class="num">${n[x[0]]}</span></button>`).join('')}</div>`; };
 /* selección visible en las tres pestañas */
 const exSelBar = () => { const k = examKeys(); return k.length ? `<div class="exsel mt16"><div class="xs t2">Tu selección · ${k.length} · <b class="num">${clp(examSum())}</b></div><div class="chips mt8">${k.map(x => `<button class="chip on" data-act="ex" data-arg="${x}">${EXAMS[x][0]} · ${clp(EXAMS[x][1])} ${ic('x')}</button>`).join('')}</div><button class="lk sm mt8" data-act="lbFrom" data-go="P88">${ic('flask')}Ver en qué laboratorios · por separado</button></div>` : ''; };
+const nPat = () => Object.keys(EXAMS).length - EXHID.length;
 const exF = q => exFind(q, 1)[0];
 const ptag = k => EXAMS[k][4] === 'c' ? '<span class="ptag c">Costo + recargo</span>' : '<span class="ptag p">Particular + recargo</span>';
 const fon = k => EXAMS[k][6] ? `Fonasa ${EXAMS[k][6]}` : `Cód. ${EXAMS[k][5] || 's/c'}`;
@@ -43,7 +46,7 @@ const qin = (k, res, ph, reset = '') => `<label class="qin">${ic('magnifying-gla
 QRES.exres = () => {
   const q = S.exq || '';
   if (!q.trim()) return `<div class="lbl2">Más pedidos</div><div class="exl">${EXPOP.map(k => exRow(k)).join('')}</div>
-    <div class="xs t3 mt12">${Object.keys(EXAMS).length - EXPROC.length} exámenes en el catálogo. Busca por nombre, parte del nombre o código Fonasa.</div>`;
+    <div class="xs t3 mt12">${nPat() - EXPROC.length} exámenes en el catálogo. Busca por nombre, parte del nombre o código Fonasa.</div>`;
   const all = exFind(q), r = all.filter(k => !isProc(k)), np = all.length - r.length;
   const hint = np ? `<button class="lk sm mt12" data-act="set" data-arg="exTab=pr">${ic('heartbeat')}${np} resultado${np > 1 ? 's' : ''} en Electro y procedimientos</button>` : '';
   if (!r.length) return `${hint}<div class="empty mt16">${ic('magnifying-glass')}<div class="b-m mt8">No encontramos «${q.replace(/</g, '')}»</div><div class="sm t2 mt4">Prueba con otra palabra o sube la foto de tu orden y lo buscamos por ti.</div>${btn('Subir foto de mi orden', 'P60', 'sec', 'data-act="mmode" data-arg="orden"')}</div>`;
@@ -108,7 +111,7 @@ def({ id: 'P40', name: 'Exámenes de laboratorio', kind: 'page', back: true, tit
     const orden = S.mmode === 'orden';
     const paths = `<div class="paths mt16">${pathCard('cat', 'list-checks', 'Elegir mis exámenes', 'Busca y marca', !orden)}${pathCard('orden', 'camera', 'Subir foto de mi orden', 'Los elegimos por ti', orden)}${pathCard('', 'chat-circle-dots', 'Ayúdame a elegir', 'Según para qué es', false, 'P63')}</div>`;
     const head = `<div class="tsteps">${[['file-arrow-up', 'Sube tu orden médica o elige tus exámenes'], ['house-line', 'Una enfermera o TENS va a tu casa y toma la muestra'], ['flask', 'La entrega en un laboratorio afiliado y te avisamos con los resultados']].map((t, i) => `<div class="tst"><span class="tsn">${i + 1}</span><span class="tsi">${ic(t[0])}</span><span class="sm">${t[1]}</span></div>`).join('')}</div>
-    <div class="t2 sm mt12">${Object.keys(EXAMS).length} exámenes. La profesional solo cobra la toma; los exámenes los pagas a Cuidapp.</div>${paths}`;
+    <div class="t2 sm mt12">${nPat()} exámenes. La profesional solo cobra la toma; los exámenes los pagas a Cuidapp.</div>${paths}`;
     if (orden) {
       const stt = S.ord === 'rev' ? row('box:hourglass-medium', 'Estamos revisando tu orden', 'Te avisamos por notificación push', 'P61', st('inf', 'En revisión', ''))
         : S.ord === 'listo' ? row('box:list-checks', `Seleccionamos ${ORD5.length} exámenes`, 'Revísalos y confírmalos', 'P62', st('ok', 'Lista', ''))
@@ -197,11 +200,11 @@ def({ id: 'P65', name: 'Documentos para reembolso', kind: 'page', back: true, ti
 const AORD = [['Rosa Muñoz Pérez', 'Ñuñoa', 'Hace 6 min', 'Dra. Marcela Ortiz R.'], ['Jorge Salinas Vera', 'Providencia', 'Hace 18 min', 'Dr. Andrés Lagos'], ['Carmen Ibarra Soto', 'La Reina', 'Hace 41 min', 'Dra. Paz Fuenzalida']];
 QRES.aexres = () => {
   const q = S.aexq || '', f = S.aexF || 'all', per = 25;
-  let l = q.trim() ? exFind(q) : Object.keys(EXAMS);
+  let l = q.trim() ? exFind(q, 9999, true) : Object.keys(EXAMS);
   if (f === 'c') l = l.filter(k => EXAMS[k][4] === 'c'); if (f === 'p') l = l.filter(k => EXAMS[k][4] === 'p'); if (f === 'sf') l = l.filter(k => !EXAMS[k][6]); if (f === 'ay') l = l.filter(k => EXAMS[k][3] < 0);
   const pg = Math.min(S.aexPage || 0, Math.max(0, Math.ceil(l.length / per) - 1)), n = Math.max(1, Math.ceil(l.length / per));
   return `<table class="t mt12"><tr><th>Código</th><th>Fonasa</th><th>Examen</th><th>Muestra</th><th>Entrega</th><th>Ayuno</th><th style="text-align:right">Precio</th><th>Tipo</th></tr>
-  ${l.slice(pg * per, pg * per + per).map(k => { const e = EXAMS[k]; return `<tr><td class="num">${e[5] || '—'}</td><td class="num">${e[6] || '<span class="t3">—</span>'}</td><td>${q ? hl(e[0], q) : e[0]}</td><td class="t2">${e[7] || '—'}</td><td class="t2">${plDias(k) == null ? 'Por confirmar' : e[8]}</td><td class="t2">${e[3] >= 0 ? ayLbl(e[3]) + ' <span class="t3">· ' + (e[10] === 3 ? 'fuentes difieren' : e[10] === 2 ? 'fuente pública' : 'por tipo de examen') + '</span>' : 'Por confirmar'}</td><td class="num" style="text-align:right">${clp(e[1])}</td><td>${ptag(k)}</td></tr>`; }).join('')}</table>
+  ${l.slice(pg * per, pg * per + per).map(k => { const e = EXAMS[k]; return `<tr><td class="num">${e[5] || '—'}</td><td class="num">${e[6] || '<span class="t3">—</span>'}</td><td>${q ? hl(e[0], q) : e[0]}</td><td class="t2">${e[7] || '—'}</td><td class="t2">${plDias(k) == null ? 'Por confirmar' : e[8]}</td><td class="t2">${e[3] >= 0 ? ayLbl(e[3]) + ' <span class="t3">· ' + (e[10] === 3 ? 'fuentes difieren' : e[10] === 2 ? 'fuente pública' : 'por tipo de examen') + '</span>' : 'Por confirmar'}</td><td class="num" style="text-align:right">${clp(e[1])}</td><td>${EXHID.includes(k) ? '<span class="ptag p">Insumo/cargo interno</span>' : ptag(k)}</td></tr>`; }).join('')}</table>
   <div class="pgr mt12"><span class="t2 sm">${l.length} exámenes · página ${pg + 1} de ${n}</span><span class="sp"></span><button class="pill" data-act="aexPg" data-arg="-1" ${pg ? '' : 'disabled'}>${ic('caret-left')}Anterior</button><button class="pill" data-act="aexPg" data-arg="1" ${pg < n - 1 ? '' : 'disabled'}>Siguiente${ic('caret-right')}</button></div>`;
 };
 def({ id: 'A08', name: 'Catálogo de exámenes', kind: 'adm', side: 'lab',
@@ -223,6 +226,6 @@ def({ id: 'A10', name: 'Revisar orden', kind: 'adm', side: 'ord', back: true,
   body: () => { const o = AORD[S.aord], sel = Object.keys(S.aordSel).filter(k => S.aordSel[k]), tot = sel.reduce((a, k) => a + EXAMS[k][1], 0);
     return `<button class="lk" data-go="A09">${ic('caret-left')}Órdenes por revisar</button><div class="ahd mt8"><div><h1 class="h-xl">${o[0]}</h1><div class="t2 sm mt4">${o[1]} · ${o[3]} · ${o[2]}</div></div></div>
     <div class="aord mt16"><div class="aord-l"><div class="lbl2" style="margin-top:0">Foto de la orden</div>${orden()}</div>
-    <div class="aord-r"><div class="lbl2" style="margin-top:0">Marca los exámenes del catálogo</div>${qin('aoq', 'aores', 'Buscar entre ' + Object.keys(EXAMS).length + ' exámenes')}<div id="aores">${QRES.aores()}</div>
+    <div class="aord-r"><div class="lbl2" style="margin-top:0">Marca los exámenes del catálogo</div>${qin('aoq', 'aores', 'Buscar entre ' + nPat() + ' exámenes')}<div id="aores">${QRES.aores()}</div>
     <div class="lbl2">Seleccionados · ${sel.length}</div>${sel.length ? sel.map(k => kv(`${EXAMS[k][0]} <span class="t3 xs">${fon(k)}</span>`, clp(EXAMS[k][1]))).join('') + kv('Total', clp(tot), 'tot') : '<div class="sm t3">Aún no marcas exámenes.</div>'}
     <div class="row8 mt16">${abtn('Pedir foto nueva', 'toast', 'Le pedimos a la paciente una foto más nítida de la orden.', 'sec')}${abtn('Enviar a la paciente', 'aoSend', '', '', 'A09', !sel.length)}</div></div></div>`; } });
