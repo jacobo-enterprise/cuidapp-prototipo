@@ -242,7 +242,7 @@ const siiOk = () => !S.siiOff;
 const BHE_ST = { 'Hoy 08:14 · Rosa M.': 'pend', 'Hoy 19:45 · Jorge T.': 'pend', 'Dom 25 oct · Carmen V.': 'fail', 'Sáb 24 oct · Pedro S.': 'emi' };
 const bheS = m => (S.bheFix || {})[m[2]] || BHE_ST[m[2]] || 'emi';
 const bheN = () => { const L = WMOV(); return { p: L.filter(m => bheS(m) === 'pend').length, f: L.filter(m => bheS(m) === 'fail').length }; };
-const ppmEst = () => Math.round(WMOV().filter(m => bheS(m) === 'emi').reduce((a, m) => a + m[3], 0) * 0.1 / 10) * 10;
+const ppmEst = () => Math.round(WMOV().filter(m => bheS(m) === 'emi').reduce((a, m) => a + m[3], 0) * 0.1525 / 10) * 10;
 Object.assign(ACT, { bheFix: m => { S.bheFix = { ...(S.bheFix || {}), [m]: 'emi' }; toast('Emitiste tu boleta de honorarios. Queda registrada en tu Billetera.'); },
   siiChk: () => { S.siiChk = !S.siiChk; }, siiUp: () => { S.siiUp = !S.siiUp; } });
 def({ id: 'R47', name: 'Boletas de honorarios', kind: 'page', back: true, title: 'Boletas de honorarios',
@@ -250,8 +250,8 @@ def({ id: 'R47', name: 'Boletas de honorarios', kind: 'page', back: true, title:
   <div class="mt12">${row('box:seal-check', siiOk() ? `Autorización SII vigente hasta ${SIIFIN}` : 'Falta tu autorización SII', siiOk() ? 'Te avisamos 30 días antes para renovarla. Se renueva una vez al año.' : 'Sin ella no podemos emitir tus boletas.', 'R50', siiOk() ? st('ok', 'Vigente', 'check-circle') : st('warn', 'Pendiente'))}</div>
   <div class="mt8">${WMOV().map(m => { const e = bheS(m); return row('box:' + m[0], m[1], m[2] + (e === 'fail' ? ' · no pudimos emitirla' : ''), '', `<span class="num">${clp(m[3])}</span>${e === 'emi' ? st('ok', 'Emitida') : e === 'fail' ? st('bad', 'Falló') : st('warn', 'Pendiente')}`); }).join('')}</div>
   ${WMOV().filter(m => bheS(m) === 'fail').map(m => `<div class="mt12">${note('warning', 'No pudimos emitir una de tus boletas: la autorización del SII venció o falló. Puedes emitirla tú con un enlace guiado y renovar la autorización.')}<div class="mt8"><button class="btn sec" data-act="bheFix" data-arg="${m[2]}">${ic('arrow-square-out')}Emitir yo misma · enlace guiado</button></div></div>`).join('')}
-  <div class="mt16">${kv('Boletas emitidas este mes', clp(WMOV().filter(m => bheS(m) === 'emi').reduce((a, m) => a + m[3], 0)))}${kv('PPM estimado del mes', clp(ppmEst()))}</div>
-  <div class="xs t3 mt4">Estimación de ejemplo con una tasa de 10%, por confirmar. La retención la hace quien emite la boleta y el PPM lo declaras tú en tu F29. Nunca te pedimos la clave del SII.</div>` });
+  <div class="mt16">${kv('Boletas emitidas este mes', clp(WMOV().filter(m => bheS(m) === 'emi').reduce((a, m) => a + m[3], 0)))}${kv('PPM estimado 15,25% (2026)', clp(ppmEst()))}</div>
+  <div class="xs t3 mt4">Tasa de retención de honorarios del SII: 15,25% en 2026 (16% en 2027 y 17% en 2028). La retención la hace quien emite la boleta y el PPM lo declaras tú en tu F29. Es una estimación. Nunca te pedimos la clave del SII.</div>` });
 
 def({ id: 'R50', name: 'Autoriza a Cuidapp para emitir tus boletas', kind: 'page', back: true, noNav: true, title: 'Autoriza tus boletas',
   body: () => `<div class="h-l">Autoriza a Cuidapp para emitir tus boletas</div><div class="t2 mt8 sm">Así tu boleta de honorarios a cada paciente sale sola, con su nombre y RUT, por el monto de tu atención. Lo haces una vez al año y lo revisas tú.</div>
