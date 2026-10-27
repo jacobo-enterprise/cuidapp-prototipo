@@ -564,3 +564,31 @@ const docsBlock = () => { const m = S.item === 'mue', o = BOLS().find(x => x.id 
   D.push(['user-circle', `Boleta de honorarios de ${pr}`, m ? 'Por la toma de muestra. Se emite automáticamente a tu nombre y RUT.' : 'Por su atención. Se emite automáticamente a tu nombre y RUT.', o.st.bhe === 'emi' ? st('ok', 'Emitida', 'check-circle') : st('neu', 'Pendiente', 'clock'), o.st.bhe === 'emi']);
   D.push(['receipt', 'Boleta Cuidapp', 'Por el servicio de Cuidapp. Se emite al terminar y llega a tu correo.', o.st.cu === 'emi' ? st('ok', 'Emitida', 'check-circle') : st('neu', 'Pendiente', 'clock'), o.st.cu === 'emi']);
   return `<div class="rmbs mt12"><b>1. Tus boletas</b><div class="xs t2 mt4">Las recibes en daniela.fuentes@gmail.com y aquí. Cada una es de quien presta el servicio.</div>${D.map(d => row('box:' + d[0], d[1], d[2], '', d[4] ? `<button class="pill" data-act="toast" data-arg="Descargado: ${d[1].replace(/ /g, '-')}.pdf">PDF</button>` : d[3])).join('')}</div>`; };
+
+
+/* ---------- Antes de tu visita: lista con avance + cómo será el día (P20 y P27) ---------- */
+const previaItems = () => {
+  const w = S.who, f = FAM[w] || FAM.yo, L = [];
+  L.push({ i: 'lock-simple', t: 'Pago', d: 'Retenido en Mercado Pago · se cobra al terminar', ok: true });
+  const dOk = !!(f.nac && f.sx);
+  L.push({ i: 'user', t: 'Datos del paciente', d: dOk ? `${whoTxt()} · completos` : 'Falta fecha de nacimiento o sexo', ok: dOk, go: dOk ? '' : 'P29' });
+  if (S.item === 'mue' && !byOrder()) { const a = ayAgg(allExKeys()), need = needPrep();
+    L.push({ i: a.h > 0 ? 'fork-knife' : 'coffee', t: need ? 'Preparación: ' + a.txt : 'Preparación', d: !need ? 'Puedes comer y tomar normal' : S.prepOk ? 'Entendida' : 'Toca para confirmar «Entendí la preparación»', ok: !need || !!S.prepOk, act: need && !S.prepOk ? 'prepOk' : '' }); }
+  if (S.mmode === 'orden' || S.ordFrom) { const ok = S.ord === 'ok';
+    L.push({ i: 'file-text', t: 'Orden médica', d: ok ? 'Revisada · ya confirmamos tus exámenes' : S.ord === 'rev' ? 'En revisión · te avisamos apenas esté' : 'Sube la foto para confirmar tus exámenes', ok, go: S.ord ? '' : 'P60' }); }
+  if (S.rbAsk === 'si' && (S.pv[w] || {}).t !== 'fonasa') { const ok = rbReady();
+    L.push({ i: 'receipt', t: 'Isapre para reembolso', d: ok ? 'Isapre y carnet listos' : 'Falta vincular tu Isapre o subir el carnet', ok, go: ok ? '' : 'P78' }); }
+  return L;
+};
+const previa = () => { const L = previaItems(), n = L.filter(x => x.ok).length, all = n === L.length;
+  return `<div class="prev mt16"><div class="prev-h"><b>${all ? 'Todo listo para tu visita' : 'Antes de tu visita'}</b><span class="xs t2 num">${n} de ${L.length}</span></div>
+  <div class="progress mt8" role="progressbar" aria-valuemin="0" aria-valuemax="${L.length}" aria-valuenow="${n}"><span style="width:${Math.round(n / L.length * 100)}%"></span></div>
+  <div class="prev-l">${L.map(x => { const inner = `<span class="check ${x.ok ? 'on' : ''}">${x.ok ? ic('check', 0).replace('ph ', 'ph-bold ') : ''}</span><span class="tx"><span class="a">${x.t}</span><span class="b">${x.d}</span></span>${x.go || x.act ? ic('caret-right') : ''}`;
+    return x.act ? `<button class="prev-r" data-act="${x.act}" data-arg="">${inner}</button>` : x.go ? `<button class="prev-r" data-go="${x.go}">${inner}</button>` : `<div class="prev-r">${inner}</div>`; }).join('')}</div></div>`; };
+const diaVisita = () => { const ex = S.item === 'mue', st = [
+  ['bell', `${first()} sale hacia tu casa`, 'Te avisamos con una notificación. Verás la hora aproximada de llegada.'],
+  ['key', `Recíbela con tu código`, `Dale el código de 4 dígitos para confirmar que es ${first()}.`],
+  [ex ? 'test-tube' : CAT[S.item].ic, ex ? 'Toma de muestras en tu casa' : CAT[S.item].n, ex ? 'Ten a mano tu carnet y, si corresponde, tu orden médica.' : 'Ten a mano tu carnet y, si corresponde, tu receta.'],
+  ['receipt', 'Pago y comprobante', ex ? 'Se cobra al terminar y recibes la boleta. Tus resultados llegan a la app.' : 'Se cobra al terminar y recibes la boleta por correo.']];
+  return `<div class="lbl2">Cómo será el día de tu visita</div><ol class="dsteps">${st.map((x, i) => `<li><span class="n">${i + 1}</span><span class="tx"><b>${x[1]}</b><span>${x[2]}</span></span></li>`).join('')}</ol>`; };
+const reagCan = (from = '', cap = true) => `<div class="row8 mt16"><button class="btn sec" data-go="P13">${ic('calendar-blank')}Reagendar</button><button class="btn sec dng" data-act="set" data-arg="cancelFrom=${from}" data-go="P30">${ic('x-circle')}Cancelar cita</button></div>${cap ? '<div class="xs t3 mt8 center">Cancelación gratis hasta 12 horas antes.</div>' : ''}`;
