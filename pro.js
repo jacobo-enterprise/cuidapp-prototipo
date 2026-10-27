@@ -6,7 +6,9 @@ Object.assign(ACT, {
   online: () => { S.online = !S.online; toast(S.online ? 'Listo. Te mostramos a pacientes que piden “lo antes posible” cerca.' : 'Ya no recibes pedidos para hoy. Tu agenda sigue igual.'); },
   key: d => { S.code = String(S.code); if (d === '<') S.code = S.code.slice(0, -1); else if (S.code.length < 4) S.code += d; },
   chk: k => { S.chk[k] = !S.chk[k]; },
-  earn: () => { if (!S.paid) { S.earn += net(S.my.iny.p); S.done += 1; S.paid = true; } toast(`Ganaste ${clp(net(S.my.iny.p))}. Se deposita el martes.`); },
+  earn: () => { if (!S.paid) { S.earn += net(S.my.iny.p); S.done += 1; S.paid = true; } toast(`Ganaste ${clp(net(S.my.iny.p))}. Ya está en tu Billetera.`); },
+  wset: n => { S.wAmt = n === 'all' ? 0 : +n; },
+  wdo: () => { const sd = S.earn - S.wd, a = Math.min(S.wAmt || sd, sd); if (a <= 0) return; S.wd += a; S.wdL.unshift(['Hoy ' + new Date().toTimeString().slice(0, 5), a]); S.wAmt = 0; toast(`Retiraste ${clp(a)}. Va a tu cuenta BancoEstado ••••3442.`); },
   prate: n => { S.pRating = +n; },
   ptag: t => { S.pTags[t] = !S.pTags[t]; },
   antec: () => { S.docs.antec = true; toast('Certificado descargado del Registro Civil.'); },
@@ -33,26 +35,26 @@ const WEEK = [['lun', 'Lunes', '08:00 a 12:00 · 18:00 a 22:00'], ['mar', 'Marte
 
 def({ id: 'R01', name: 'Postula como profesional', kind: 'page', noNav: true, back: true,
   body: () => `<div style="padding-top:8px">${logoImg('horizontal-nm', 30)}</div><div class="h-xl mt24">Atiende pacientes a tu manera</div>
-  <div class="t2 mt8">Para enfermeras, enfermeros y TENS con registro en la Superintendencia de Salud.</div>
+  <div class="t2 mt8">Para enfermeras, enfermeros, TENS y cuidadoras. Enfermeras y TENS con registro en la Superintendencia de Salud.</div>
   <div class="mt16">${row('box:currency-circle-dollar', 'Tú pones tus precios', 'Sobre un mínimo por servicio. Cuidapp cobra 15% solo cuando atiendes.', '', '')}
   ${row('box:calendar-blank', 'Tú eliges horarios y comunas', 'Las pacientes agendan solo en tus horas libres', '', '')}
-  ${row('box:bank', 'Pago todos los martes', 'A tu CuentaRUT o cuenta corriente', '', '')}</div>`,
+  ${row('box:wallet', 'Tu Billetera en la app', 'Cuidapp cobra a la paciente y abona tu parte. Retiras cuando quieras a tu cuenta.', '', '')}</div>`,
   foot: () => `${btn('Postular', 'R02')}${btn('Ya tengo cuenta', 'R16', 'ghost')}` });
 
 def({ id: 'R02', name: 'Datos de la profesional', kind: 'page', back: true, noNav: true, title: 'Paso 1 de 2',
   body: () => `<div class="h-l">Tus datos</div>${lbl('Nombre completo')}${field('', 'Camila Rojas Vergara')}${lbl('RUT')}${field('', '18.903.442-K')}${lbl('Celular')}${field('', '+56 9 7712 3008')}
-  ${lbl('Profesión')}<div class="chips">${chip('Enfermera/o', S.prof === 'enf', 'set', 'prof=enf')}${chip('TENS', S.prof === 'tens', 'set', 'prof=tens')}</div>
+  ${lbl('Profesión')}<div class="chips">${chip('Enfermera/o', S.prof === 'enf', 'set', 'prof=enf')}${chip('TENS', S.prof === 'tens', 'set', 'prof=tens')}${chip('Cuidadora', S.prof === 'cuid', 'set', 'prof=cuid')}</div>
   <div class="mt16">${note('lock-simple', 'Tu celular no se muestra a las pacientes hasta que confirmas una reserva.')}</div>`,
   foot: () => btn('Continuar', 'R03') });
 
-def({ id: 'R03', name: 'Documentos', kind: 'page', back: true, noNav: true, title: 'Paso 2 de 2',
+def({ id: 'R03', name: 'Documentos', kind: 'page', back: true, noNav: true, title: 'Paso 2 de 2', next: ['R06', 'R48'],
   body: () => `<div class="h-l">Sube tus documentos</div><div class="t2 mt8 sm">Los revisamos en menos de 48 horas hábiles.</div>
   <div class="progress mt16"><span style="width:${Object.values(S.docs).filter(Boolean).length * 20}%"></span></div><div class="mt8">
   ${docRow('carnet', 'identification-card', 'Carnet de identidad', 'Ambos lados', 'R04')}
   ${docRow('selfie', 'user-focus', 'Selfie', 'Para comparar con tu carnet', 'R05')}
-  ${docRow('titulo', 'graduation-cap', 'Título y registro SIS', 'Registro 482.317', 'R06')}
+  ${S.prof === 'cuid' ? docRow('titulo', 'hand-heart', 'Experiencia y referencias', '6 años · 2 referencias', 'R48') : docRow('titulo', 'graduation-cap', 'Título y registro SIS', 'Registro 482.317', 'R06')}
   ${docRow('antec', 'file-text', 'Certificado de antecedentes', 'Descargado del Registro Civil', '', 'antec')}
-  ${docRow('banco', 'bank', 'Cuenta para pagos', 'BancoEstado CuentaRUT', 'R07')}</div>`,
+  ${docRow('banco', 'bank', 'Cuenta para retiros', 'BancoEstado CuentaRUT', 'R07')}</div>`,
   foot: () => abtn('Enviar a revisión', '', '', '', 'R08', !docsOk()) });
 
 def({ id: 'R04', name: 'Foto del carnet', kind: 'page', back: 'x', noNav: true, title: 'Carnet de identidad',
@@ -72,20 +74,20 @@ def({ id: 'R06', name: 'Título y registro SIS', kind: 'page', back: true, noNav
   <div class="doc"><div class="hd"><b>Universidad de Chile</b><span>2019</span></div><div style="text-align:center;padding:8px 0">Otorga el título de<div class="hw" style="font-size:20px;margin:4px 0">Enfermera</div>a Camila Rojas Vergara</div></div>`,
   foot: () => abtn('Guardar', 'doc', 'titulo', '', 'R03') });
 
-def({ id: 'R07', name: 'Cuenta bancaria', kind: 'page', back: true, noNav: true, title: 'Cuenta para pagos',
+def({ id: 'R07', name: 'Cuenta bancaria', kind: 'page', back: true, noNav: true, title: 'Cuenta para retiros',
   body: () => `${lbl('Banco')}${field('bank', 'BancoEstado')}${lbl('Tipo de cuenta')}<div class="chips">${chip('CuentaRUT', true, 'toast', 'CuentaRUT seleccionada.')}${chip('Corriente', false, 'toast', 'Puedes cambiarla después en tu perfil.')}${chip('Vista', false, 'toast', 'Puedes cambiarla después en tu perfil.')}</div>
   ${lbl('Número de cuenta')}${field('', '18903442')}${lbl('Titular')}${field('', 'Camila Rojas Vergara · 18.903.442-K')}
-  <div class="mt16">${note('info', 'La cuenta debe estar a tu nombre.')}</div>`,
+  <div class="mt16">${note('info', 'La cuenta debe estar a tu nombre. Es donde llegan los retiros de tu Billetera.')}</div>`,
   foot: () => abtn('Guardar', 'doc', 'banco', '', 'R03') });
 
 def({ id: 'R08', name: 'En revisión', kind: 'page', noNav: true, auto: 'R09', enter: () => T(() => go('R09'), 5000),
   body: () => `<div style="margin-top:40px">${ic('hourglass-medium', 1).replace('<i ', '<i style="font-size:56px;color:#7A7CF0" ')}</div><div class="h-l mt16">Estamos revisando tus documentos</div>
   <div class="t2 mt8">Te avisamos con una notificación push y por correo en menos de 48 horas hábiles. Mientras, puedes ir pensando tus precios y horarios.</div><div class="mt24">
-  ${row('box:check', 'Documentos recibidos', 'Hoy 10:42', '', '')}${row('box:magnifying-glass', 'Revisión del registro SIS', 'En curso', '', st('inf', 'Revisando'))}${row('box:video-camera', 'Entrevista corta por videollamada', 'Después de la revisión', '', '')}</div>` });
+  ${row('box:check', 'Documentos recibidos', 'Hoy 10:42', '', '')}${row('box:magnifying-glass', S.prof === 'cuid' ? 'Revisión de tus referencias' : 'Revisión del registro SIS', 'En curso', '', st('inf', 'Revisando'))}${row('box:video-camera', 'Entrevista corta por videollamada', 'Después de la revisión', '', '')}</div>` });
 
 def({ id: 'R09', name: 'Cuenta aprobada', kind: 'page', noNav: true,
   body: () => `<div style="margin-top:40px">${av('CR', 'l', true)}</div><div class="h-l mt16">Listo, Camila. Ya estás verificada</div>
-  <div class="t2 mt8">Revisamos tu registro SIS 482.317: habilitada como Enfermera.</div>
+  <div class="t2 mt8">${S.prof === 'cuid' ? 'Revisamos tus documentos y tus referencias: habilitada como Cuidadora.' : S.prof === 'tens' ? 'Revisamos tu registro SIS 482.317: habilitada como TENS.' : 'Revisamos tu registro SIS 482.317: habilitada como Enfermera.'}</div>
   <div class="mt24">${note('lightbulb', 'Ahora arma tu perfil: tus servicios, tus precios, tus comunas y tus horarios. Toma unos 5 minutos.')}</div>`,
   foot: () => btn('Armar mi perfil', 'R10') });
 
@@ -114,7 +116,7 @@ def({ id: 'R11', name: 'Servicios y precios', kind: 'page', back: true, title: '
   ${GALL.filter(g => GRP[g].l.some(k => mySvcs().includes(k))).map(g => `<div class="lbl2">${GRP[g].n}</div>${GRP[g].l.filter(k => mySvcs().includes(k)).map(k => { const m = S.my[k]; return `<div class="svcrow"><span class="si">${i3(k)}</span><button class="tog ${m.on ? 'on' : ''}" data-act="svcOn" data-arg="${k}"></button>
   <button class="tx" data-act="edit" data-arg="${k}" data-go="R12"><div class="a">${CAT[k].n}</div><div class="b">${!m.on ? 'No lo ofreces' : k === 'mue' ? 'Tu tarifa de toma · exámenes los cobra el laboratorio' : `${m.dur} min · mínimo ${clp(S.mins[k])}`}</div></button>
   <button class="end" data-act="edit" data-arg="${k}" data-go="R12">${m.on ? money(m.p) : ''}${ic('caret-right')}</button></div>`; }).join('')}`).join('')}</div>
-  <div class="mt16">${note('info', `Cuidapp cobra ${S.comm}% de cada atención. El resto es tuyo y se deposita los martes.`)}</div>`,
+  <div class="mt16">${note('info', `Cuidapp cobra ${S.comm}% de cada atención. El resto es tuyo y se abona a tu Billetera.`)}</div>`,
   foot: () => abtn('Guardar', 'done', 'serv', '', 'back') });
 
 def({ id: 'R12', name: 'Editar servicio y precio', kind: 'page', back: true, title: '',
@@ -210,14 +212,47 @@ def({ id: 'R22', name: 'Calificar paciente', kind: 'page',
   <div class="chips mt24" style="justify-content:center">${['Dirección clara', 'Amables', 'Tenían todo listo', 'Me esperaron abajo'].map(t => chip(t, S.pTags[t], 'ptag', t)).join('')}</div>`,
   foot: () => `${btn('Listo', 'R23')}${btn('Ver mi agenda', 'R24', 'sec')}` });
 
-def({ id: 'R23', name: 'Ganancias', kind: 'page', tab: 'ganancias',
-  body: () => { const d = [['M', 36000], ['M', 18000], ['J', 41400], ['V', 20000], ['S', 36600], ['D', 0], ['L', Math.max(0, S.earn - 152000)]]; const mx = 60000; const gross = Math.round(S.earn / (1 - S.comm / 100));
-    return `<div class="sm t2 mt8">Semana del 20 al 26 oct</div><div class="price mt4" style="font-size:40px;line-height:46px">${clp(S.earn)}</div><div class="t2 sm mt4">${S.done} atenciones · para ti, ya descontada la comisión</div>
-  <div class="bars mt24">${d.map((x, i) => `<div class="${i === 6 ? 'on' : ''}"><span style="height:${Math.max(4, x[1] / mx * 100)}%"></span>${x[0]}</div>`).join('')}</div>
-  <div class="mt16">${kv('Cobrado a pacientes', clp(gross))}${kv(`Comisión Cuidapp (${S.comm}%, incluye recargos)`, '−' + clp(gross - S.earn))}${kv('Para ti', clp(S.earn), 'tot')}</div>
-  <div class="sec-t">Hoy</div>${S.paid ? row('box:syringe', 'Inyección · Ñuñoa', '08:14 · Rosa M.', '', money(net(S.my.iny.p))) : ''}
-  ${row('box:bandaids', 'Curación · Providencia', '19:45 · Jorge T.', '', money(net(S.my.cur.p)))}
-  <div class="mt16">${note('bank', 'Próximo depósito: martes 27 oct a BancoEstado CuentaRUT ••••3442.')}</div>`; } });
+const WMOV = () => { const iny = net(S.my.iny.p), cur = net(S.my.cur.p), sg = S.my.sig ? net(S.my.sig.p) : 15000;
+  return [...(S.paid ? [['syringe', 'Inyección · Ñuñoa', 'Hoy 08:14 · Rosa M.', iny]] : []), ['bandaids', 'Curación · Providencia', 'Hoy 19:45 · Jorge T.', cur], ['heartbeat', 'Signos vitales · Ñuñoa', 'Dom 25 oct · Carmen V.', sg], ['bandaids', 'Curación · La Reina', 'Sáb 24 oct · Pedro S.', cur]]; };
+def({ id: 'R23', name: 'Billetera', kind: 'page', tab: 'ganancias', next: ['R46', 'R47', 'R07'],
+  body: () => { const sd = S.earn - S.wd, d = [['M', 36000], ['M', 18000], ['J', 41400], ['V', 20000], ['S', 36600], ['D', 0], ['L', Math.max(0, S.earn - 152000)]]; const mx = 60000; const gross = Math.round(S.earn / (1 - S.comm / 100));
+    return `<div class="sm t2 mt8">Saldo disponible</div><div class="price mt4" style="font-size:40px;line-height:46px">${clp(sd)}</div><div class="t2 sm mt4">Lo retiras cuando quieras, sin esperar a un día de pago.</div>
+  <div class="mt16">${abtn(ic('arrow-up-right') + 'Retirar', '', '', '', 'R46', sd <= 0)}</div>
+  <div class="mt8">${row('box:bank', 'Cuenta de retiro', 'BancoEstado CuentaRUT ••••3442', 'R07')}</div>
+  <div class="mt8">${note('receipt', 'Cuidapp cobra a la paciente con Mercado Pago y abona tu parte en la Billetera. Cuidapp gestiona la boleta de honorarios de cada pago.')}</div>
+  <div class="sec-t">Movimientos</div>
+  ${S.wdL.map(w => row('box:arrow-up-right', 'Retiro a BancoEstado ••••3442', w[0], '', `<span class="num">−${clp(w[1])}</span>`)).join('')}${WMOV().map(m => row('box:' + m[0], m[1], m[2], 'R47', money(m[3]))).join('')}${row('box:arrow-up-right', 'Retiro a BancoEstado ••••3442', 'Lun 19 oct', '', `<span class="num">−${clp(140000)}</span>`)}
+  <div class="mt8">${row('box:receipt', 'Boletas de honorarios', 'Las gestiona Cuidapp en cada pago', 'R47')}</div>
+  <div class="sec-t">Esta semana · 20 al 26 oct</div><div class="t2 sm mt4">${S.done} atenciones</div>
+  <div class="bars mt16">${d.map((x, i) => `<div class="${i === 6 ? 'on' : ''}"><span style="height:${Math.max(4, x[1] / mx * 100)}%"></span>${x[0]}</div>`).join('')}</div>
+  <div class="mt16">${kv('Cobrado a pacientes', clp(gross))}${kv(`Comisión Cuidapp (${S.comm}%, incluye recargos)`, '−' + clp(gross - S.earn))}${kv('Abonado a tu Billetera', clp(S.earn), 'tot')}</div>
+  <div class="mt16">${note('flask', 'Los exámenes de laboratorio los paga Cuidapp aparte; no pasan por tu Billetera.')}</div>`; } });
+
+def({ id: 'R46', name: 'Retirar de la Billetera', kind: 'page', back: true, title: 'Retirar', next: ['R23'],
+  body: () => { const sd = S.earn - S.wd, a = Math.min(S.wAmt || sd, sd); const opts = [['all', 'Todo'], ...[20000, 50000, 100000].filter(x => x < sd).map(x => [x, clp(x)])];
+    return `<div class="sm t2 mt8">Monto a retirar</div><div class="price mt4" style="font-size:40px;line-height:46px">${clp(a)}</div><div class="t2 sm mt4">Disponible: ${clp(sd)}</div>
+  <div class="chips mt16">${opts.map(o => chip(o[1], o[0] === 'all' ? !S.wAmt || S.wAmt >= sd : S.wAmt === o[0], 'wset', o[0])).join('')}</div>
+  <div class="lbl2">Se transfiere a</div>${row('box:bank', 'BancoEstado · CuentaRUT', '••••3442 · Camila Rojas Vergara', 'R07')}
+  <div class="mt16">${note('info', 'Retiras cuando quieras. La cuenta debe estar a tu nombre.')}</div>`; },
+  foot: () => { const sd = S.earn - S.wd, a = Math.min(S.wAmt || sd, sd); return abtn(`Retirar ${clp(a)}`, 'wdo', '', '', 'R23', a <= 0); } });
+
+def({ id: 'R47', name: 'Boletas de honorarios', kind: 'page', back: true, title: 'Boletas de honorarios',
+  body: () => `<div class="sm t2 mt8">Cuidapp gestiona la boleta de honorarios de cada pago.</div>
+  <div class="mt8">${WMOV().map(m => row('box:' + m[0], m[1], m[2], '', `<span class="num">${clp(m[3])}</span>${st('ok', 'Gestionada')}`)).join('')}</div>
+  <div class="mt16">${note('info', 'Aquí verás el estado de cada boleta. Te avisamos si necesitamos algo de ti.')}</div>` });
+
+def({ id: 'R48', name: 'Experiencia y referencias', kind: 'page', back: true, noNav: true, title: 'Experiencia y referencias',
+  body: () => `${lbl('Años de experiencia como cuidadora')}${field('', '6 años')}
+  ${lbl('Cuidados que realizas')}<div class="chips">${['Adulto mayor', 'Postración', 'Acompañamiento', 'Después de una cirugía'].map((t, i) => chip(t, i < 3, 'toast', 'Los puedes cambiar después en tu perfil.')).join('')}</div>
+  ${lbl('Referencia 1')}${field('', 'Marta Illanes · +56 9 5540 1122')}${lbl('Referencia 2')}${field('', 'Pablo Soto · +56 9 6628 3350')}
+  <div class="mt8">${note('magnifying-glass', 'Las revisamos antes de aprobar tu cuenta. Tu perfil mostrará el sello «Verificada».', 'inf')}</div>
+  ${lbl('Certificado de curso (si tienes)')}<div class="doc"><div class="hd"><b>Curso de cuidados</b><span>Opcional</span></div><div style="text-align:center;padding:8px 0">Puedes subir un certificado o diploma que respalde tu experiencia.</div></div>`,
+  foot: () => abtn('Guardar', 'doc', 'titulo', '', 'R03') });
+
+def({ id: 'R49', name: 'Ayuda para profesionales', kind: 'page', back: true, title: 'Ayuda',
+  body: () => `<div class="sm t2 mt8">Escríbenos y te respondemos por correo.</div>
+  <div class="mt8">${row('box:envelope-simple', 'Profesionales', 'profesionales@cuidapp.io', '', '', '', 'toast', 'Escríbenos a profesionales@cuidapp.io')}${row('box:lifebuoy', 'Soporte', 'soporte@cuidapp.io', '', '', '', 'toast', 'Escríbenos a soporte@cuidapp.io')}</div>
+  <div class="mt16">${note('wallet', 'Para dudas de tu Billetera o de tus boletas de honorarios, usa profesionales@cuidapp.io.')}</div>` });
 
 const AG = { 0: [['19:00', 'Curación simple', 'Providencia · Jorge T.', 'ok', 'bandaids'], ['20:30', 'Signos vitales', 'Ñuñoa · Carmen V.', 'ok', 'heartbeat']], 1: [['08:00', 'Inyección', 'Ñuñoa · Rosa M.', 'r1', 'syringe'], ['11:30', 'Libre', '', 'free', 'clock'], ['19:00', 'Curación simple', 'La Reina · Pedro S.', 'ok', 'bandaids']], 2: [['08:00', 'Toma de muestras', 'Providencia · Andrea P.', 'r2', 'test-tube'], ['18:30', 'Inyección', 'Ñuñoa · Rosa M. · 2ª dosis', 'ok', 'syringe']], 3: [['09:00', 'Libre', '', 'free', 'clock']], 4: [], 5: [['10:00', 'Libre', '', 'free', 'clock']] };
 def({ id: 'R24', name: 'Agenda', kind: 'page', tab: 'agenda', next: ['R17', 'R18'],
@@ -231,8 +266,8 @@ def({ id: 'R24', name: 'Agenda', kind: 'page', tab: 'agenda', next: ['R17', 'R18
 
 def({ id: 'R25', name: 'Perfil profesional', kind: 'page', tab: 'perfil',
   body: () => `<div style="display:flex;align-items:center;gap:16px;margin-top:8px">${av('CR', 'l', true)}<div><div class="h-l">Camila Rojas</div><div class="sm t2">Enfermera · SIS 482.317 · ★ 4,9</div></div></div>
-  <div class="mt16">${row('camera', 'Cambiar foto', S.proPh ? 'Foto nueva publicada' : 'Tomar foto o elegir de galería', 'R26')}${row('flask', 'Laboratorios afiliados', 'Dónde entregar las muestras', 'R45')}${row('storefront', 'Ver mi perfil público', 'Como lo ven las pacientes', 'R29', ic('caret-right'), '', 'pick', 'cr|')}${row('star', 'Mis reseñas', `★ 4,9 · ${REVIEWS.cr.filter(r => !S.resp[r.id]).length} sin responder`, 'R27')}${row('user-circle', 'Foto y presentación', '', 'R26')}${row('megaphone', 'Destacar mi perfil', S.dest.cr ? 'Activo · apareces primero' : `Aparece primero · ${clp(S.pz.pdest)} al mes`, 'R44', S.dest.cr ? st('ok', 'Destacado') : ic('caret-right'))}${row('currency-circle-dollar', 'Servicios y precios', `${mySvcs().filter(k => S.my[k].on).length} servicios`, 'R11')}${row('map-pin-area', 'Comunas', comTxt().join(', '), 'R13')}${row('calendar-blank', 'Horario semanal', 'Lun a sáb', 'R14')}
-  ${row('identification-card', 'Documentos', 'Todos vigentes', 'R03', st('ok', 'Verificada', 'seal-check'))}${row('bank', 'Cuenta para pagos', 'BancoEstado CuentaRUT', 'R07')}${row('first-aid-kit', 'Pedir una atención para mí', 'Ir a la app de pacientes', 'P06')}${row('sign-out', 'Cerrar sesión', '', 'R01', '')}</div>` });
+  <div class="mt16">${row('camera', 'Cambiar foto', S.proPh ? 'Foto nueva publicada' : 'Tomar foto o elegir de galería', 'R26')}${row('lifebuoy', 'Ayuda', 'profesionales@cuidapp.io', 'R49')}${row('flask', 'Laboratorios afiliados', 'Dónde entregar las muestras', 'R45')}${row('storefront', 'Ver mi perfil público', 'Como lo ven las pacientes', 'R29', ic('caret-right'), '', 'pick', 'cr|')}${row('star', 'Mis reseñas', `★ 4,9 · ${REVIEWS.cr.filter(r => !S.resp[r.id]).length} sin responder`, 'R27')}${row('user-circle', 'Foto y presentación', '', 'R26')}${row('megaphone', 'Destacar mi perfil', S.dest.cr ? 'Activo · apareces primero' : `Aparece primero · ${clp(S.pz.pdest)} al mes`, 'R44', S.dest.cr ? st('ok', 'Destacado') : ic('caret-right'))}${row('currency-circle-dollar', 'Servicios y precios', `${mySvcs().filter(k => S.my[k].on).length} servicios`, 'R11')}${row('map-pin-area', 'Comunas', comTxt().join(', '), 'R13')}${row('calendar-blank', 'Horario semanal', 'Lun a sáb', 'R14')}
+  ${row('identification-card', 'Documentos', 'Todos vigentes', 'R03', st('ok', 'Verificada', 'seal-check'))}${row('bank', 'Cuenta para retiros', 'BancoEstado CuentaRUT', 'R07')}${row('first-aid-kit', 'Pedir una atención para mí', 'Ir a la app de pacientes', 'P06')}${row('sign-out', 'Cerrar sesión', '', 'S01', '')}</div>` });
 
 /* ===== Destacado (pagado por la profesional; precio en S.pz.pdest) ===== */
 def({ id: 'R44', name: 'Destacar mi perfil', kind: 'page', back: true, title: 'Destacar mi perfil', next: ['R25'],

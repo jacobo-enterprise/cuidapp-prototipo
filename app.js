@@ -13,10 +13,10 @@ const S0 = () => ({
   item: 'iny', addr: 'mama', who: 'mama', when: 'prog', pro: 'cr', day: 1, slot: '08:00', sort: 'rel', ptab: 'serv', det: 'next',
   f: { enf: true, tens: true, cuid: true }, fmax: 0, fday: 'all', frat: 0, fgen: '', fcom: '',
   fav: { cr: true, pg: true }, q: '', typed: false, sheet: '', ctab: 'next', revF: 'all', revSort: 'rec', resp: { cr4: 'Gracias, Francisco. Ese día me pilló un taco en Grecia, por eso te avisé. ¡Nos vemos en el próximo control!' }, replyTo: 'cr1', rtxt: false, rcrit: {}, pday: 1, svcFrom: '',
-  hasMed: true, receta: false, orden: '', mmode: 'cat', pack: '', exq: '', kinAv: false, medAv: false, promo: 'kin', exams: {}, needOrd: false, ord: '', ordSel: null, ordFrom: false, help: '', exPage: 0, exLim: 20, scope: '', aexq: '', aexPage: 0, aord: 0, aordSel: {}, aordDone: [], pv: { mama: { t: 'fonasa', tr: 'B', is: '' }, papa: { t: 'isapre', tr: '', is: 'Colmena' }, yo: { t: 'isapre', tr: '', is: 'Banmédica' } }, isaOpen: false, blog: 'b12', blogF: '', bm: 'hba', bF: 'all', bSis: '', crit: false, incVis: false, shr: { cr: false, pg: true, lf: false }, shrLink: false, resShared: false, eduRes: false, pk: 'gen', pkOpen: '', ctl: { 0: true, 1: true, 2: false, 3: true }, lk: { w: 'yo', is: '', c1: false, c2: false, car: false, bank: false }, isa: {}, rbAuto: false, rbSel: 'r2', rbList: null, profAv: {}, labId: 'la', lbMode: 'dom', lbSuc: 0, lbEx: [], lbDay: '', lbHr: '', lbSort: '', lbDone: false, cq: { age: '', r: null, dep: 0, is: '' }, ase: 'mi', aseSent: {}, qa: { is: ['Colmena'], plan: 'free', plus: false, paid: false }, unl: {}, aseOk: {}, dest: { vm: true }, pz: { unl: 9990, mem: 59990, plus: 19990, pdest: 9990 }, lead: 0, leadSt: {}, mue: { up: false, rot: true, ord: true, fri: true, done: false }, aLab: 'la', mkG: 10, mkL: { bl: { g: 10, ex: { vitd: 12 } } }, aImp: false, aImpDone: {}, aPer: 'oct2', liqPaid: {}, cuida: true, proSt: '', svcP: 2, rbAsk: '', lkNext: '', rc: RC0(), rcMax: 100, rcEd: '', rbDocs: false, tensNeeds: { hig: true, mov: true, sig: true, com: false },
+  hasMed: true, receta: false, orden: '', mmode: 'cat', pack: '', exq: '', kinAv: false, medAv: false, promo: 'kin', exFirst: true, exams: {}, needOrd: false, ord: '', ordSel: null, ordFrom: false, help: '', exPage: 0, exLim: 20, scope: '', aexq: '', aexPage: 0, aord: 0, aordSel: {}, aordDone: [], pv: { mama: { t: 'fonasa', tr: 'B', is: '' }, papa: { t: 'isapre', tr: '', is: 'Colmena' }, yo: { t: 'isapre', tr: '', is: 'Banmédica' } }, isaOpen: false, blog: 'b12', blogF: '', bm: 'hba', bF: 'all', bSis: '', crit: false, incVis: false, shr: { cr: false, pg: true, lf: false }, shrLink: false, resShared: false, eduRes: false, pk: 'gen', pkOpen: '', ctl: { 0: true, 1: true, 2: false, 3: true }, lk: { w: 'yo', is: '', c1: false, c2: false, car: false, bank: false }, isa: {}, rbAuto: false, rbSel: 'r2', rbList: null, profAv: {}, labId: 'la', lbMode: 'dom', lbSuc: 0, lbEx: [], lbDay: '', lbHr: '', lbSort: '', lbDone: false, cq: { age: '', r: null, dep: 0, is: '' }, ase: 'mi', aseSent: {}, qa: { is: ['Colmena'], plan: 'free', plus: false, paid: false }, unl: {}, aseOk: {}, dest: { vm: true }, pz: { unl: 9990, mem: 59990, plus: 19990, pdest: 9990 }, lead: 0, leadSt: {}, mue: { up: false, rot: true, ord: true, fri: true, done: false }, aLab: 'la', mkG: 10, mkL: { bl: { g: 10, ex: { vitd: 12 } } }, aImp: false, aImpDone: {}, aPer: 'oct2', liqPaid: {}, cuida: true, proSt: '', svcP: 2, rbAsk: '', lkNext: '', rc: RC0(), rcMax: 100, rcEd: '', rbDocs: false, tensNeeds: { hig: true, mov: true, sig: true, com: false },
   pay: 'visa', prev: 'fonasa', consent: false, rating: 0, tags: {}, tip: 0, chat: [], phase: 'llego', cancelFrom: 'P27', booked: false, hecho: false, cr: 0,
   docs: { carnet: false, selfie: false, titulo: false, antec: false, banco: false }, prof: 'enf',
-  online: false, code: '', chk: { id: false, rec: false, ale: false }, earn: 186405, done: 9, pRating: 0, pTags: {}, paid: false,
+  online: false, code: '', chk: { id: false, rec: false, ale: false }, earn: 186405, done: 9, wd: 0, wAmt: 0, wdL: [], pRating: 0, pTags: {}, paid: false,
   my: {
     vneu: { on: true, p: 18000, night: 0, nOn: false, dur: 30, inc: { ins: true, pre: true, res: true, edu: false } },
     vb12: { on: true, p: 18000, night: 0, nOn: false, dur: 30, inc: { ins: true, pre: true, res: true, edu: false } },
@@ -57,7 +57,7 @@ const S0 = () => ({
   week: { lun: true, mar: true, mie: true, jue: true, vie: true, sab: true, dom: false }, gap: 30, antic: 2,
   blocked: { 30: true }, req: { r1: 'new', r2: 'new' }, aday: 1, spec: { am: true, pd: true, ped: false, pal: false },
   sis: 0, aprob: [], rech: [], admTab: 'rev', cand: 0, aedit: 'iny', comm: 15,
-  mins: { vneu: 12000, vb12: 12000, vd: 12000, vc: 30000, vfe: 38000, vsue: 38000, vmg: 30000, vmed: 18000, iny: 12000, inysc: 12000, inyev: 26000, via: 44000, recs: 22000, suero: 36000, vac: 12000, insu: 14000, past: 18000, cur: 15000, cura: 24000, esc: 26000, pun: 16000, dren: 22000, mue: 5000, ecg: 25000, holt: 68000, valo: 24000, cuid: 32000, acomp: 23000, bano: 18000, cogn: 16000, tens8: 37000, pos: 38000, sonali: 26000, son: 25000, ost: 26000, traq: 30000, oxi: 18000, pack: 250000, alta: 30000, noche: 40000, hdia: 27000, hnoc: 32000, h24: 52000, ncasa: 34000, pal: 40000, fin: 36000, sig: 12000, diab: 20000, edu: 12000, rcp: 48000 }, aRec: true,
+  mins: { vneu: 12000, vb12: 12000, vd: 12000, vc: 30000, vfe: 38000, vsue: 38000, vmg: 30000, vmed: 18000, iny: 12000, inysc: 12000, inyev: 26000, via: 44000, recs: 22000, suero: 36000, vac: 12000, insu: 14000, past: 18000, cur: 15000, cura: 24000, esc: 26000, pun: 16000, dren: 22000, mue: 5000, ecg: 25000, holt: 68000, valo: 24000, cuid: 32000, acomp: 23000, bano: 18000, cogn: 16000, tens8: 37000, pos: 38000, sonali: 26000, son: 25000, ost: 26000, traq: 30000, oxi: 18000, pack: 250000, alta: 30000, noche: 40000, hdia: 27000, hnoc: 32000, h24: 52000, ncasa: 34000, pal: 40000, fin: 36000, sig: 9990, diab: 20000, edu: 12000, rcp: 48000 }, aRec: true,
 });
 let S = S0();
 let view = localStorage.getItem('cv') || 'm';
@@ -214,7 +214,7 @@ const SUR = { get dom() { return rcPct(PRO(), 'dom') / 100; }, get fest() { retu
 const FEST = { '31-10': 'Día de las Iglesias Evangélicas', '1-11': 'Todos los Santos', '8-12': 'Inmaculada Concepción' };
 /* iconos 3D de servicios (img/iconos-3d); el resto de la interfaz usa Phosphor */
 const i3k = k => CAT[k] ? (CAT[k].i || IC3[CAT[k].g] || CAT[k].g) : (IC3[k] || k);
-const i3 = (k, c = '') => `<img class="i3d ${c}" src="img/iconos-3d/${i3k(k)}.webp?v=20261026p" alt="" draggable="false">`;
+const i3 = (k, c = '') => `<img class="i3d ${c}" src="img/iconos-3d/${i3k(k)}.webp?v=20261026q" alt="" draggable="false">`;
 const INC = { ins: 'Insumos: jeringa, aguja, tórulas y guantes', pre: 'Control de presión antes y después', res: 'Retiro de residuos clínicos', edu: 'Indicaciones escritas para la familia' };
 /* catálogo del laboratorio: precios fijos, no los pone la profesional */
 const LAB = 'Laboratorio';
@@ -226,6 +226,8 @@ const EXPOP = ['hemo', 'lip', 'gli', 'bioq', 'ori', 'uro', 'tsh', 't4', 'hba', '
 const examKeys = () => Object.keys(EXAMS).filter(k => S.exams[k]);
 const examList = () => examKeys().map(k => EXAMS[k]);
 const examGross = () => examList().reduce((a, e) => a + e[1], 0);
+const EXD_P = 20, EXD_MIN = 30000, EXD_MAX = 20000; /* primer pedido de exámenes sobre $30.000: 20% de descuento, tope $20.000 (como CUIDA15). Lo paga Cuidapp (adquisición) */
+const exDiscOf = () => S.exFirst && typeof byOrder === 'function' && !byOrder() && examSum() >= EXD_MIN ? Math.min(EXD_MAX, Math.round(examSum() * EXD_P / 100 / 10) * 10) : 0;
 const examSum = () => examGross() - (typeof pkD === 'function' ? pkD() : 0); /* neto: con descuento de pack */
 const byOrder = () => S.mmode === 'orden' && S.ord !== 'ok';
 const fasting = () => !byOrder() && examKeys().some(k => EXAMS[k][3]) || byOrder();
@@ -257,7 +259,7 @@ const PROS = [
     spec: ['Inyecciones', 'Toma de muestras', 'Control de presión'],
     edu: [['Enfermería', 'Universidad Andrés Bello', '2023'], ['Curso de Urgencias Prehospitalarias', 'Clínica Indisa', '2024']],
     dist: [76, 18, 4, 2, 0], crit: [['Puntualidad', '4,8'], ['Trato', '4,7'], ['Técnica', '4,8'], ['Explica todo', '4,5']],
-    f: 0.95, gs: ['iny', 'mue', 'cron', 'edu'], p: { iny: 15000, cur: 20000, mue: 13000, sig: 10000 }, night: {}, xinc: '',
+    f: 0.95, gs: ['iny', 'mue', 'cron', 'edu'], p: { iny: 15000, cur: 20000, mue: 13000, sig: 9990 }, night: {}, xinc: '',
     sl: [[], [], ['09:00', '10:00', '11:00'], ['09:00', '15:00'], ['18:00', '19:00'], ['09:00', '10:00', '11:00', '12:00']] },
   { id: 'pg', n: 'Paula Godoy', i: 'PG', t: 'TENS', k: 'tens', g: 'f', reg: '311.208', r: '4,8', rn: 4.8, a: 87, rv: 63, km: 2.4, yrs: 8, bg: '#F3F3F5', fg: '#2A2A2E',
     com: ['Providencia', 'Ñuñoa', 'Santiago'], tel: '+56 9 8840 1206', resp: '25 min',
@@ -409,7 +411,7 @@ function price() {
   const p = priceOf(pr, S.item);
   const rc = rcLines(pr, p, S.when === 'prog' ? S.day : 0, S.when === 'prog' ? S.slot : '', S.when !== 'prog'), rs = rc.reduce((a, b) => a + b[1], 0);
   const fee = typeof isaOf === 'function' && isaOf(S.who) && S.rbAuto ? [['Gestión de reembolso', RB_FEE]] : [];
-  if (S.item === 'mue') { L.push([`Toma a domicilio · ${first(pr)}`, p], ...rc); if (!byOrder()) { L.push([`Exámenes (laboratorio) · ${examList().length}`, examGross()]); if (pkD()) L.push([`Descuento pack ${pkAct()[1]}`, -pkD(), 'dsc']); } if (!byOrder() && examSum() >= 30000) L.push(['Toma gratis · exámenes sobre $30.000', -p]); const svc = p + rs - (!byOrder() && examSum() >= 30000 ? p : 0); L.push(...cuidaLine(svc)); const W = withFee(L, fee); return { L: W.L, total: W.L.reduce((a, b) => a + b[1], 0), pro: p + rs, lab: byOrder() ? 0 : examSum(), pend: byOrder(), disc: cuidaOf(svc), sf: W.sf }; }
+  if (S.item === 'mue') { L.push([`Toma a domicilio · ${first(pr)}`, p], ...rc); if (!byOrder()) { L.push([`Exámenes (laboratorio) · ${examList().length}`, examGross()]); if (pkD()) L.push([`Descuento pack ${pkAct()[1]}`, -pkD(), 'dsc']); } const exd = exDiscOf(); if (exd) L.push([`Descuento primer pedido de exámenes (${EXD_P}%)`, -exd, 'dsc']); const svc = p + rs; L.push(...cuidaLine(svc)); const W = withFee(L, fee); return { L: W.L, total: W.L.reduce((a, b) => a + b[1], 0), pro: p + rs, lab: byOrder() ? 0 : examSum(), pend: byOrder(), disc: cuidaOf(svc), sf: W.sf }; }
   L.push([CAT[S.item].n, p], ...rc, ...cuidaLine(p + rs)); const W = withFee(L, fee);
   return { L: W.L, total: W.L.reduce((a, b) => a + b[1], 0), pro: p + rs, rc: rs, disc: cuidaOf(p + rs), sf: W.sf };
 }
@@ -468,7 +470,7 @@ const row = (i, a, b = '', go = '', end = ic('caret-right'), cls = '', act = '',
 const ST_I = { ok: 'check-circle', warn: 'clock', inf: 'clock-countdown', bad: 'x-circle' };
 const st = (k, t, i) => { i = i === '' ? '' : (i || ST_I[k]); return `<span class="st ${k}">${i ? ic(i, 1) : ''}${t}</span>`; };
 const PHOTO = ['CR', 'FA', 'MC', 'PG', 'VM', 'FL', 'DN', 'JS', 'CD', 'IP', 'RS', 'XV', 'MP'];
-const V = '?v=20261026p';
+const V = '?v=20261026q';
 const slug = n => n.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\./g, '').trim().replace(/\s+/g, '-');
 const PACPH = { DF: 'daniela-fuentes', RM: 'rosa-m', LF: 'luis-fuentes', MIb: 'isabel-montt', RVa: 'rodrigo-vial', CHe: 'valeria-cortes', FAr: 'francisco-lagos', JCa: 'soledad-rios' };
 const phSrc = ini => ini === 'CR' && typeof S !== 'undefined' && S.proPh ? S.proPh : PHOTO.includes(ini) ? `img/pro/${ini.toLowerCase()}.webp${V}` : PACPH[ini] ? `img/pac/${PACPH[ini]}.webp${V}` : '';
@@ -492,7 +494,7 @@ function orden() {
 const idcard = () => `<div class="idcard"><div class="ph">${ic('user', 1).replace('<i ', '<i style="font-size:56px;color:#A5A5AE" ')}</div><div style="flex:1"><b>CÉDULA DE IDENTIDAD</b><br>República de Chile<div class="blurline" style="width:80%"></div><div class="blurline" style="width:60%"></div><div class="blurline" style="width:70%"></div><div class="blurline" style="width:40%"></div></div></div>`;
 const logoImg = (n = 'horizontal-nm', h = 28, st = '') => `<img src="${LOGO(n)}" alt="Cuidapp" style="height:${h}px;${st}">`;
 const tabsP = [['servicios', 'magnifying-glass', 'Servicios', 'P06'], ['citas', 'calendar-blank', 'Mis citas', 'P26'], ['salud', 'heartbeat', 'Mi salud', 'P93'], ['favoritos', 'heart', 'Favoritos', 'P34'], ['cuenta', 'user-circle', 'Cuenta', 'P28']];
-const tabsR = [['inicio', 'house', 'Inicio', 'R16'], ['agenda', 'calendar-blank', 'Agenda', 'R24'], ['ganancias', 'wallet', 'Ganancias', 'R23'], ['perfil', 'user', 'Perfil', 'R25']];
+const tabsR = [['inicio', 'house', 'Inicio', 'R16'], ['agenda', 'calendar-blank', 'Agenda', 'R24'], ['ganancias', 'wallet', 'Billetera', 'R23'], ['perfil', 'user', 'Perfil', 'R25']];
 const tabbar = (role, on) => `<div class="tabbar">${(role === 'pro' ? tabsR : tabsP).map(t => `<button class="${t[0] === on ? 'on' : ''}" data-go="${t[3]}">${ic(t[1], t[0] === on)}${t[2]}</button>`).join('')}</div>`;
 const sbar = () => `<div class="sb ${'%M%'}"><span class="num">21:10</span><span class="ic">${ic('cell-signal-full', 1)}${ic('wifi-high', 1)}${ic('battery-full', 1)}</span></div>`;
 
@@ -536,7 +538,7 @@ function frameM(s) {
 }
 function headerD(s) {
   const r = roleOf(s.id);
-  const items = r === 'pro' ? [['house', 'Inicio', 'R16', 'inicio'], ['calendar-blank', 'Agenda', 'R24', 'agenda'], ['wallet', 'Ganancias', 'R23', 'ganancias'], ['user', 'Perfil', 'R25', 'perfil']]
+  const items = r === 'pro' ? [['house', 'Inicio', 'R16', 'inicio'], ['calendar-blank', 'Agenda', 'R24', 'agenda'], ['wallet', 'Billetera', 'R23', 'ganancias'], ['user', 'Perfil', 'R25', 'perfil']]
     : [['magnifying-glass', 'Servicios', 'W01', 'servicios'], ['calendar-blank', 'Mis citas', 'P26', 'citas'], ['heart', 'Favoritos', 'P34', 'favoritos'], ['user-circle', 'Cuenta', 'P28', 'cuenta']];
   const on = s.tab || s.dtab;
   const nav = s.noNav ? '' : `<nav>${items.map(t => `<button class="${t[3] === on ? 'on' : ''}" data-go="${t[2]}">${ic(t[0], t[3] === on)}${t[1]}</button>`).join('')}</nav>`;
@@ -699,7 +701,7 @@ function linksOf(id) {
 }
 window.__links = linksOf;
 const LANES = [
-  ['pac', 'Paciente', [['P01', 'P02', 'P03', 'P04', 'P05'], ['P06', 'P07', 'P08', 'P09'], ['P10', 'P11', 'P36', 'P34'], ['P12', 'P32', 'P33', 'P22'], ['P13', 'P14', 'P15', 'P16'], ['P17', 'P18', 'P19', 'P20'], ['P26', 'P27', 'P30', 'P28', 'P29'], ['P23', 'P24', 'P25'], ['P50', 'P51', 'P52', 'P53'], ['P54', 'P55', 'P56', 'P57', 'P58', 'P59'], ['P40', 'P60', 'P61', 'P62', 'P63'], ['P16', 'P64', 'P65'], ['P66', 'P67'], ['P93', 'P70', 'P71', 'P72', 'P73'], ['P74', 'P75', 'P76', 'P77'], ['P78', 'P79', 'P80', 'P81', 'P82', 'P94'], ['P83', 'P84', 'P85', 'P86', 'P87', 'P88'], ['P89', 'P90', 'P91', 'P92'], ['W01', 'W02', 'W03']]],
+  ['pac', 'Paciente', [['S00', 'S01'], ['P01', 'P02', 'P03', 'P04', 'P05'], ['P06', 'P07', 'P08', 'P09'], ['P10', 'P11', 'P36', 'P34'], ['P12', 'P32', 'P33', 'P22'], ['P13', 'P14', 'P15', 'P16'], ['P17', 'P18', 'P19', 'P20'], ['P26', 'P27', 'P30', 'P28', 'P29'], ['P23', 'P24', 'P25'], ['P50', 'P51', 'P52', 'P53'], ['P54', 'P55', 'P56', 'P57', 'P58', 'P59'], ['P40', 'P60', 'P61', 'P62', 'P63'], ['P16', 'P64', 'P65'], ['P66', 'P67'], ['P93', 'P70', 'P71', 'P72', 'P73'], ['P74', 'P75', 'P76', 'P77'], ['P78', 'P79', 'P80', 'P81', 'P82', 'P94'], ['P83', 'P84', 'P85', 'P86', 'P87', 'P88'], ['P89', 'P90', 'P91', 'P92'], ['W01', 'W02', 'W03']]],
   ['pro', 'Profesional', [['R01', 'R02', 'R03'], ['R04', 'R05', 'R06', 'R07'], ['R08', 'R09', 'R10', 'R26'], ['R11', 'R12', 'R13', 'R14', 'R15'], ['R16', 'R17', 'R18'], ['R20', 'R21', 'R22'], ['R23', 'R24', 'R25'], ['R27', 'R28', 'R29'], ['R37', 'R38', 'R31', 'R32'], ['R40', 'R41', 'R33', 'R34'], ['R35', 'R39', 'R36', 'R42', 'R43', 'R44', 'R45']]],
   ['adm', 'Admin', [['A01', 'A02', 'A03'], ['A04', 'A05', 'A07'], ['A06', 'A08'], ['A09', 'A10'], ['A11', 'A12', 'A13', 'A14']]],
   ['ase', 'Asesor de Isapre', [['Q01', 'Q02', 'Q03', 'Q04', 'Q05']]],
@@ -767,7 +769,7 @@ window.__audit = function () {
     }
   }
   // alcanzables desde los inicios
-  const seen = new Set(), q = ['P06', 'P01', 'R01', 'A01', 'Q01'];
+  const seen = new Set(), q = ['S00', 'P06', 'P01', 'R01', 'A01', 'Q01'];
   while (q.length) { const x = q.shift(); if (seen.has(x)) continue; seen.add(x); linksOf(x).forEach(y => { q.push(y); if (TO_D[y]) q.push(TO_D[y]); if (TO_M[y]) q.push(TO_M[y]); }); }
   ids.forEach(id => { if (!seen.has(id)) bad.push('pantalla suelta (no se llega): ' + id); });
   return { pantallas: ids.length, problemas: bad, fotos: [...AVSRC] };
@@ -780,6 +782,6 @@ window.addEventListener('DOMContentLoaded', () => {
   const h = location.hash.replace('#/', '');
   const q = new URLSearchParams(location.search);
   if (q.get('v') && !NATIVE) { view = q.get('v'); }
-  go(SC[h] ? h : 'P06', false);
+  go(SC[h] ? h : 'S00', false);
   window.addEventListener('hashchange', () => { const x = location.hash.replace('#/', ''); if (SC[x] && x !== cur) { closeFlow(); go(x); } });
 });

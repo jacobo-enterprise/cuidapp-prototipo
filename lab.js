@@ -1,21 +1,21 @@
 /* ===== Exámenes de laboratorio (catálogo completo), orden médica opcional, previsión de salud y reembolso ===== */
 /* EXAMS[k] = [nombre, precio, tubo, ayuno, c|p, código, código Fonasa, muestra, plazo, nombre completo] */
-const exN = t => norm(String(t || '')).replace(/\bvit\.?\s*(?=[a-z0-9])/g, 'vitamina ').replace(/\bfe\b/g, 'hierro').replace(/\s+/g, ' ').trim();
+const exN = t => norm(String(t || '')).replace(/\bvit(?:\.\s*|\s+)(?=[a-z0-9])/g, 'vitamina ').replace(/\bfe\b/g, 'hierro').replace(/\s+/g, ' ').trim();
 /* palabras de uso común que no aparecen en el nombre técnico */
 const EXKW = [[/tiro|tsh|\bt3\b|\bt4/, 'tiroides'], [/hiv/, 'vih sida'], [/gonadotrofina corionica/, 'embarazo beta hcg'], [/glicemia|glucosa|hemoglobina glicosilada|insulina|homa/, 'azucar diabetes'], [/colesterol|lipid|triglic/, 'colesterol grasas'], [/fierro|hierro|ferritina/, 'hierro fierro anemia'], [/hemograma/, 'sangre completo anemia'], [/creatinina|nitrogeno ureico|urea/, 'rinon renal'], [/transaminasa|bilirrubina|hepatico/, 'higado'], [/antigeno prostatico/, 'psa prostata'], [/covid|coronavirus/, 'covid pcr']];
 const EXIDX = Object.keys(EXAMS).map(k => { const e = EXAMS[k], n = exN(e[9] + ' ' + e[0]); return [k, exN(e[0]), exN([e[9], e[7], e[5], e[6]].join(' ')) + ' ' + EXKW.filter(x => x[0].test(n)).map(x => x[1]).join(' ')]; });
 function exFind(q, lim = 9999) {
   const t = exN(q).split(' ').filter(Boolean); if (!t.length) return [];
   const out = [], ph = t.some(w => w.length < 3) ? t.join(' ') : '';
-  for (const [k, a, b] of EXIDX) { const s = a + ' ' + b; if (t.every(w => s.includes(w)) && (!ph || (' ' + s + ' ').includes(' ' + ph))) out.push([k, a.startsWith(t[0]) ? 0 : t.every(w => a.includes(w)) ? 1 : 2]); }
+  for (const [k, a, b] of EXIDX) { const s = a + ' ' + b; if (t.every(w => hasW(s, w)) && (!ph || (' ' + s + ' ').includes(' ' + ph))) out.push([k, plV(t[0]).some(x => a.startsWith(x)) ? 0 : t.every(w => hasW(a, w)) ? 1 : 2]); }
   out.sort((x, y) => x[1] - y[1] || EXAMS[x[0]][0].length - EXAMS[y[0]][0].length);
   return out.slice(0, lim).map(x => x[0]);
 }
 const exF = q => exFind(q, 1)[0];
-const ptag = k => EXAMS[k][4] === 'c' ? '<span class="ptag c">Precio Cuidapp</span>' : '<span class="ptag p">Precio particular</span>';
+const ptag = k => EXAMS[k][4] === 'c' ? '<span class="ptag c">Costo + recargo</span>' : '<span class="ptag p">Particular + recargo</span>';
 const fon = k => EXAMS[k][6] ? `Fonasa ${EXAMS[k][6]}` : `Cód. ${EXAMS[k][5] || 's/c'}`;
 const exSub = k => { const e = EXAMS[k]; return [e[7], e[8], e[3] ? 'con ayuno' : '', fon(k)].filter(Boolean).join(' · '); };
-const exRow = (k, q = '', act = 'ex', on = S.exams[k]) => `<button class="exr" data-act="${act}" data-arg="${k}"><span class="check ${on ? 'on' : ''}">${on ? ic('check', 0).replace('ph ', 'ph-bold ') : ''}</span><span class="tx"><span class="a">${q ? hl(EXAMS[k][0], q) : EXAMS[k][0]}</span><span class="b">${exSub(k)}</span></span><span class="exp"><span class="pp num">${clp(EXAMS[k][1])}</span>${ptag(k)}</span></button>`;
+const exRow = (k, q = '', act = 'ex', on = S.exams[k]) => `<button class="exr" data-act="${act}" data-arg="${k}"><span class="check ${on ? 'on' : ''}">${on ? ic('check', 0).replace('ph ', 'ph-bold ') : ''}</span><span class="tx"><span class="a">${q ? hl(EXAMS[k][0], q) : EXAMS[k][0]}</span><span class="b">${exSub(k)}</span></span><span class="exp"><span class="pp num">${clp(EXAMS[k][1])}</span></span></button>`;
 
 /* búsqueda en vivo: los inputs con data-q actualizan solo su lista de resultados (no se pierde el foco) */
 
@@ -104,7 +104,7 @@ def({ id: 'P40', name: 'Exámenes de laboratorio', kind: 'page', back: true, tit
     <div class="soonr mt24"><button class="soonc" data-go="P83"><span class="ri box">${ic('storefront')}</span><span class="tx"><b>Agendar directo en un laboratorio</b><span class="xs t2">Elige laboratorio, día y si vas tú o te visitan</span></span><span class="pr soonb">Muy pronto</span></button></div>
     <div class="lbl2">Buscar exámenes</div><div>${qin('exq', 'exres', 'Busca: hemograma, vitamina D, 0301045…', 'exLim')}</div><div id="exres">${QRES.exres()}</div>
     <div class="lbl2">Orden médica</div>${checkRow('Necesito orden médica', S.needOrd, 'tog', 'needOrd', 'La gestionamos con un médico · precio por confirmar')}
-    <div class="xs t3 mt8">Precio Cuidapp: precio convenido con el laboratorio. Precio particular: valor de lista cuando no hay precio Cuidapp.</div>`;
+`;
   },
   foot: () => S.mmode === 'orden'
     ? (S.ord === 'ok' ? `<div class="fbar"><div class="fb-l"><b class="num">${clp(examSum())}</b><span>${nEx()}</span></div><button class="btn fbtn" data-go="P16">Continuar</button></div>`
@@ -130,14 +130,14 @@ def({ id: 'P62', name: 'Seleccionamos tus exámenes', kind: 'page', back: true, 
   body: () => { const l = S.ordSel || ORD5, tot = l.reduce((a, k) => a + EXAMS[k][1], 0);
     return `<button class="push" data-go="P62"><div class="push-h"><img src="logo/apple-touch-icon.png" alt=""><span>Cuidapp</span><span class="t3">ahora</span></div><b>Tu orden está lista</b><div>Seleccionamos ${l.length} exámenes. Revísalos y confirma.</div></button>
     <div class="h-l mt16">Seleccionamos ${l.length} exámenes</div><div class="t2 sm mt4">Según la orden de la Dra. Marcela Ortiz · revisada por nuestro equipo</div>
-    <div class="exl mt8">${l.map(k => `<div class="exr"><span class="tx"><span class="a">${EXAMS[k][0]}</span><span class="b">${exSub(k)}</span></span><span class="exp"><span class="pp num">${clp(EXAMS[k][1])}</span>${ptag(k)}</span></div>`).join('')}</div>
+    <div class="exl mt8">${l.map(k => `<div class="exr"><span class="tx"><span class="a">${EXAMS[k][0]}</span><span class="b">${exSub(k)}</span></span><span class="exp"><span class="pp num">${clp(EXAMS[k][1])}</span></span></div>`).join('')}</div>
     ${kv('Total exámenes', clp(tot), 'tot')}<div class="mt12">${note('lock-simple', 'No cobramos nada hasta que confirmes y la profesional acepte la toma.', 'inf')}</div>`; },
   foot: () => `<div class="row8">${abtn('Editar', 'ordEdit', '', 'sec', 'P40')}${abtn('Confirmar', 'ordOk', '', '', 'P16')}</div>` });
 
 def({ id: 'P63', name: 'Ayúdame a elegir', kind: 'page', back: true, title: 'Ayúdame a elegir', next: ['P40', 'P60'],
   body: () => `<div class="h-m">¿Para qué son los exámenes?</div><div class="t2 sm mt4">Te sugerimos los más pedidos. Puedes quitar o agregar después.</div>
   <div class="hgrid mt16">${Object.entries(HELP).map(([k, h]) => `<button class="hcell ${S.help === k ? 'on' : ''}" data-act="help" data-arg="${k}">${ic(h[1], S.help === k)}<span>${h[0]}</span></button>`).join('')}</div>
-  ${S.help ? `<div class="lbl2">Sugeridos · ${HELP[S.help][0]}</div><div class="exl">${HELP[S.help][2].map(k => `<div class="exr"><span class="tx"><span class="a">${EXAMS[k][0]}</span><span class="b">${exSub(k)}</span></span><span class="exp"><span class="pp num">${clp(EXAMS[k][1])}</span>${ptag(k)}</span></div>`).join('')}</div>` : ''}
+  ${S.help ? `<div class="lbl2">Sugeridos · ${HELP[S.help][0]}</div><div class="exl">${HELP[S.help][2].map(k => `<div class="exr"><span class="tx"><span class="a">${EXAMS[k][0]}</span><span class="b">${exSub(k)}</span></span><span class="exp"><span class="pp num">${clp(EXAMS[k][1])}</span></span></div>`).join('')}</div>` : ''}
   <div class="mt16">${note('info', 'Es una guía general y no reemplaza la indicación de tu médico. Si tienes una orden, súbela y la revisamos.')}</div>
   ${row('box:chat-circle-dots', 'Prefiero hablar con alguien', 'Chat con nuestro equipo · respuesta en minutos', '', ic('caret-right'), '', 'toast', 'Te escribimos por WhatsApp en menos de 10 minutos.')}${row('box:camera', 'Tengo una orden', 'Sube la foto y elegimos por ti', 'P60', ic('caret-right'), '', 'path', 'orden')}`,
   foot: () => abtn(S.help ? `Agregar ${HELP[S.help][2].length} exámenes` : 'Elige un motivo', 'helpAdd', '', '', 'P40', !S.help) });
@@ -148,7 +148,7 @@ const pvBlock = w => { const p = S.pv[w];
   ${radioRow('Isapre', p.t === 'isapre' && p.is ? p.is : 'Elige tu isapre', p.t === 'isapre', 'pvT', w + '|isapre', 'buildings')}${p.t === 'isapre' ? `<div class="chips sub">${ISAPRES.map(t => chip(t, p.is === t, 'pvIs', w + '|' + t)).join('')}</div>` : ''}
   ${radioRow('Particular', 'Sin previsión o prefiero no usarla', p.t === 'part', 'pvT', w + '|part', 'wallet')}`; };
 def({ id: 'P64', name: 'Previsión de salud', kind: 'page', back: true, title: 'Previsión de salud',
-  body: () => { const w = pvW(); return `<div class="t2 sm">${patN(w)} · RUT ${RUTS[w]}</div><div class="mt12">${pvBlock(w)}</div>${S.pv[w].t === 'isapre' ? `<div class="mt12">${S.isa[w] ? row('box:link', `${S.isa[w].is} vinculada`, 'Reembolso automático activo', 'P82', st('ok', 'Activa'), '', 'lkW', w) : row('box:link', 'Reembolso automático', `Vincula ${S.pv[w].is || 'tu Isapre'} una vez y enviamos los reembolsos por ti`, 'P78', '<span class="lk">Vincular</span>', '', 'lkW', w)}</div>` : ''}
+  body: () => { const w = pvW(); return `<div class="t2 sm">${patN(w)} · RUT ${RUTS[w]}</div><div class="mt12">${pvBlock(w)}</div>${S.pv[w].t === 'isapre' ? `<div class="mt12">${S.isa[w] ? row('box:link', `${S.isa[w].is} vinculada`, 'Reembolso automático activo', 'P82', st('ok', 'Activa'), '', 'lkW', w) : row('box:link', 'Reembolso automático', `Vincula ${S.pv[w].is || 'tu Isapre'} una vez y te ayudamos a enviar los reembolsos`, 'P78', '<span class="lk">Vincular</span>', '', 'lkW', w)}</div>` : ''}
   <div class="mt12">${row('box:chart-bar', 'Cotiza tu Isapre', 'Asesores de Isapre comparan planes para ti', 'P89')}</div>
   <div class="mt16">${note('receipt', 'La usamos para emitir tus boletas para reembolso: van con tu RUT, tu previsión y los códigos Fonasa de cada examen.')}</div>`; },
   foot: () => btn('Guardar', 'back') });
@@ -158,15 +158,16 @@ const reembolsoBlock = () => { const m = S.item === 'mue';
   return `<div class="rmb mt8"><div class="rmb-h">${ic('receipt')}<b>Boleta para reembolso</b></div>
   <div class="rmb-r"><span>Paciente</span><b>${patN(S.who)} · RUT ${RUTS[S.who]}</b></div><div class="rmb-r"><span>Previsión</span><b>${pvTxt()}</b></div>
   ${m ? `<div class="rmb-r"><span>Exámenes</span><b>${examList().length ? examKeys().slice(0, 3).map(k => EXAMS[k][6] || EXAMS[k][5]).join(', ') + (examKeys().length > 3 ? ` y ${examKeys().length - 3} más` : '') : 'Se agregan al confirmar la orden'}</b></div>` : ''}
-  <div class="rmb-r"><span>${m ? 'Toma de muestra' : 'Atención'}</span><b>Boleta de honorarios de ${PRO().n.split(' ').slice(0, 2).join(' ')}</b></div>
+  <div class="rmb-r"><span>${m ? 'Toma de muestra' : 'Atención'}</span><b>Boleta de Cuidapp · pago con Mercado Pago</b></div>
   <button class="lk mt8" data-go="P65">${ic('file-pdf')}Ver documentos para reembolso</button></div>`; };
 def({ id: 'P65', name: 'Documentos para reembolso', kind: 'page', back: true, title: 'Para tu reembolso',
   body: () => { const m = S.item === 'mue', w = S.who, pr = PRO(), p = price(); const toma = m ? p.pro : p.total;
-    return `${(S.pv[w] || {}).t === 'isapre' ? `<div class="mb12">${S.isa[w] ? row('box:lightning', 'Reembolso automático', `Lo enviamos a ${S.isa[w].is} por ti`, 'P80', st('ok', 'Activo')) : row('box:link', 'Que lo envíe Cuidapp', `Vincula ${S.pv[w].is} y no tienes que subir nada`, 'P78', '<span class="lk">Vincular</span>', '', 'lkW', w)}</div>` : ''}<div class="pdfp"><div class="pdh"><div><b>Cuidapp</b><div class="xs t2">Documentos para reembolso · ${DAYS[S.day][3].replace(/^(hoy )?\S+ /, '')} 2026</div></div>${ic('file-pdf', 1)}</div>
+    return `${(S.pv[w] || {}).t === 'isapre' ? `<div class="mb12">${S.isa[w] ? row('box:lightning', 'Reembolso automático', `Te ayudamos a enviarlo a ${S.isa[w].is}`, 'P80', st('ok', 'Activo')) : row('box:link', 'Envío asistido', `Vincula ${S.pv[w].is} y te dejamos todo listo para enviar`, 'P78', '<span class="lk">Vincular</span>', '', 'lkW', w)}</div>` : ''}<div class="pdfp"><div class="pdh"><div><b>Cuidapp</b><div class="xs t2">Documentos para reembolso · ${DAYS[S.day][3].replace(/^(hoy )?\S+ /, '')} 2026</div></div>${ic('file-pdf', 1)}</div>
     <div class="xs t2 mt8">Paciente: <b style="color:var(--text)">${patN(w)}</b> · RUT ${RUTS[w]} · ${pvTxt(w)}</div>
-    ${m ? `<div class="rmbs mt12"><b>1. Boleta de exámenes</b><table class="rtab mt8"><tr><th>Código</th><th>Examen</th><th>Valor</th></tr>${examKeys().map(k => `<tr><td class="num">${EXAMS[k][6] || EXAMS[k][5] || 's/c'}</td><td>${EXAMS[k][0]}</td><td class="num">${clp(EXAMS[k][1])}</td></tr>`).join('')}<tr><td></td><td><b>Total</b></td><td class="num"><b>${clp(examSum())}</b></td></tr></table>${examKeys().some(k => !EXAMS[k][6]) ? '<div class="xs t3 mt4">Sin código Fonasa: consulta con tu previsión si lo cubre.</div>' : ''}</div>` : ''}
-    <div class="rmbs mt12"><b>${m ? '2' : '1'}. Boleta de honorarios electrónica</b><table class="rtab mt8"><tr><td>Profesional</td><td>${pr.n} · ${pr.t}</td></tr><tr><td>RUT</td><td class="num">${PRUT[pr.id] || PRUT.cr}</td></tr><tr><td>Prestación</td><td>${m ? 'Toma de muestra venosa a domicilio · cód. 0307011' : CAT[S.item].n + ' a domicilio'}</td></tr><tr><td>Valor</td><td class="num">${clp(toma)}</td></tr></table></div>
-    ${m ? `<div class="rmbs mt12"><b>3. Orden médica</b><div class="xs t2 mt4">${S.orden === 'si' ? 'Foto de tu orden · Dra. Marcela Ortiz R.' : S.needOrd ? 'Gestionada por Cuidapp · se adjunta al emitirla' : 'Si tu previsión la pide, podemos gestionarla por ti.'}</div></div>` : ''}</div>
+    <div class="rmbs mt12"><b>1. Boleta de Cuidapp por tu pago</b><div class="xs t2 mt4">Cuidapp la emite por el pago que hiciste con Mercado Pago.</div><table class="rtab mt8"><tr><td>Pagado con</td><td>Mercado Pago</td></tr><tr><td>Total pagado</td><td class="num">${clp(p.total)}</td></tr></table></div>
+    ${m ? `<div class="rmbs mt12"><b>2. Exámenes</b><table class="rtab mt8"><tr><th>Código</th><th>Examen</th><th>Valor</th></tr>${examKeys().map(k => `<tr><td class="num">${EXAMS[k][6] || EXAMS[k][5] || 's/c'}</td><td>${EXAMS[k][0]}</td><td class="num">${clp(EXAMS[k][1])}</td></tr>`).join('')}<tr><td></td><td><b>Total</b></td><td class="num"><b>${clp(examSum())}</b></td></tr></table>${examKeys().some(k => !EXAMS[k][6]) ? '<div class="xs t3 mt4">Sin código Fonasa: consulta con tu previsión si lo cubre.</div>' : ''}</div>` : ''}
+    <div class="rmbs mt12"><b>${m ? '3' : '2'}. Detalle de la atención</b><table class="rtab mt8"><tr><td>Profesional</td><td>${pr.n} · ${pr.t}</td></tr><tr><td>RUT</td><td class="num">${PRUT[pr.id] || PRUT.cr}</td></tr><tr><td>Prestación</td><td>${m ? 'Toma de muestra venosa a domicilio · cód. 0307011' : CAT[S.item].n + ' a domicilio'}</td></tr><tr><td>Valor</td><td class="num">${clp(toma)}</td></tr></table></div>
+    ${m ? `<div class="rmbs mt12"><b>${m ? '4' : '3'}. Orden médica</b><div class="xs t2 mt4">${S.orden === 'si' ? 'Foto de tu orden · Dra. Marcela Ortiz R.' : S.needOrd ? 'Gestionada por Cuidapp · se adjunta al emitirla' : 'Si tu previsión la pide, podemos gestionarla por ti.'}</div></div>` : ''}</div>
     <div class="lbl2">Cómo pedir el reembolso</div>
     ${row('box:buildings', 'Isapre', 'En la app o el sitio de tu isapre, sección reembolsos: sube la boleta y la orden médica.', '', '')}
     ${row('box:shield-check', 'Fonasa', 'Consulta en una sucursal Fonasa o en fonasa.cl si aplica bono o reembolso para estas prestaciones.', '', '')}
@@ -187,9 +188,9 @@ QRES.aexres = () => {
 def({ id: 'A08', name: 'Catálogo de exámenes', kind: 'adm', side: 'lab',
   body: () => { const all = Object.keys(EXAMS), c = all.filter(k => EXAMS[k][4] === 'c').length, f = S.aexF || 'all';
     return `<div class="ahd"><div><h1 class="h-xl">Catálogo de exámenes</h1><div class="t2 sm mt4">Importado desde el Excel del laboratorio el 26 oct 2026</div></div><button class="btn sec" style="width:auto;padding:0 18px" data-act="toast" data-arg="Sube el Excel actualizado y te mostramos los cambios antes de publicarlos.">${ic('file-arrow-up')}Importar Excel</button></div>
-    <div class="kpis mt16">${[[all.length, 'Exámenes publicados'], [c, 'Con precio Cuidapp'], [all.length - c, 'Con precio particular'], [all.filter(k => EXAMS[k][6]).length, 'Con código Fonasa']].map(t => `<div class="kpi"><b class="num">${t[0]}</b><span>${t[1]}</span></div>`).join('')}</div>
-    <div class="row8 mt16" style="align-items:center"><div style="flex:1;max-width:420px">${qin('aexq', 'aexres', 'Buscar por nombre o código', 'aexPage')}</div><div class="chips">${[['all', 'Todos'], ['c', 'Precio Cuidapp'], ['p', 'Precio particular'], ['sf', 'Sin código Fonasa']].map(t => chip(t[1], f === t[0], 'aexF', t[0])).join('')}</div></div>
-    <div id="aexres">${QRES.aexres()}</div><div class="xs t3 mt12">Se muestra el precio Cuidapp cuando existe; si no, el precio particular. Los costos internos del Excel no se publican.</div>`; } });
+    <div class="kpis mt16">${[[all.length, 'Exámenes publicados'], [c, 'Costo del laboratorio + recargo'], [all.length - c, 'Particular + recargo (sin costo)'], [all.filter(k => EXAMS[k][6]).length, 'Con código Fonasa']].map(t => `<div class="kpi"><b class="num">${t[0]}</b><span>${t[1]}</span></div>`).join('')}</div>
+    <div class="row8 mt16" style="align-items:center"><div style="flex:1;max-width:420px">${qin('aexq', 'aexres', 'Buscar por nombre o código', 'aexPage')}</div><div class="chips">${[['all', 'Todos'], ['c', 'Costo + recargo'], ['p', 'Particular + recargo'], ['sf', 'Sin código Fonasa']].map(t => chip(t[1], f === t[0], 'aexF', t[0])).join('')}</div></div>
+    <div id="aexres">${QRES.aexres()}</div><div class="xs t3 mt12">Precio paciente = costo del laboratorio + recargo; si no hay costo, precio particular + recargo. Los costos internos del Excel no se publican.</div>`; } });
 
 def({ id: 'A09', name: 'Órdenes por revisar', kind: 'adm', side: 'ord', next: ['A10'],
   body: () => `<div class="ahd"><div><h1 class="h-xl">Órdenes por revisar</h1><div class="t2 sm mt4">Fotos de órdenes médicas subidas por pacientes. Marca los exámenes del catálogo y envíalos para que confirmen.</div></div></div>

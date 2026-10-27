@@ -82,7 +82,7 @@ Object.assign(ACT, {
   lkIs: i => { S.lk.is = i; },
   lkC: k => { S.lk[k] = !S.lk[k]; if (k === 'car') { S.car = S.car || {}; S.car[S.lk.w] = S.lk.car ? { f: 'ok', b: 'ok' } : null; } },
   carRm: s => { S.car[S.who][s] = ''; },
-  isaLink: () => { S.isa[S.lk.w] = { is: S.lk.is, desde: '26 oct 2026' }; S.pv[S.lk.w].t = 'isapre'; S.pv[S.lk.w].is = S.lk.is; S.rbAuto = true; if (S.lkNext) S.rbAsk = 'si'; toast(`${S.lk.is} vinculada. Desde ahora enviamos tus reembolsos por ti.`); },
+  isaLink: () => { S.isa[S.lk.w] = { is: S.lk.is, desde: '26 oct 2026' }; S.pv[S.lk.w].t = 'isapre'; S.pv[S.lk.w].is = S.lk.is; S.rbAuto = true; if (S.lkNext) S.rbAsk = 'si'; toast(`${S.lk.is} vinculada. Desde ahora te ayudamos a enviar tus reembolsos.`); },
   isaUn: w => { delete S.isa[w]; S.rbAuto = false; toast('Isapre desvinculada. Borramos el acceso y dejamos de enviar reembolsos.'); },
   rbAuto: () => { S.rbAuto = !S.rbAuto; S.rbAsk = S.rbAuto ? 'si' : 'no'; },
   rbAsk: v => { S.rbAsk = v; S.rbAuto = v === 'si' && !!isaOf(S.who); },
@@ -147,15 +147,15 @@ def({ id: 'P73', name: 'Compartir resultados', kind: 'page', back: true, title: 
 
 /* ---------- P74 / P75 · Chequeos ---------- */
 const PACKS = [
-  ["pre", "Chequeo preventivo", "Adultos, una vez al año", "Revisa sangre, azúcar, colesterol, riñón e hígado en un solo pinchazo.", ["hemo", "bioq", "lip", "ori"], 27990],
-  ["cv", "Preventivo cardiovascular", "Presión alta o colesterol", "Colesterol, grasas y sales de la sangre para tu control con el médico.", ["bioq", "lip", "x38"], 22990],
-  ["met", "Control metabólico", "Diabetes o azúcar alta", "Azúcar de los últimos 3 meses, colesterol, riñón e hígado.", ["hba", "gli", "lip", "cre", "x58"], 32990],
-  ["tir", "Tiroides y hormonas", "Cansancio, peso o ciclo irregular", "Tiroides y las principales hormonas, para conversar con tu médico.", ["tsh", "x81", "x82", "x69", "x70", "x73", "x62"], 49990],
-  ["nut", "Nutricional y vitaminas", "Cansancio frecuente o dieta especial", "Vitaminas, hierro y minerales que más se piden en controles.", ["x191", "vitd", "x267", "x5", "x4", "x31", "x42"], 61990],
-  ["muj", "Salud mujer", "Control anual de la mujer", "Hormonas, tiroides, hierro, vitaminas y calcio.", ["x69", "x70", "tsh", "t4", "x82", "x191", "x5", "x4", "x267", "x31", "ori"], 74990],
-  ["hom", "Salud hombre", "Hombres desde los 40", "Sangre, azúcar, colesterol, tiroides y antígeno prostático.", ["hemo", "bioq", "lip", "x105", "tsh", "ori"], 46990],
-  ["int", "Salud integral", "El chequeo más completo", "Todo lo del preventivo más azúcar de 3 meses, tiroides, B12 y ferritina.", ["hemo", "bioq", "lip", "hba", "tsh", "t4", "x82", "x191", "x4", "ori"], 72990],
-]; /* precio pack calculado desde datos/examenes-con-packs.xlsx (hoja Packs): ~8% menos que por separado, respetando el margen mínimo de 10% sobre el costo del laboratorio. Contenido clínico: validar con médico y laboratorio antes de producción (interno) */
+  ["pre", "Chequeo preventivo", "Adultos, una vez al año", "Revisa sangre, azúcar, colesterol, riñón e hígado en un solo pinchazo.", ["hemo", "bioq", "lip", "ori"], 32800],
+  ["cv", "Preventivo cardiovascular", "Presión alta o colesterol", "Colesterol, grasas y sales de la sangre para tu control con el médico.", ["bioq", "lip", "x38"], 27000],
+  ["met", "Control metabólico", "Diabetes o azúcar alta", "Azúcar de los últimos 3 meses, colesterol, riñón e hígado.", ["hba", "gli", "lip", "cre", "x58"], 38200],
+  ["tir", "Tiroides y hormonas", "Cansancio, peso o ciclo irregular", "Tiroides y las principales hormonas, para conversar con tu médico.", ["tsh", "x81", "x82", "x69", "x70", "x73", "x62"], 57700],
+  ["nut", "Nutricional y vitaminas", "Cansancio frecuente o dieta especial", "Vitaminas, hierro y minerales que más se piden en controles.", ["x191", "vitd", "x267", "x5", "x4", "x31", "x42"], 71700],
+  ["muj", "Salud mujer", "Control anual de la mujer", "Hormonas, tiroides, hierro, vitaminas y calcio.", ["x69", "x70", "tsh", "t4", "x82", "x191", "x5", "x4", "x267", "x31", "ori"], 86500],
+  ["hom", "Salud hombre", "Hombres desde los 40", "Sangre, azúcar, colesterol, tiroides y antígeno prostático.", ["hemo", "bioq", "lip", "x105", "tsh", "ori"], 53900],
+  ["int", "Salud integral", "El chequeo más completo", "Todo lo del preventivo más azúcar de 3 meses, tiroides, B12 y ferritina.", ["hemo", "bioq", "lip", "hba", "tsh", "t4", "x82", "x191", "x4", "ori"], 84500],
+]; /* precio pack = suma de los precios al paciente −5%, redondeado a $100 (datos/examenes-con-packs.xlsx, hoja Packs). Contenido clínico: validar con médico y laboratorio antes de producción (interno) */
 const EXBM = { hemo: ['Hemoglobina', 'Leucocitos', 'Plaquetas', 'Hematocrito'], bioq: ['Glicemia', 'Nitrógeno ureico', 'Ácido úrico', 'Colesterol total', 'Proteínas', 'Albúmina', 'Bilirrubina', 'Fosfatasas alcalinas', 'GOT', 'LDH', 'Calcio', 'Fósforo'], lip: ['Colesterol total', 'LDL', 'HDL', 'VLDL', 'Triglicéridos'], ori: ['Orina completa'], cre: ['Creatinina'], gli: ['Glicemia'], hba: ['Hemoglobina glicosilada'], x616: ['Microalbuminuria'], x38: ['Sodio', 'Potasio', 'Cloro'], tsh: ['TSH'], t4: ['T4 libre'], x81: ['T4'], x82: ['T3'], x69: ['FSH'], x70: ['LH'], x73: ['Progesterona'], x62: ['Cortisol'], vitd: ['Vitamina D'], x191: ['Vitamina B12'], x267: ['Ácido fólico'], x4: ['Ferritina'], x5: ['Hierro'], x31: ['Calcio'], x42: ['Fósforo'], x58: ['Bilirrubina', 'GGT', 'Fosfatasas alcalinas', 'Tiempo de protrombina', 'Transaminasas'], x105: ['Antígeno prostático (PSA)'], pcr: ['Proteína C reactiva'] };
 const pkSum = p => p[4].reduce((a, k) => a + EXAMS[k][1], 0);
 const pkBm = p => [...new Set(p[4].flatMap(k => EXBM[k] || [EXAMS[k][0]]))];
@@ -164,14 +164,15 @@ const pkPl = p => p[4].map(k => EXAMS[k][8] || '').sort((a, b) => parseInt(b) - 
 const TOMA = () => CAT.mue.base;
 const pkPr = p => p[5];
 const pkSave = p => pkSum(p) - pkPr(p);
-const pkTot = p => pkPr(p) + (pkPr(p) >= 30000 ? 0 : TOMA());
+const exD = pr => S.exFirst && pr >= EXD_MIN ? Math.min(EXD_MAX, Math.round(pr * EXD_P / 100 / 10) * 10) : 0;
+const pkTot = p => pkPr(p) + TOMA() - exD(pkPr(p));
 const pkOf = id => PACKS.find(x => x[0] === id) || PACKS[0];
 const pkCard = (p, sm) => `<button class="pkc2 ${sm ? 'sm' : ''}" data-act="pk" data-arg="${p[0]}" data-go="P75"><span class="tx"><b>${p[1]}</b><span class="sm t2">${p[2]}</span><span class="pkmeta xs t2"><span>${ic('test-tube')}${p[4].length} exámenes</span><span>${ic(pkAy(p) ? 'fork-knife' : 'coffee')}${pkAy(p) ? 'Con ayuno' : 'Sin ayuno'}</span>${sm ? '' : `<span>${ic('clock')}${pkPl(p)}</span>`}</span></span><span class="pkp"><b class="num">${clp(pkPr(p))}</b><s class="xs t3 num">${clp(pkSum(p))}</s><span class="pksv">Ahorras ${clp(pkSave(p))}</span></span></button>`;
 const pkSec = () => `<div class="shd mt24"><h3>Packs de exámenes</h3><button class="lk sm" data-go="P74">Ver los ${PACKS.length}</button></div><div class="xs t2">Exámenes que se piden juntos, a menor precio que por separado.</div><div class="pkl2 mt8">${PACKS.slice(0, 3).map(p => pkCard(p, 1)).join('')}</div>`;
 const pkAct = () => { const p = S.pack && PACKS.find(x => x[0] === S.pack); return p && p[4].every(k => S.exams[k]) ? p : null; };
 const pkD = () => { const p = pkAct(); return p && !byOrder() ? pkSave(p) : 0; };
 def({ id: 'P74', name: 'Packs de exámenes', kind: 'page', back: true, title: 'Packs de exámenes', next: ['P75'],
-  body: () => `<div class="sm t2">Exámenes que se piden juntos, a menor precio que por separado. La toma a domicilio es gratis si los exámenes suman $30.000 o más.</div>
+  body: () => `<div class="sm t2">Exámenes que se piden juntos, a menor precio que por separado. En tu primer pedido de exámenes sobre $30.000 tienes 20% de descuento (hasta $20.000).</div>
   <div class="pkl2 mt16">${PACKS.map(p => pkCard(p)).join('')}</div>
   <div class="xs t3 mt12">Consulta a tu médico qué exámenes necesitas. Packs de ejemplo.</div>`,
   foot: () => btn('Prefiero elegir exámenes sueltos', 'P40', 'sec') });
@@ -180,12 +181,12 @@ def({ id: 'P75', name: 'Detalle del pack', kind: 'page', back: true, title: '', 
     return `<div class="xs t3">Pack · ${p[4].length} exámenes</div><h1 class="h-l mt4">${p[1]}</h1><div class="sm t2 mt4">${p[2]} · resultados en ${pkPl(p)}</div>
     <div class="lbl2">Para qué sirve</div><div class="sm">${p[3]}</div>
     <div class="lbl2">Qué incluye</div><div class="exl">${p[4].map(k => `<div class="exr"><span class="check on">${ic('check', 0).replace('ph ', 'ph-bold ')}</span><span class="tx"><span class="a">${EXAMS[k][0]}</span><span class="b">${(EXBM[k] && EXBM[k].length > 1 ? EXBM[k].join(', ') + ' · ' : '') + exSub(k)}</span></span></div>`).join('')}</div>
-    <div class="lbl2">Precio</div>${kv('Por separado', clp(sm))}${kv('Descuento pack', '−' + clp(sm - pr), 'dsc')}${kv('Precio del pack', clp(pr))}${kv('Toma a domicilio', pr >= 30000 ? '<s class="t3">' + clp(TOMA()) + '</s> $0' : clp(TOMA()))}${kv('Total', clp(pkTot(p)), 'tot')}
-    <div class="xs t2 mt8">${pr >= 30000 ? 'Toma gratis porque el pack suma más de $30.000.' : 'La toma a domicilio se suma al precio del pack.'} El costo por servicio (${S.svcP}%) y el descuento CUIDA15 en la toma se ven al pagar.</div>
+    <div class="lbl2">Precio</div>${kv('Por separado', clp(sm))}${kv('Descuento pack', '−' + clp(sm - pr), 'dsc')}${kv('Precio del pack', clp(pr))}${kv('Toma a domicilio', clp(TOMA()))}${exD(pr) ? kv('Primer pedido de exámenes (20%)', '−' + clp(exD(pr)), 'dsc') : ''}${kv('Total', clp(pkTot(p)), 'tot')}
+    <div class="xs t2 mt8">${pr >= EXD_MIN ? 'El 20% de descuento aplica a tu primer pedido de exámenes (sobre $30.000, hasta $20.000).' : 'La toma a domicilio se suma al precio del pack.'} El costo por servicio (${S.svcP}%) y el descuento CUIDA15 en la toma se ven al pagar.</div>
     <div class="lbl2">Preparación</div>${row('box:' + (pkAy(p) ? 'fork-knife' : 'coffee'), pkAy(p) ? 'Ayuno de 8 a 12 horas' : 'No necesitas ayuno', pkAy(p) ? 'Puedes tomar agua. Agenda temprano en la mañana.' : 'Puedes comer normal', '', '')}${row('box:test-tube', 'Muestras', tubes.join(' · '), '', '')}${p[4].includes('x62') ? row('box:clock', 'Cortisol antes de las 9:30', 'Agenda la toma temprano', '', '') : ''}
     <div class="lbl2">Orden médica y reembolso</div>${row('box:file-text', 'No necesitas orden médica', 'Si la necesitas, la gestionamos por ti', '', '')}
     <div class="mt8">${note('receipt', 'Con orden médica suele ser más fácil reembolsar en la Isapre o Fonasa. Revisa las condiciones de tu plan.')}</div>`; },
-  foot: () => `<div class="fbar"><div class="fb-l"><b class="num">${clp(pkPr(pkOf(S.pk)))}</b><span>${pkOf(S.pk)[4].length} exámenes · ${pkPr(pkOf(S.pk)) >= 30000 ? 'toma gratis' : 'toma aparte'}</span></div>${abtn('Agregar pack', 'pkGo', S.pk || PACKS[0][0], 'fbtn', 'P40')}</div>` });
+  foot: () => `<div class="fbar"><div class="fb-l"><b class="num">${clp(pkPr(pkOf(S.pk)))}</b><span>${pkOf(S.pk)[4].length} exámenes · ${exD(pkPr(pkOf(S.pk))) ? '20% de descuento' : 'toma aparte'}</span></div>${abtn('Agregar pack', 'pkGo', S.pk || PACKS[0][0], 'fbtn', 'P40')}</div>` });
 
 /* ---------- P76 · Seguimiento de exámenes ---------- */
 def({ id: 'P76', name: 'Seguimiento de exámenes', kind: 'page', back: true, title: 'Estado de los exámenes', next: ['P72'],
@@ -234,21 +235,21 @@ def({ id: 'P94', name: 'Carnet para el reembolso', kind: 'page', back: true, tit
 
 const rbAsk = () => { const w = S.who, p = S.pv[w] || {}; if (p.t === 'fonasa') return '';
   const lk = isaOf(w), is = lk ? lk.is : p.is || 'tu Isapre';
-  return `<div class="rbq mt16"><div class="rbq-h"><span class="ri box">${ic('lightning')}</span><div><b>¿Quieres que gestionemos tu reembolso automáticamente?</b><div class="sm t2 mt4">Cuidapp envía tu boleta a ${is} · ${clp(RB_FEE)}</div></div></div>
+  return `<div class="rbq mt16"><div class="rbq-h"><span class="ri box">${ic('lightning')}</span><div><b>¿Quieres que gestionemos tu reembolso automáticamente?</b><div class="sm t2 mt4">Cuidapp prepara tus documentos y te ayuda a enviarlos a ${is} · ${clp(RB_FEE)}</div></div></div>
   <div class="row8 mt12"><button class="btn ${S.rbAsk === 'si' ? '' : 'sec'} sm" data-act="rbAsk" data-arg="si">${S.rbAsk === 'si' ? ic('check') : ''}Sí</button><button class="btn ${S.rbAsk === 'no' ? '' : 'sec'} sm" data-act="rbAsk" data-arg="no">${S.rbAsk === 'no' ? ic('check') : ''}No, gracias</button></div>
-  ${S.rbAsk === 'si' ? `<div class="rbreq mt12"><div class="xs t2">Para enviarlo por ti necesitamos 2 cosas, una sola vez:</div>
+  ${S.rbAsk === 'si' ? `<div class="rbreq mt12"><div class="xs t2">Para ayudarte a enviarlo necesitamos 2 cosas, una sola vez:</div>
     ${lk ? row('box:check-circle', `1. ${lk.is} vinculada`, 'Listo', '', st('ok', 'Hecho')) : row('box:link', '1. Vincular tu Isapre', `Conecta ${is}. Toma 2 minutos.`, 'P78', '<span class="lk">Vincular</span>', '', 'lkBook', '')}
     ${carOk(w) ? row('box:check-circle', '2. Carnet por ambos lados', 'Subido', 'P94', st('ok', 'Hecho')) : row('box:identification-card', '2. Subir tu carnet', 'Foto por delante y por detrás', 'P94', '<span class="lk">Subir</span>')}
-    ${rbReady() ? `<div class="xs t2 mt8">${ic('check-circle')} Listo. Al terminar la atención enviamos la boleta a ${is}. La gestión (${clp(RB_FEE)}) aparece en el desglose.</div>` : `<div class="xs warnt mt8">Completa los 2 pasos para continuar, o elige «No, gracias».</div>`}</div>` : S.rbAsk === 'no' ? `<div class="xs t2 mt12">Igual te dejamos la boleta para que la presentes tú.</div>` : ''}</div>`; };
+    ${rbReady() ? `<div class="xs t2 mt8">${ic('check-circle')} Listo. Al terminar la atención preparamos tus documentos y te ayudamos a enviarlos a ${is}. La gestión (${clp(RB_FEE)}) aparece en el desglose.</div>` : `<div class="xs warnt mt8">Completa los 2 pasos para continuar, o elige «No, gracias».</div>`}</div>` : S.rbAsk === 'no' ? `<div class="xs t2 mt12">Igual te dejamos la boleta para que la presentes tú.</div>` : ''}</div>`; };
 const rbAutoRow = () => { const w = S.who, p = S.pv[w] || {};
   if (p.t !== 'isapre') return p.t === 'fonasa' ? row('box:receipt', 'Reembolso Fonasa', 'Descarga los documentos y preséntalos en Fonasa', 'P65') : '';
-  if (!isaOf(w)) return row('box:link', 'Reembolso automático', `Vincula ${p.is || 'tu Isapre'} y lo enviamos por ti · gestión ${clp(RB_FEE)}`, 'P78', '<span class="lk">Vincular</span>', '', 'lkW', w);
-  return `<div class="row nodiv"><span class="ri box">${ic('lightning')}</span><span class="tx"><div class="a">Reembolso automático</div><div class="b">${S.rbAuto ? `Lo enviamos a ${isaOf(w).is} al terminar · gestión ${clp(RB_FEE)}` : `Desactivado · si lo activas, gestión ${clp(RB_FEE)}`}</div></span><span class="end">${swc(S.rbAuto, 'rbAuto', '', 'Reembolso automático')}</span></div>`; };
+  if (!isaOf(w)) return row('box:link', 'Reembolso automático', `Vincula ${p.is || 'tu Isapre'} y te ayudamos a enviarlo · gestión ${clp(RB_FEE)}`, 'P78', '<span class="lk">Vincular</span>', '', 'lkW', w);
+  return `<div class="row nodiv"><span class="ri box">${ic('lightning')}</span><span class="tx"><div class="a">Reembolso automático</div><div class="b">${S.rbAuto ? `Te ayudamos a enviarlo a ${isaOf(w).is} al terminar · gestión ${clp(RB_FEE)}` : `Desactivado · si lo activas, gestión ${clp(RB_FEE)}`}</div></span><span class="end">${swc(S.rbAuto, 'rbAuto', '', 'Reembolso automático')}</span></div>`; };
 
 def({ id: 'P78', name: 'Vincular mi Isapre · paso 1', kind: 'page', back: true, title: 'Vincular mi Isapre', next: ['P79'],
   prep: () => { if (!S.lk.is) ACT.lkW(S.lk.w || S.who); },
   body: () => { const w = S.lk.w, p = S.pv[w];
-    return `<div class="xs t2">Paso 1 de 2</div><h1 class="h-l mt4">¿De quién es la Isapre?</h1><div class="sm t2 mt4">La vinculas una vez y un agente de Cuidapp sube la boleta, la orden médica y tu carnet cada vez que te atiendes. Gestión de reembolso: ${clp(RB_FEE)} por solicitud, solo cuando lo activas.</div>
+    return `<div class="xs t2">Paso 1 de 2</div><h1 class="h-l mt4">¿De quién es la Isapre?</h1><div class="sm t2 mt4">La vinculas una vez y un agente de Cuidapp prepara tu boleta, la orden médica y tu carnet cada vez que te atiendes, y te ayuda a enviarlos. Gestión de reembolso: ${clp(RB_FEE)} por solicitud, solo cuando lo activas.</div>
     <div class="chips mt16">${['yo', 'papa', 'mama'].map(x => chip(FAM[x].c + (x === 'yo' ? ' (tú)' : ''), w === x, 'lkW', x)).join('')}</div>
     ${p.t === 'fonasa' ? `<div class="mt16">${note('info', `${FAM[w].c} es de Fonasa. Por ahora el envío automático es para Isapres: con Fonasa descargas los documentos y los presentas tú.`)}</div>${btn('Ver documentos para Fonasa', 'P65', 'sec mt12')}` : `
     <div class="lbl2">Isapre</div><div class="isal">${ISAPRES.map(i => `<button class="isai ${S.lk.is === i ? 'on' : ''}" data-act="lkIs" data-arg="${i}"><span class="isl">${i.split(' ').map(x => x[0]).join('').slice(0, 2)}</span><span>${i}</span>${S.lk.is === i ? ic('check-circle', 1) : ''}</button>`).join('')}</div>
@@ -257,13 +258,12 @@ def({ id: 'P78', name: 'Vincular mi Isapre · paso 1', kind: 'page', back: true,
 
 def({ id: 'P79', name: 'Vincular mi Isapre · conectar cuenta', kind: 'page', back: true, title: 'Conectar cuenta', next: ['P80'],
   body: () => { const w = S.lk.w, is = S.lk.is || 'tu Isapre';
-    return `<div class="xs t2">Paso 2 de 2</div><div class="lkh mt8"><span class="lkl">${ic('lock-simple', 1)}</span><div><h1 class="h-l">Ingresa a tu cuenta de ${is}</h1><div class="sm t2 mt4">Con los mismos datos que usas en el sitio de ${is}.</div></div></div>
-    <div class="lkbox mt16"><label class="lkf"><span class="xs t2">RUT</span><input value="${RUTS[w]}" readonly></label><label class="lkf"><span class="xs t2">Clave de ${is}</span><input type="password" placeholder="••••••••" autocomplete="off"></label>
-    <div class="lkn">${ic('shield-check', 1)}<span>Conexión cifrada. Nadie de Cuidapp ve tu clave. Puedes desvincular cuando quieras.</span></div></div>
+    return `<div class="xs t2">Paso 2 de 2</div><div class="lkh mt8"><span class="lkl">${ic('lock-simple', 1)}</span><div><h1 class="h-l">Envío asistido a ${is}</h1><div class="sm t2 mt4">Cuidapp prepara tus documentos y te ayuda a enviarlos. Tú ingresas a ${is} con tu clave.</div></div></div>
+    <div class="lkbox mt16"><div class="lkn">${ic('shield-check', 1)}<span>Cuidapp no te pide ni guarda la clave de ${is}. Puedes desvincular cuando quieras.</span></div></div>
     <div class="lbl2">Autorización</div>
-    ${checkRow('Autorizo a Cuidapp a presentar mis reembolsos', S.lk.c1, 'lkC', 'c1', `Mandato para que un agente suba a ${is}, en mi nombre, la boleta, la orden médica y mi carnet de las atenciones agendadas en Cuidapp. Acepto el cobro de ${clp(RB_FEE)} por cada reembolso gestionado`)}
+    ${checkRow('Autorizo a Cuidapp a ayudarme con mis reembolsos', S.lk.c1, 'lkC', 'c1', `Para que un agente de Cuidapp prepare mi boleta, mi orden médica y mi carnet de las atenciones agendadas en Cuidapp y me ayude a enviarlos a ${is}. Acepto el cobro de ${clp(RB_FEE)} por cada reembolso gestionado`)}
     ${checkRow('Acepto el uso de mis datos de salud para este fin', S.lk.c2, 'lkC', 'c2', 'Solo para tramitar reembolsos. Cada envío queda registrado y lo puedes ver')}
-    <button class="lk sm mt4" data-act="toast" data-arg="Mandato: Cuidapp presenta solo reembolsos de atenciones agendadas en Cuidapp. No cambia tu plan ni tus datos. Puedes revocarlo cuando quieras desde Cuenta.">Leer el mandato completo</button>
+    <button class="lk sm mt4" data-act="toast" data-arg="Cuidapp solo prepara y ayuda a enviar reembolsos de atenciones agendadas en Cuidapp. No guarda tu clave de la Isapre, no cambia tu plan ni tus datos. Puedes revocarlo cuando quieras desde Cuenta.">Leer la autorización completa</button>
     <div class="lbl2">Una sola vez</div>${row('box:identification-card', 'Carnet de identidad', S.lk.car ? 'Subido · por ambos lados' : 'Foto por ambos lados', '', S.lk.car ? st('ok', 'Listo') : '<span class="lk">Subir</span>', '', 'lkC', 'car')}
     ${row('box:bank', 'Cuenta para recibir el pago', S.lk.bank ? 'BancoEstado · Cuenta RUT •••• 3207' : 'Opcional, si tu Isapre paga por transferencia', '', S.lk.bank ? st('ok', 'Lista') : '<span class="lk">Agregar</span>', '', 'lkC', 'bank')}
     <div class="mt16">${note('info', 'Sujeto a las condiciones y plazos de cada Isapre. La Isapre decide el monto que reembolsa según tu plan.')}</div>`; },
@@ -271,20 +271,20 @@ def({ id: 'P79', name: 'Vincular mi Isapre · conectar cuenta', kind: 'page', ba
 
 def({ id: 'P80', name: 'Mis reembolsos', kind: 'page', back: true, title: 'Reembolsos', next: ['P81', 'P78', 'P82'],
   body: () => { const ws = Object.keys(S.isa); const l = RBS();
-    return `${ws.length ? ws.map(w => row('box:link', `${S.isa[w].is} vinculada`, `${FAM[w].c} · RUT ${RUTS[w]}`, 'P82', st('ok', 'Activa'), '', 'lkW', w)).join('') : row('box:link', 'Vincula tu Isapre', 'Y enviamos tus reembolsos por ti', 'P78', '<span class="lk">Vincular</span>')}
+    return `${ws.length ? ws.map(w => row('box:link', `${S.isa[w].is} vinculada`, `${FAM[w].c} · RUT ${RUTS[w]}`, 'P82', st('ok', 'Activa'), '', 'lkW', w)).join('') : row('box:link', 'Vincula tu Isapre', 'Y te ayudamos a enviar tus reembolsos', 'P78', '<span class="lk">Vincular</span>')}
     <div class="lbl2">Solicitudes</div>${l.map(r => `<button class="rbc" data-act="rb" data-arg="${r.id}" data-go="P81"><span class="tx"><b>${r.svc}</b><span class="xs t2">${FAM[r.w].c} · ${r.f} · gestión ${clp(RB_FEE)} · ${(S.pv[r.w] || {}).t === 'isapre' ? 'Isapre ' + S.pv[r.w].is : pvTxt(r.w)}</span></span><span class="rbr"><b class="num">${clp(r.m)}</b>${rbChip(r.st)}</span></button>`).join('')}
     <div class="mt16">${note('info', 'Sujeto a las condiciones y plazos de cada Isapre.')}</div>`; } });
 
 def({ id: 'P81', name: 'Detalle del reembolso', kind: 'page', back: true, title: 'Reembolso', next: ['P65'],
   body: () => { const r = RBS().find(x => x.id === S.rbSel) || RBS()[1], ix = rbIdx(r.st), isa = (S.pv[r.w] || {}).is || 'la Isapre';
     const steps = [['file-text', 'Documentos listos'], ['paper-plane-tilt', 'Enviado a la Isapre'], ['hourglass-medium', 'En revisión'], [r.st === 'rech' ? 'x-circle' : 'check', r.st === 'rech' ? 'Rechazado' : 'Aprobado'], ['bank', 'Pagado']];
-    const log = [['26 oct · 09:14', 'Agente Cuidapp preparó la boleta y la orden médica'], ['26 oct · 09:20', `Subió los documentos al sitio de ${isa}`], ['26 oct · 09:21', `${isa} entregó el n.º de solicitud 4821-77`], ['28 oct · 12:03', `${isa} cambió el estado a «En revisión»`], ['2 nov · 10:40', r.st === 'rech' ? `${isa} rechazó: falta la orden médica` : `${isa} aprobó la solicitud`], ['5 nov · 15:10', 'Pago depositado en tu cuenta']].slice(0, Math.max(1, [1, 3, 4, 5, 6][ix]));
+    const log = [['26 oct · 09:14', 'Agente Cuidapp preparó la boleta y la orden médica'], ['26 oct · 09:20', `Enviaste los documentos al sitio de ${isa} con ayuda del agente`], ['26 oct · 09:21', `${isa} entregó el n.º de solicitud 4821-77`], ['28 oct · 12:03', `${isa} cambió el estado a «En revisión»`], ['2 nov · 10:40', r.st === 'rech' ? `${isa} rechazó: falta la orden médica` : `${isa} aprobó la solicitud`], ['5 nov · 15:10', 'Pago depositado en tu cuenta']].slice(0, Math.max(1, [1, 3, 4, 5, 6][ix]));
     return `<div class="xs t2">${FAM[r.w].c} · ${r.f}</div><h1 class="h-l mt4">${r.svc}</h1><div class="mt8">${rbChip(r.st)}</div>
     <div class="mt16">${kv('Monto presentado', clp(r.m))}${kv('Monto reembolsado', r.pago ? clp(r.pago) : r.st === 'rech' ? '—' : 'Lo informa la Isapre')}${kv('Gestión de reembolso Cuidapp', clp(RB_FEE))}</div>
     ${r.st === 'rech' ? `<div class="mt12">${note('warning', r.mot, 'bad')}</div>` : ''}
     <div class="lbl2">Estado</div><div class="tl3">${steps.map((t, i) => `<div class="tl3r ${i < ix || (i === ix && (r.st === 'pag')) ? 'ok' : i === ix ? 'on' : ''}">${ic(t[0], i <= ix)}<div><b>${t[1]}</b><span>${i < ix || r.st === 'pag' ? 'Hecho' : i === ix ? 'Ahora' : 'Pendiente'}</span></div></div>`).join('')}</div>
     <div class="lbl2">Documentos</div>${[['Boleta', 'receipt'], ['Orden médica', 'file-text'], ['Carnet de identidad', 'identification-card']].map((d, i) => row('box:' + d[1], d[0], r.d[i] ? 'Adjunta' : 'Falta', '', r.d[i] ? st('ok', 'Lista') : st('bad', 'Falta'))).join('')}
-    <div class="lbl2">Lo que hizo el agente</div><div class="rblog">${log.map(l => `<div><span class="xs t3">${l[0]}</span><span class="sm">${l[1]}</span></div>`).join('')}</div>
+    <div class="lbl2">Paso a paso</div><div class="rblog">${log.map(l => `<div><span class="xs t3">${l[0]}</span><span class="sm">${l[1]}</span></div>`).join('')}</div>
     <div class="mt16">${note('info', 'Sujeto a las condiciones y plazos de cada Isapre.')}</div>`; },
   foot: () => { const r = RBS().find(x => x.id === S.rbSel) || RBS()[1]; return r.st === 'rech' ? abtn('Subir orden y reenviar', 'rbFix', '', '', '') : btn(ic('file-pdf') + 'Ver documentos', 'P65', 'sec'); } });
 
@@ -292,7 +292,7 @@ def({ id: 'P82', name: 'Isapre vinculada', kind: 'page', back: true, title: 'Isa
   body: () => { const w = S.lk.w || 'yo', i = S.isa[w] || { is: S.pv[w].is || 'Isapre', desde: '—' };
     return `<div class="lkh"><span class="lkl ok">${ic('link', 1)}</span><div><h1 class="h-l">${i.is}</h1><div class="sm t2 mt4">${FAM[w].n} · RUT ${RUTS[w]}</div></div></div>
     <div class="mt16">${st('ok', 'Vinculada desde el ' + i.desde, 'check-circle')}</div>
-    <div class="lbl2">Qué puede hacer Cuidapp</div>${row('box:upload-simple', 'Subir boleta, orden médica y carnet', 'Solo de atenciones agendadas en Cuidapp', '', '')}${row('box:eye', 'Ver el estado de tus solicitudes', 'Para avisarte cuando cambian', '', '')}${row('box:prohibit', 'No cambia tu plan ni tus datos', 'Tampoco hace otros trámites', '', '')}
+    <div class="lbl2">Qué puede hacer Cuidapp</div>${row('box:file-text', 'Preparar boleta, orden médica y carnet', 'Solo de atenciones agendadas en Cuidapp', '', '')}${row('box:hand-pointing', 'Ayudarte a enviarlos', 'Tú ingresas a tu Isapre con tu clave. Cuidapp no la guarda', '', '')}${row('box:prohibit', 'No cambia tu plan ni tus datos', 'Tampoco hace otros trámites', '', '')}
     <div class="lbl2">Actividad</div>${row('box:clock-counter-clockwise', 'Último envío', 'Hoy 09:20 · Vitamina D', 'P80')}`; },
   foot: () => `<div class="row8">${btn('Ver reembolsos', 'P80', 'sec')}${abtn('Desvincular', 'isaUn', S.lk.w || 'yo', 'sec danger', 'P28')}</div>` });
 
@@ -306,9 +306,9 @@ const msTrend = k => { const b = BIOM[k], v = bval(k), p = prevL(b);
   return `<button class="mstr" data-act="bm" data-arg="${k}" data-go="P71"><span class="tx"><b>${b.n}</b><span class="sm t2"><b class="num">${nf(v, b.d)}</b> ${b.u}${p ? ` · ${v < p[1] ? '↓' : v > p[1] ? '↑' : '='} desde ${nf(p[1], b.d)} (${p[0]})` : ''}</span><span class="msst ${bst(k) === 'ok' ? 'ok' : 'warn'}">${{ ok: 'En rango', hi: 'Sobre el rango', lo: 'Bajo el rango', crit: 'Requiere atención hoy' }[bst(k)]}</span></span>${spark(k)}${ic('caret-right')}</button>`; };
 Object.assign(ACT, { msFm: k => { S.fm = k; } });
 const msIsa = k => { const p = S.pv[k] || {}, l = isaOf(k), nm = k === 'yo' ? 'tu' : 'la';
-  if (l) return `<div class="isac on mt12" role="button" data-act="lkW" data-arg="${k}" data-go="P82"><span class="ri box">${ic('link')}</span><span class="tx"><b>${l.is} vinculada</b><span class="xs t2">Enviamos los reembolsos por ti · desde ${l.desde}</span></span>${st('ok', 'Activa')}</div>`;
+  if (l) return `<div class="isac on mt12" role="button" data-act="lkW" data-arg="${k}" data-go="P82"><span class="ri box">${ic('link')}</span><span class="tx"><b>${l.is} vinculada</b><span class="xs t2">Te ayudamos a enviar los reembolsos · desde ${l.desde}</span></span>${st('ok', 'Activa')}</div>`;
   if (p.t === 'fonasa') return `<div class="isac mt12"><span class="ri box">${ic('shield-check')}</span><span class="tx"><b>${FAM[k].c} es de Fonasa ${p.tr ? 'tramo ' + p.tr : ''}</b><span class="xs t2">Descarga los documentos para tu reembolso. ¿Se cambió a Isapre? Vincúlala.</span></span><button class="pill" data-act="lkW" data-arg="${k}" data-go="P78">Vincular</button></div>`;
-  return `<div class="isac mt12"><span class="ri box">${ic('link')}</span><span class="tx"><b>Vincula ${nm} Isapre${p.is ? ' · ' + p.is : ''}</b><span class="xs t2">Y enviamos tus reembolsos por ti al terminar cada atención</span></span><button class="btn sm2" data-act="lkW" data-arg="${k}" data-go="P78">Vincular</button></div>`; };
+  return `<div class="isac mt12"><span class="ri box">${ic('link')}</span><span class="tx"><b>Vincula ${nm} Isapre${p.is ? ' · ' + p.is : ''}</b><span class="xs t2">Y te ayudamos a enviar tus reembolsos al terminar cada atención</span></span><button class="btn sm2" data-act="lkW" data-arg="${k}" data-go="P78">Vincular</button></div>`; };
 def({ id: 'P93', name: 'Mi salud', kind: 'page', tab: 'salud', next: ['P70', 'P71', 'P74', 'P75', 'P77', 'P51', 'P52', 'P55', 'P59', 'P80', 'P81', 'P26', 'P78', 'P82', 'P65'],
   body: () => { const k = FAM[S.fm] ? S.fm : 'mama', f = FAM[k], x = MSX[k], m = k === 'mama', out = outK(), rbs = RBS().filter(r => r.w === k);
     const res = m ? `<div class="msc"><div class="msc-h"><div><b>Exámenes del 24 oct</b><span class="xs t2">${BKEYS.length} biomarcadores · Paula Godoy</span></div><button class="lk sm" data-go="P70">Ver todos</button></div>
@@ -323,6 +323,6 @@ def({ id: 'P93', name: 'Mi salud', kind: 'page', tab: 'salud', next: ['P70', 'P7
     <div class="lbl2">Próximos y recordatorios</div>${x.prox.map(p => row('box:' + p[0], p[1], p[2], p[3], p[4] ? st('ok', p[4]) : '', '', p[3] === 'P51' ? 'fm' : p[3] === 'P75' ? 'pk' : '', p[3] === 'P51' ? k : p[3] === 'P75' ? 'pre' : '')).join('')}
     <div class="shd mt24"><h3>Chequeos sugeridos</h3><button class="lk sm" data-go="P74">Ver packs</button></div><div class="pkl2">${x.pk.map(id => pkCard(pkOf(id), 1)).join('')}</div>
     <div class="lbl2">Ficha y documentos</div>${row('box:notebook', 'Ficha de salud', f.dx[0], 'P51', '', '', 'fm', k)}${row('box:list', 'Línea de tiempo', m ? '9 registros · última nota hoy' : k === 'papa' ? '3 registros · última nota 21 oct' : 'Sin registros todavía', 'P52', '', '', 'fm', k)}${m ? row('box:file-pdf', 'Informe del laboratorio', 'Resultados 24 oct · PDF', '', ic('download-simple'), '', 'toast', 'Descargado: Resultados-Rosa-24-10-2026.pdf') : ''}${row('box:file-pdf', 'Ficha en PDF', 'Para llevarla al médico', 'P59', '', '', 'fm', k)}
-    <div class="lbl2">Reembolsos</div>${rbs.length ? rbs.map(r => row('box:receipt', r.svc, `${r.f} · ${clp(r.m)}`, 'P81', rbChip(r.st), '', 'rb', r.id)).join('') : row('box:receipt', 'Sin reembolsos en curso', S.pv[k] && S.pv[k].t === 'isapre' ? 'Los enviamos por ti cuando vinculas tu Isapre' : pvTxt(k), 'P80', '<span class="lk">Ver todos</span>')}
+    <div class="lbl2">Reembolsos</div>${rbs.length ? rbs.map(r => row('box:receipt', r.svc, `${r.f} · ${clp(r.m)}`, 'P81', rbChip(r.st), '', 'rb', r.id)).join('') : row('box:receipt', 'Sin reembolsos en curso', S.pv[k] && S.pv[k].t === 'isapre' ? 'Te ayudamos a enviarlos cuando vinculas tu Isapre' : pvTxt(k), 'P80', '<span class="lk">Ver todos</span>')}
     <div class="lbl2">Privacidad</div>${row('box:eye', 'Quién vio la ficha', m ? 'Último acceso hoy 08:41 · Camila' : 'Registro de accesos', 'P55', '', '', 'fm', k)}
     <div class="mt16">${note('info', 'Esto no es un diagnóstico. Conversa tus resultados con tu médico tratante.')}</div>`; } });

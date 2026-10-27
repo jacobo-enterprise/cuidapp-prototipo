@@ -3,7 +3,7 @@
 var D=window.CUIDA_SUG;if(!D)return;
 var PLAT='../plataforma/',KEY='cuidapp:go';
 var norm=function(t){return String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()};
-var exN=function(t){return norm(t).replace(/\bvit\.?\s*(?=[a-z0-9])/g,'vitamina ').replace(/\bfe\b/g,'hierro').replace(/\s+/g,' ').trim()};
+var exN=function(t){return norm(t).replace(/\bvit(?:\.\s*|\s+)(?=[a-z0-9])/g,'vitamina ').replace(/\bfe\b/g,'hierro').replace(/\s+/g,' ').trim()};
 var esc=function(t){return String(t).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
 /* plural tolerante: «inyecciones» encuentra «inyección» */
 var vars=function(w){var v=[w];if(w.length>4){if(/ciones$/.test(w))v.push(w.slice(0,-2));if(/es$/.test(w))v.push(w.slice(0,-2));if(/s$/.test(w))v.push(w.slice(0,-1))}return v};
