@@ -27,7 +27,7 @@ const fon = k => EXAMS[k][6] ? `Fonasa ${EXAMS[k][6]}` : `Cód. ${EXAMS[k][5] ||
 const exSub = k => { const e = EXAMS[k]; return [e[7], ayLbl(e[3]), plLbl(k), fon(k)].filter(Boolean).join(' · '); };
 /* preparación y entrega de lo que lleva la paciente: filas reutilizadas en selección, resumen, pago y confirmación */
 const prepRows = () => {
-  if (byOrder()) return row('box:file-text', 'Ayuno y entrega según tu orden', 'Te los confirmamos cuando revisemos tu orden', '', '');
+  if (byOrder()) return row('box:file-text', 'Ayuno y entrega según tu orden', 'Los vemos apenas confirmes los exámenes de tu orden', '', '');
   const ks = allExKeys(), a = ayAgg(ks), p = plAgg(ks), n = ks.length > 1 ? ' (el mayor entre todos los exámenes)' : '';
   return row('box:' + (a.h > 0 ? 'fork-knife' : a.pend ? 'question' : 'coffee'), a.txt, a.h > 0 ? `Solo agua${n}${a.pend ? ' · ' + a.pend + ' por confirmar' : ''}` : a.pend ? 'Te confirmamos antes de la toma si algún examen pide ayuno' : 'Puedes comer y tomar normal', '', '')
     + row('box:clock', p.txt, ks.length > 1 && p.plazo ? 'Todos tus resultados, contando desde la toma' + (p.pend ? ' · ' + p.pend + ' por confirmar' : '') : 'Contando desde la toma · te avisamos cuando estén', '', '');
@@ -64,6 +64,8 @@ const HELP = {
   ren: ['Riñón y presión', 'heartbeat', ['cre', 'x49', 'x38', 'ori']],
 };
 const ORD5 = ['hemo', 'bioq', 'tsh', 'hba', 'ori'];
+/* lo que la lectura automática no reconoce del catálogo (la paciente lo busca ella) */
+const ORDNO = ['Panel de alergias alimentarias'];
 
 /* ---------- RUT de ejemplo con dígito verificador válido ---------- */
 const rutDV = n => { let s = 0, m = 2; for (const d of String(n).split('').reverse()) { s += +d * m; m = m === 7 ? 2 : m + 1; } const r = 11 - (s % 11); return r === 11 ? '0' : r === 10 ? 'K' : String(r); };
@@ -80,10 +82,12 @@ Object.assign(ACT, {
   exMore: () => { S.exLim = (S.exLim || 20) + 20; },
   exAdd: k => { S.item = 'mue'; S.mmode = 'cat'; S.exams[k] = true; S.exq = ''; toast(`${EXAMS[k][0]} agregado a tus exámenes.`); },
   path: p => { S.mmode = p; },
-  ordUp: () => { S.orden = 'si'; S.ord = 'rev'; S.mmode = 'orden'; },
-  ordReady: () => { S.ord = 'listo'; S.ordSel = ORD5.slice(); },
-  ordOk: () => { S.pack = ''; S.exams = {}; (S.ordSel || ORD5).forEach(k => S.exams[k] = true); S.ord = 'ok'; S.ordFrom = true; S.mmode = 'cat'; S.item = 'mue'; },
-  ordEdit: () => { ACT.ordOk(); toast('Puedes agregar o quitar exámenes. El laboratorio revisa los cambios.'); },
+  ordUp: () => { S.orden = 'si'; S.ord = 'lee'; S.mmode = 'orden'; S.ordSel = null; S.ordLst = null; S.ordNo = []; S.ordq = ''; },
+  ordReady: () => { S.ord = 'listo'; S.ordSel = ORD5.slice(); S.ordLst = ORD5.slice(); S.ordNo = ORDNO.slice(); S.ordq = ''; },
+  ordTog: k => { const l = S.ordLst || (S.ordLst = []), s = S.ordSel || (S.ordSel = []); if (!l.includes(k)) l.push(k); if (s.includes(k)) S.ordSel = s.filter(x => x !== k); else { s.push(k); toast(`${EXAMS[k][0]} agregado a tu orden.`); } },
+  ordNoX: i => { S.ordNo.splice(+i, 1); },
+  ordCancel: () => { S.ord = ''; S.ordSel = null; S.ordLst = null; S.ordNo = []; S.ordq = ''; S.mmode = 'cat'; },
+  ordOk: () => { S.pack = ''; S.exams = {}; (S.ordSel || []).forEach(k => S.exams[k] = true); S.ord = 'ok'; S.ordFrom = true; S.mmode = 'cat'; S.item = 'mue'; },
   help: k => { S.help = k; },
   helpAdd: () => { HELP[S.help][2].forEach(k => S.exams[k] = true); S.mmode = 'cat'; S.exq = ''; toast(`Agregamos ${HELP[S.help][2].length} exámenes sugeridos.`); },
   pvFor: w => { S.pvFor = w; },
@@ -94,9 +98,6 @@ Object.assign(ACT, {
   scopeGo: s => { S.scope = s; S.q = ''; S.typed = true; },
   aexPg: d => { S.aexPage = Math.max(0, S.aexPage + (+d)); },
   aexF: f => { S.aexF = f; S.aexPage = 0; },
-  aord: i => { S.aord = +i; S.aordSel = i == 0 ? { hemo: true, lip: true } : {}; S.aoq = ''; },
-  aoTog: k => { S.aordSel[k] = !S.aordSel[k]; },
-  aoSend: () => { if (!S.aordDone.includes(S.aord)) S.aordDone.push(S.aord); toast(`Enviado a ${AORD[S.aord][0].split(' ')[0]}: ${Object.values(S.aordSel).filter(Boolean).length} exámenes. Le avisamos por notificación push para que confirme.`); },
 });
 
 /* ---------- P40 · Exámenes: tres caminos ---------- */
@@ -109,14 +110,14 @@ def({ id: 'P40', name: 'Exámenes de laboratorio', kind: 'page', back: true, tit
   prep: () => { S.item = 'mue'; },
   body: () => {
     const orden = S.mmode === 'orden';
-    const paths = `<div class="paths mt16">${pathCard('cat', 'list-checks', 'Elegir mis exámenes', 'Busca y marca', !orden)}${pathCard('orden', 'camera', 'Subir foto de mi orden', 'Los elegimos por ti', orden)}${pathCard('', 'chat-circle-dots', 'Ayúdame a elegir', 'Según para qué es', false, 'P63')}</div>`;
+    const paths = `<div class="paths mt16">${pathCard('cat', 'list-checks', 'Elegir mis exámenes', 'Busca y marca', !orden)}${pathCard('orden', 'camera', 'Subir foto de mi orden', 'Los marcamos por ti', orden)}${pathCard('', 'chat-circle-dots', 'Ayúdame a elegir', 'Según para qué es', false, 'P63')}</div>`;
     const head = `<div class="tsteps">${[['file-arrow-up', 'Sube tu orden médica o elige tus exámenes'], ['house-line', 'Una enfermera o TENS va a tu casa y toma la muestra'], ['flask', 'La entrega en un laboratorio afiliado y te avisamos con los resultados']].map((t, i) => `<div class="tst"><span class="tsn">${i + 1}</span><span class="tsi">${ic(t[0])}</span><span class="sm">${t[1]}</span></div>`).join('')}</div>
     <div class="t2 sm mt12">${nPat()} exámenes. La profesional solo cobra la toma; los exámenes los pagas a Cuidapp.</div>${paths}`;
     if (orden) {
-      const stt = S.ord === 'rev' ? row('box:hourglass-medium', 'Estamos revisando tu orden', 'Te avisamos por notificación push', 'P61', st('inf', 'En revisión', ''))
-        : S.ord === 'listo' ? row('box:list-checks', `Seleccionamos ${ORD5.length} exámenes`, 'Revísalos y confírmalos', 'P62', st('ok', 'Lista', ''))
+      const stt = S.ord === 'lee' ? row('box:scan', 'Leyendo tu orden', 'Son unos segundos', 'P61', st('inf', 'Leyendo', ''))
+        : S.ord === 'listo' ? row('box:list-checks', `Detectamos ${(S.ordSel || ORD5).length} exámenes`, 'Revísalos y confirma', 'P62', st('ok', 'Lista', ''))
         : S.ord === 'ok' ? row('box:check-circle', 'Orden confirmada', nEx(), 'P16', st('ok', 'Confirmada', '')) : '';
-      return `${head}<div class="mt16">${note('sparkle', 'Sube una foto de tu orden y nuestro equipo marca los exámenes por ti. Tú confirmas los precios antes de pagar.', 'ok')}</div>${stt ? `<div class="mt16">${stt}</div>` : `<div class="lbl2">Cómo funciona</div>${[['camera', 'Sacas una foto a la orden', 'Papel o PDF, la de cualquier médico'], ['magnifying-glass', 'La revisamos en menos de 30 min', 'En horario hábil, con el catálogo del laboratorio'], ['check-circle', 'Confirmas los exámenes y el precio', 'Puedes editar antes de pagar']].map(t => row('box:' + t[0], t[1], t[2], '', '')).join('')}`}`;
+      return `${head}<div class="mt16">${note('sparkle', 'Sube una foto de tu orden y la leemos al instante y marcamos los exámenes por ti. Tú confirmas los precios antes de pagar.', 'ok')}</div>${stt ? `<div class="mt16">${stt}</div>` : `<div class="lbl2">Cómo funciona</div>${[['camera', 'Sacas una foto a la orden', 'Papel o PDF, la de cualquier médico'], ['scan', 'La leemos en unos segundos', 'Buscamos cada examen en el catálogo del laboratorio'], ['check-circle', 'Confirmas los exámenes y el precio', 'Puedes editar antes de pagar']].map(t => row('box:' + t[0], t[1], t[2], '', '')).join('')}`}`;
     }
     return `${head}<div class="mt16">${note('check-circle', 'No necesitas orden: nosotros la gestionamos por ti.', 'ok')}</div>
     <div class="mt16">${exTabs()}</div>
@@ -130,38 +131,46 @@ def({ id: 'P40', name: 'Exámenes de laboratorio', kind: 'page', back: true, tit
   },
   foot: () => S.mmode === 'orden'
     ? (S.ord === 'ok' ? `<div class="fbar"><div class="fb-l"><b class="num">${clp(examSum())}</b><span>${nEx()}</span></div><button class="btn fbtn" data-go="P16">Continuar</button></div>`
-      : S.ord === 'listo' ? btn(`Ver los ${ORD5.length} exámenes`, 'P62') : S.ord === 'rev' ? btn('Ver estado', 'P61', 'sec') : btn(`${ic('camera')}Subir foto de mi orden`, 'P60'))
+      : S.ord === 'listo' ? btn(`Ver los ${(S.ordSel || ORD5).length} exámenes`, 'P62') : S.ord === 'lee' ? btn('Ver la lectura', 'P61', 'sec') : btn(`${ic('camera')}Subir foto de mi orden`, 'P60'))
     : `<div class="fbar"><div class="fb-l"><b class="num">${clp(examSum())}</b><span>${examList().length === 1 ? '1 examen' : examList().length + ' exámenes'}${S.needOrd ? ' + orden' : ''} · toma aparte</span></div><button class="btn fbtn" data-go="P16" ${examList().length ? '' : 'disabled'}>Continuar</button></div>` });
 
 def({ id: 'P60', name: 'Subir foto de la orden', kind: 'page', back: true, title: 'Tu orden médica', next: ['P61'],
-  body: () => `<div class="h-m">Sube la foto de tu orden</div><div class="t2 sm mt8">Nuestro equipo la lee y marca los exámenes por ti. Antes de pagar ves la lista con precios.</div>
+  body: () => `<div class="h-m">Sube la foto de tu orden</div><div class="t2 sm mt8">La leemos sola y marcamos los exámenes por ti. Antes de pagar ves la lista con precios.</div>
   <div class="drop mt16"><div class="row8"><button class="pill on" data-act="ordUp" data-go="P61">${ic('camera')}Tomar foto</button><button class="pill" data-act="ordUp" data-go="P61">${ic('image')}Elegir de fotos</button><button class="pill" data-act="ordUp" data-go="P61">${ic('file-arrow-up')}PDF</button></div><div class="t3 sm">Foto completa, derecha y con luz</div></div>
   <div class="lbl2">Que se vea</div>${['Nombre del paciente', 'Exámenes indicados', 'Nombre y firma del médico'].map(t => `<div class="chk">${ic('check')}<span>${t}</span></div>`).join('')}
   <div class="mt16">${note('info', '¿No tienes orden? No es obligatoria: elige tus exámenes y nosotros la gestionamos.')}</div>`,
-  foot: () => btn('Mejor elijo yo', 'P40', 'ghost', 'data-act="path" data-arg="cat"') });
+  foot: () => btn('Mejor elijo yo', 'P40', 'ghost', 'data-act="ordCancel"') });
 
-def({ id: 'P61', name: 'Estamos revisando tu orden', kind: 'page', back: true, title: '', next: ['P62'], auto: 'P62', autoAct: () => ACT.ordReady(),
-  prep: () => { if (!S.ord) S.ord = 'rev'; },
-  body: () => `<div class="center mt8"><div class="recok" style="justify-content:center">${orden()}</div></div><div class="h-l mt16">Estamos revisando tu orden</div><div class="t2 sm mt8">Nuestro equipo marca los exámenes del catálogo. Suele tardar menos de 30 minutos en horario hábil.</div>
-  <div class="tl3 mt16">${[['check-circle', 'Orden recibida', 'Hoy 10:31', 'ok'], ['hourglass-medium', 'Revisando exámenes', 'En curso', 'on'], ['list-checks', 'Lista para que confirmes', 'Te avisamos por notificación push', '']].map(t => `<div class="tl3r ${t[3]}">${ic(t[0], t[3] === 'ok')}<div><b>${t[1]}</b><span>${t[2]}</span></div></div>`).join('')}</div>`,
-  foot: () => `${btn('Seguir explorando', 'P06', 'sec')}`,
-  enter: () => T(() => { if (cur === 'P61') { ACT.ordReady(); go('P62'); } }, 3500) });
+def({ id: 'P61', name: 'Leyendo tu orden', kind: 'page', back: true, title: '', next: ['P62', 'P40'], auto: 'P62', autoAct: () => ACT.ordReady(),
+  prep: () => { if (!S.ord) S.ord = 'lee'; },
+  body: () => `<div class="center mt8"><div class="ordscan" role="status" aria-label="Leyendo tu orden">${orden()}<span class="ordscan-l"></span></div></div><div class="h-l mt16">Leyendo tu orden</div><div class="t2 sm mt8">Estamos reconociendo cada examen y buscándolo en el catálogo. Son unos segundos.</div>
+  <div class="progress bar-anim mt16"><span></span></div>
+  <div class="tl3 mt16">${[['check-circle', 'Foto recibida', 'Se ve completa y derecha', 'ok'], ['scan', 'Leyendo los exámenes', 'En curso', 'on'], ['list-checks', 'Marcando en el catálogo', 'Después los revisas tú', '']].map(t => `<div class="tl3r ${t[3]}">${ic(t[0], t[3] === 'ok')}<div><b>${t[1]}</b><span>${t[2]}</span></div></div>`).join('')}</div>`,
+  foot: () => `${btn('Cancelar y elegir yo', 'P40', 'ghost', 'data-act="ordCancel"')}`,
+  enter: () => T(() => { if (cur === 'P61') { ACT.ordReady(); go('P62'); } }, 3200) });
 
-def({ id: 'P62', name: 'Seleccionamos tus exámenes', kind: 'page', back: true, title: '', next: ['P16', 'P40'],
+QRES.ordres = () => { const q = S.ordq || ''; if (!q.trim()) return '';
+  const l = exFind(q, 8), on = S.ordSel || [];
+  return l.length ? `<div class="exl">${l.map(k => exRow(k, q, 'ordTog', on.includes(k))).join('')}</div>` : `<div class="empty mt16">${ic('magnifying-glass')}<div class="b-m mt8">No encontramos «${q.replace(/</g, '')}»</div><div class="sm t2 mt4">Prueba con otra palabra o con el código del examen.</div></div>`; };
+def({ id: 'P62', name: 'Exámenes detectados', kind: 'page', back: true, title: '', next: ['P16', 'P40'],
   prep: () => { if (!S.ordSel) ACT.ordReady(); },
-  body: () => { const l = S.ordSel || ORD5, tot = l.reduce((a, k) => a + EXAMS[k][1], 0);
-    return `<button class="push" data-go="P62"><div class="push-h"><img src="logo/apple-touch-icon.png" alt=""><span>Cuidapp</span><span class="t3">ahora</span></div><b>Tu orden está lista</b><div>Seleccionamos ${l.length} exámenes. Revísalos y confirma.</div></button>
-    <div class="h-l mt16">Seleccionamos ${l.length} exámenes</div><div class="t2 sm mt4">Según la orden de la Dra. Marcela Ortiz · revisada por nuestro equipo</div>
-    <div class="exl mt8">${l.map(k => `<div class="exr"><span class="tx"><span class="a">${EXAMS[k][0]}</span><span class="b">${exSub(k)}</span></span><span class="exp"><span class="pp num">${clp(EXAMS[k][1])}</span></span></div>`).join('')}</div>
-    ${kv('Total exámenes', clp(tot), 'tot')}<div class="mt12">${note('lock-simple', 'No cobramos nada hasta que confirmes y la profesional acepte la toma.', 'inf')}</div>`; },
-  foot: () => `<div class="row8">${abtn('Editar', 'ordEdit', '', 'sec', 'P40')}${abtn('Confirmar', 'ordOk', '', '', 'P16')}</div>` });
+  body: () => { const sel = S.ordSel || [], lst = S.ordLst || [], tot = sel.reduce((a, k) => a + EXAMS[k][1], 0), no = S.ordNo || [];
+    return `<button class="push" data-go="P62"><div class="push-h"><img src="logo/apple-touch-icon.png" alt=""><span>Cuidapp</span><span class="t3">ahora</span></div><b>Leímos tu orden</b><div>Detectamos ${ORD5.length} exámenes. Revísalos y confirma.</div></button>
+    <div class="h-l mt16">Detectamos ${sel.length} ${sel.length === 1 ? 'examen' : 'exámenes'}</div><div class="t2 sm mt4">Orden de la Dra. Marcela Ortiz · leída automáticamente. Quita los que no quieras o agrega otros.</div>
+    ${no.length ? `<div class="mt16">${no.map((t, i) => `<div>${note('warning', `No pudimos leer: «${t}». Búscalo en el catálogo y agrégalo.`, 'warn')}<button class="lk sm mt4" data-act="ordNoX" data-arg="${i}">Quitar este aviso</button></div>`).join('')}</div>` : ''}
+    <div class="exl mt8">${lst.map(k => exRow(k, '', 'ordTog', sel.includes(k))).join('')}</div>
+    ${kv('Total exámenes', clp(tot), 'tot')}
+    <div class="lbl2">Buscar en el catálogo</div>${qin('ordq', 'ordres', 'Busca: hemograma, vitamina D, 0301045…')}<div id="ordres">${QRES.ordres()}</div>
+    <div class="mt12">${note('lock-simple', 'No cobramos nada hasta que confirmes y la profesional acepte la toma.', 'inf')}</div>`; },
+  foot: () => { const sel = S.ordSel || [], tot = sel.reduce((a, k) => a + EXAMS[k][1], 0);
+    return `<div class="fbar"><div class="fb-l"><b class="num">${clp(tot)}</b><span>${sel.length === 1 ? '1 examen' : sel.length + ' exámenes'} · toma aparte</span></div><button class="btn fbtn" data-act="ordOk" data-go="P16" ${sel.length ? '' : 'disabled'}>Continuar</button></div>`; } });
 
 def({ id: 'P63', name: 'Ayúdame a elegir', kind: 'page', back: true, title: 'Ayúdame a elegir', next: ['P40', 'P60'],
   body: () => `<div class="h-m">¿Para qué son los exámenes?</div><div class="t2 sm mt4">Te sugerimos los más pedidos. Puedes quitar o agregar después.</div>
   <div class="hgrid mt16">${Object.entries(HELP).map(([k, h]) => `<button class="hcell ${S.help === k ? 'on' : ''}" data-act="help" data-arg="${k}">${ic(h[1], S.help === k)}<span>${h[0]}</span></button>`).join('')}</div>
   ${S.help ? `<div class="lbl2">Sugeridos · ${HELP[S.help][0]}</div><div class="exl">${HELP[S.help][2].map(k => `<div class="exr"><span class="tx"><span class="a">${EXAMS[k][0]}</span><span class="b">${exSub(k)}</span></span><span class="exp"><span class="pp num">${clp(EXAMS[k][1])}</span></span></div>`).join('')}</div>` : ''}
-  <div class="mt16">${note('info', 'Es una guía general y no reemplaza la indicación de tu médico. Si tienes una orden, súbela y la revisamos.')}</div>
-  ${row('box:chat-circle-dots', 'Prefiero hablar con alguien', 'Chat con nuestro equipo · respuesta en minutos', '', ic('caret-right'), '', 'toast', 'Te escribimos por WhatsApp en menos de 10 minutos.')}${row('box:camera', 'Tengo una orden', 'Sube la foto y elegimos por ti', 'P60', ic('caret-right'), '', 'path', 'orden')}`,
+  <div class="mt16">${note('info', 'Es una guía general y no reemplaza la indicación de tu médico. Si tienes una orden, súbela y la leemos.')}</div>
+  ${row('box:chat-circle-dots', 'Prefiero hablar con alguien', 'Chat con nuestro equipo · respuesta en minutos', '', ic('caret-right'), '', 'toast', 'Te escribimos por WhatsApp en menos de 10 minutos.')}${row('box:camera', 'Tengo una orden', 'Sube la foto y marcamos los exámenes por ti', 'P60', ic('caret-right'), '', 'path', 'orden')}`,
   foot: () => abtn(S.help ? `Agregar ${HELP[S.help][2].length} exámenes` : 'Elige un motivo', 'helpAdd', '', '', 'P40', !S.help) });
 
 /* ---------- Previsión de salud ---------- */
@@ -196,8 +205,9 @@ def({ id: 'P65', name: 'Documentos para reembolso', kind: 'page', back: true, ti
     <div class="xs t3 mt8">Lo que te devuelven depende de tu plan y de tu previsión.</div>`; },
   foot: () => `${abtn(ic('download-simple') + 'Descargar documentos para reembolso', 'toast', 'Descargado: Reembolso-' + patN(S.who).split(' ').slice(0, 2).join('-').normalize('NFD').replace(/[\u0300-\u036f]/g, '') + '.pdf (boletas y orden).')}${abtn(ic('envelope-simple') + 'Enviar a mi correo', 'toast', 'Te enviamos los documentos a daniela.fuentes@gmail.com.', 'sec')}` });
 
-/* ---------- Admin: catálogo completo y órdenes por revisar ---------- */
-const AORD = [['Rosa Muñoz Pérez', 'Ñuñoa', 'Hace 6 min', 'Dra. Marcela Ortiz R.'], ['Jorge Salinas Vera', 'Providencia', 'Hace 18 min', 'Dr. Andrés Lagos'], ['Carmen Ibarra Soto', 'La Reina', 'Hace 41 min', 'Dra. Paz Fuenzalida']];
+/* ---------- Admin: catálogo completo y lecturas de órdenes ---------- */
+/* registro de lecturas automáticas: [fecha, paciente, exámenes detectados, no reconocidos, resultado ('res' reservó · 'sin' no reservó)] */
+const ALEC = [['26 oct · 10:31', 'Rosa Muñoz Pérez', ORD5, ORDNO, 'res'], ['26 oct · 09:12', 'Jorge Salinas Vera', ['hemo', 'lip', 'bioq'], [], 'res'], ['25 oct · 19:48', 'Carmen Ibarra Soto', ['hemo', 'ori', 'tsh', 'hba'], ['Estudio de sueño'], 'sin'], ['25 oct · 11:05', 'Luis Fuentes Rojas', ['bioq', 'lip'], [], 'res'], ['24 oct · 16:20', 'Marta Díaz Osorio', ['hemo', 'ori'], [], 'sin'], ['23 oct · 08:55', 'Pedro Araya Lagos', ['hemo', 'bioq', 'tsh', 'lip'], ['Panel de alergias alimentarias', 'Test de intolerancia'], 'res']];
 QRES.aexres = () => {
   const q = S.aexq || '', f = S.aexF || 'all', per = 25;
   let l = q.trim() ? exFind(q, 9999, true) : Object.keys(EXAMS);
@@ -214,18 +224,11 @@ def({ id: 'A08', name: 'Catálogo de exámenes', kind: 'adm', side: 'lab',
     <div class="row8 mt16" style="align-items:center"><div style="flex:1;max-width:420px">${qin('aexq', 'aexres', 'Buscar por nombre o código', 'aexPage')}</div><div class="chips">${[['all', 'Todos'], ['c', 'Costo + recargo'], ['p', 'Particular + recargo'], ['sf', 'Sin código Fonasa'], ['ay', 'Ayuno por confirmar']].map(t => chip(t[1], f === t[0], 'aexF', t[0])).join('')}</div></div>
     <div id="aexres">${QRES.aexres()}</div><div class="xs t3 mt12">Precio paciente = costo del laboratorio + recargo; si no hay costo, precio particular + recargo. Los costos internos del Excel no se publican. El laboratorio informa la entrega pero no el ayuno: el ayuno viene de fuentes públicas chilenas (Hospital San Juan de Dios, RedSalud, Examedi, Laboval; la URL por examen está en el Excel) o del tipo de examen; si las fuentes difieren se usa el criterio más estricto. El resto está por confirmar con el laboratorio.</div>`; } });
 
-def({ id: 'A09', name: 'Órdenes por revisar', kind: 'adm', side: 'ord', next: ['A10'],
-  body: () => `<div class="ahd"><div><h1 class="h-xl">Órdenes por revisar</h1><div class="t2 sm mt4">Fotos de órdenes médicas subidas por pacientes. Marca los exámenes del catálogo y envíalos para que confirmen.</div></div></div>
-  <table class="t mt16"><tr><th>Paciente</th><th>Comuna</th><th>Médico</th><th>Recibida</th><th>Estado</th><th></th></tr>
-  ${AORD.map((o, i) => `<tr><td><b>${o[0]}</b></td><td>${o[1]}</td><td class="t2">${o[3]}</td><td class="t2">${o[2]}</td><td>${S.aordDone.includes(i) ? st('ok', 'Enviada') : st('warn', 'Por revisar')}</td><td><button class="pill" data-act="aord" data-arg="${i}" data-go="A10">Revisar</button></td></tr>`).join('')}</table>
-  <div class="mt16" style="max-width:560px">${note('clock', 'Meta: responder en menos de 30 minutos en horario hábil. La paciente recibe una notificación push cuando la orden está lista.')}</div>` });
-
-QRES.aores = () => { const q = S.aoq || ''; const l = q.trim() ? exFind(q, 12) : EXPOP;
-  return `<div class="exl">${l.map(k => exRow(k, q, 'aoTog', !!S.aordSel[k])).join('')}</div>`; };
-def({ id: 'A10', name: 'Revisar orden', kind: 'adm', side: 'ord', back: true,
-  body: () => { const o = AORD[S.aord], sel = Object.keys(S.aordSel).filter(k => S.aordSel[k]), tot = sel.reduce((a, k) => a + EXAMS[k][1], 0);
-    return `<button class="lk" data-go="A09">${ic('caret-left')}Órdenes por revisar</button><div class="ahd mt8"><div><h1 class="h-xl">${o[0]}</h1><div class="t2 sm mt4">${o[1]} · ${o[3]} · ${o[2]}</div></div></div>
-    <div class="aord mt16"><div class="aord-l"><div class="lbl2" style="margin-top:0">Foto de la orden</div>${orden()}</div>
-    <div class="aord-r"><div class="lbl2" style="margin-top:0">Marca los exámenes del catálogo</div>${qin('aoq', 'aores', 'Buscar entre ' + nPat() + ' exámenes')}<div id="aores">${QRES.aores()}</div>
-    <div class="lbl2">Seleccionados · ${sel.length}</div>${sel.length ? sel.map(k => kv(`${EXAMS[k][0]} <span class="t3 xs">${fon(k)}</span>`, clp(EXAMS[k][1]))).join('') + kv('Total', clp(tot), 'tot') : '<div class="sm t3">Aún no marcas exámenes.</div>'}
-    <div class="row8 mt16">${abtn('Pedir foto nueva', 'toast', 'Le pedimos a la paciente una foto más nítida de la orden.', 'sec')}${abtn('Enviar a la paciente', 'aoSend', '', '', 'A09', !sel.length)}</div></div></div>`; } });
+def({ id: 'A09', name: 'Lecturas de órdenes', kind: 'adm', side: 'ord',
+  body: () => { const live = S.ord === 'listo' || S.ord === 'ok' ? [['Ahora · esta sesión', 'Rosa Muñoz Pérez', S.ordSel || [], S.ordNo || [], S.ord === 'ok' ? 'res' : 'cur']] : [], rows = live.concat(ALEC),
+      nEx = rows.reduce((a, r) => a + r[2].length, 0), nNo = rows.reduce((a, r) => a + r[3].length, 0), nRes = rows.filter(r => r[4] === 'res').length;
+    return `<div class="ahd"><div><h1 class="h-xl">Lecturas de órdenes</h1><div class="t2 sm mt4">Cada foto de orden se lee automáticamente. Es un registro: no hay nada que revisar ni aprobar.</div></div></div>
+  <div class="kpis mt16">${[[rows.length, 'Órdenes leídas'], [nEx, 'Exámenes detectados'], [nNo, 'No reconocidos'], [nRes, 'Terminaron en reserva']].map(t => `<div class="kpi"><b class="num">${t[0]}</b><span>${t[1]}</span></div>`).join('')}</div>
+  <table class="t mt16"><tr><th>Fecha</th><th>Paciente</th><th>Exámenes detectados</th><th>No reconocidos</th><th>Resultado</th></tr>
+  ${rows.map(r => `<tr><td class="t2">${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2].length ? `<b class="num">${r[2].length}</b> <span class="t2">· ${r[2].slice(0, 3).map(k => EXAMS[k][0]).join(', ')}${r[2].length > 3 ? ' y ' + (r[2].length - 3) + ' más' : ''}</span>` : '<span class="t3">Ninguno</span>'}</td><td class="t2">${r[3].length ? r[3].join(', ') : '<span class="t3">—</span>'}</td><td>${r[4] === 'res' ? st('ok', 'Reservó') : r[4] === 'cur' ? st('inf', 'En curso', 'hourglass-medium') : st('neu', 'No reservó')}</td></tr>`).join('')}</table>
+  <div class="mt16" style="max-width:560px">${note('lock-simple', 'Registro de solo lectura. Lo que no se reconoce lo busca la paciente en el catálogo, en su propia pantalla.')}</div>`; } });

@@ -575,7 +575,7 @@ const previaItems = () => {
   if (S.item === 'mue' && !byOrder()) { const a = ayAgg(allExKeys()), need = needPrep();
     L.push({ i: a.h > 0 ? 'fork-knife' : 'coffee', t: need ? 'Preparación: ' + a.txt : 'Preparación', d: !need ? 'Puedes comer y tomar normal' : S.prepOk ? 'Entendida' : 'Toca para confirmar «Entendí la preparación»', ok: !need || !!S.prepOk, act: need && !S.prepOk ? 'prepOk' : '' }); }
   if (S.mmode === 'orden' || S.ordFrom) { const ok = S.ord === 'ok';
-    L.push({ i: 'file-text', t: 'Orden médica', d: ok ? 'Revisada · ya confirmamos tus exámenes' : S.ord === 'rev' ? 'En revisión · te avisamos apenas esté' : 'Sube la foto para confirmar tus exámenes', ok, go: S.ord ? '' : 'P60' }); }
+    L.push({ i: 'file-text', t: 'Orden médica', d: ok ? 'Leída · ya confirmaste tus exámenes' : S.ord === 'lee' ? 'Leyendo tu orden · son unos segundos' : S.ord === 'listo' ? 'Leída · confirma tus exámenes' : 'Sube la foto y marcamos tus exámenes', ok, go: S.ord ? '' : 'P60' }); }
   if (S.rbAsk === 'si' && (S.pv[w] || {}).t !== 'fonasa') { const ok = rbReady();
     L.push({ i: 'receipt', t: 'Isapre para reembolso', d: ok ? 'Isapre y carnet listos' : 'Falta vincular tu Isapre o subir el carnet', ok, go: ok ? '' : 'P78' }); }
   return L;

@@ -133,7 +133,7 @@ function platCmp() {
 }
 
 /* pasos que en la vida real dependen de otra persona (confirmación, término de la atención…) */
-const AUTO_L = { P19: 'Simular: la profesional confirma', P23: 'Simular: termina la atención', P61: 'Simular: orden revisada', R08: 'Simular: cuenta aprobada', R17: 'Simular: aceptar solicitud', R20: 'Simular: checklist completo', R40: 'Simular: terminar dictado' };
+const AUTO_L = { P19: 'Simular: la profesional confirma', P23: 'Simular: termina la atención', P61: 'Simular: orden leída', R08: 'Simular: cuenta aprobada', R17: 'Simular: aceptar solicitud', R20: 'Simular: checklist completo', R40: 'Simular: terminar dictado' };
 document.addEventListener('click', e => {
   if (!e.target.closest('[data-auto]')) return; const s = SC[cur]; if (!s || !s.auto) return;
   if (s.autoAct) s.autoAct(); go(typeof s.auto === 'function' ? s.auto() : s.auto);

@@ -1050,9 +1050,12 @@ input[type=search]::-webkit-search-cancel-button{display:none}
 .kpi b{font-size:24px;font-weight:700}.kpi span{font-size:13px;color:var(--t2)}
 .pgr{display:flex;align-items:center;gap:8px}.pgr .sp{flex:1}
 .pgr .pill[disabled]{opacity:.4}
-.aord{display:grid;grid-template-columns:300px 1fr;gap:28px;align-items:start}
-.aord-l .doc{max-width:none!important}
-.aord-r .exl{max-height:360px;overflow:auto}
+/* P61 · lectura de la orden: una línea de acento recorre el papel */
+.ordscan{position:relative;display:inline-block;overflow:hidden;border-radius:6px;text-align:left}
+.ordscan .doc{max-width:240px}
+.ordscan-l{position:absolute;left:0;right:0;top:0;height:3px;background:var(--accent);box-shadow:0 0 12px 2px var(--accent);animation:ordscan 1.4s ease-in-out infinite alternate}
+@keyframes ordscan{from{top:0}to{top:calc(100% - 3px)}}
+@media (prefers-reduced-motion:reduce){.ordscan-l{animation:none;top:50%}}
 .rmb{display:block}
 .pdfp .rtab td:nth-child(2),.pdfp .rtab th:nth-child(2){text-align:left}
 .scopes .chip{padding:0 12px;font-size:13px}
