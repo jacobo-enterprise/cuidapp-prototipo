@@ -159,15 +159,15 @@ const PACKS = [
 const EXBM = { hemo: ['Hemoglobina', 'Leucocitos', 'Plaquetas', 'Hematocrito'], bioq: ['Glicemia', 'Nitrógeno ureico', 'Ácido úrico', 'Colesterol total', 'Proteínas', 'Albúmina', 'Bilirrubina', 'Fosfatasas alcalinas', 'GOT', 'LDH', 'Calcio', 'Fósforo'], lip: ['Colesterol total', 'LDL', 'HDL', 'VLDL', 'Triglicéridos'], ori: ['Orina completa'], cre: ['Creatinina'], gli: ['Glicemia'], hba: ['Hemoglobina glicosilada'], x616: ['Microalbuminuria'], x38: ['Sodio', 'Potasio', 'Cloro'], tsh: ['TSH'], t4: ['T4 libre'], x81: ['T4'], x82: ['T3'], x69: ['FSH'], x70: ['LH'], x73: ['Progesterona'], x62: ['Cortisol'], vitd: ['Vitamina D'], x191: ['Vitamina B12'], x267: ['Ácido fólico'], x4: ['Ferritina'], x5: ['Hierro'], x31: ['Calcio'], x42: ['Fósforo'], x58: ['Bilirrubina', 'GGT', 'Fosfatasas alcalinas', 'Tiempo de protrombina', 'Transaminasas'], x105: ['Antígeno prostático (PSA)'], pcr: ['Proteína C reactiva'] };
 const pkSum = p => p[4].reduce((a, k) => a + EXAMS[k][1], 0);
 const pkBm = p => [...new Set(p[4].flatMap(k => EXBM[k] || [EXAMS[k][0]]))];
-const pkAy = p => p[4].some(k => EXAMS[k][3]);
-const pkPl = p => p[4].map(k => EXAMS[k][8] || '').sort((a, b) => parseInt(b) - parseInt(a))[0];
+const pkAy = p => ayAgg(p[4]);
+const pkPl = p => plAgg(p[4]).txt.replace(/^Resultados en /, '');
 const TOMA = () => CAT.mue.base;
 const pkPr = p => p[5];
 const pkSave = p => pkSum(p) - pkPr(p);
 const exD = pr => S.exFirst && pr >= EXD_MIN ? Math.min(EXD_MAX, Math.round(pr * EXD_P / 100 / 10) * 10) : 0;
 const pkTot = p => pkPr(p) + TOMA() - exD(pkPr(p));
 const pkOf = id => PACKS.find(x => x[0] === id) || PACKS[0];
-const pkCard = (p, sm) => `<button class="pkc2 ${sm ? 'sm' : ''}" data-act="pk" data-arg="${p[0]}" data-go="P75"><span class="tx"><b>${p[1]}</b><span class="sm t2">${p[2]}</span><span class="pkmeta xs t2"><span>${ic('test-tube')}${p[4].length} exámenes</span><span>${ic(pkAy(p) ? 'fork-knife' : 'coffee')}${pkAy(p) ? 'Con ayuno' : 'Sin ayuno'}</span>${sm ? '' : `<span>${ic('clock')}${pkPl(p)}</span>`}</span></span><span class="pkp"><b class="num">${clp(pkPr(p))}</b><s class="xs t3 num">${clp(pkSum(p))}</s><span class="pksv">Ahorras ${clp(pkSave(p))}</span></span></button>`;
+const pkCard = (p, sm) => `<button class="pkc2 ${sm ? 'sm' : ''}" data-act="pk" data-arg="${p[0]}" data-go="P75"><span class="tx"><b>${p[1]}</b><span class="sm t2">${p[2]}</span><span class="pkmeta xs t2"><span>${ic('test-tube')}${p[4].length} exámenes</span><span>${ic(pkAy(p).h > 0 ? 'fork-knife' : 'coffee')}${pkAy(p).txt}</span>${sm ? '' : `<span>${ic('clock')}${pkPl(p)}</span>`}</span></span><span class="pkp"><b class="num">${clp(pkPr(p))}</b><s class="xs t3 num">${clp(pkSum(p))}</s><span class="pksv">Ahorras ${clp(pkSave(p))}</span></span></button>`;
 const pkSec = () => `<div class="shd mt24"><h3>Packs de exámenes</h3><button class="lk sm" data-go="P74">Ver los ${PACKS.length}</button></div><div class="xs t2">Exámenes que se piden juntos, a menor precio que por separado.</div><div class="pkl2 mt8">${PACKS.slice(0, 3).map(p => pkCard(p, 1)).join('')}</div>`;
 const pkAct = () => { const p = S.pack && PACKS.find(x => x[0] === S.pack); return p && p[4].every(k => S.exams[k]) ? p : null; };
 const pkD = () => { const p = pkAct(); return p && !byOrder() ? pkSave(p) : 0; };
@@ -178,15 +178,15 @@ def({ id: 'P74', name: 'Packs de exámenes', kind: 'page', back: true, title: 'P
   foot: () => btn('Prefiero elegir exámenes sueltos', 'P40', 'sec') });
 def({ id: 'P75', name: 'Detalle del pack', kind: 'page', back: true, title: '', next: ['P40', 'P16'],
   body: () => { const p = pkOf(S.pk), sm = pkSum(p), pr = pkPr(p), tubes = [...new Set(p[4].map(k => EXAMS[k][7] === 'Orina' ? 'Frasco de orina' : EXAMS[k][2]))];
-    return `<div class="xs t3">Pack · ${p[4].length} exámenes</div><h1 class="h-l mt4">${p[1]}</h1><div class="sm t2 mt4">${p[2]} · resultados en ${pkPl(p)}</div>
+    return `<div class="xs t3">Pack · ${p[4].length} exámenes</div><h1 class="h-l mt4">${p[1]}</h1><div class="sm t2 mt4">${p[2]} · resultados en ${pkPl(p)}${plAgg(p[4]).pend ? ' (algunos por confirmar)' : ''}</div>
     <div class="lbl2">Para qué sirve</div><div class="sm">${p[3]}</div>
     <div class="lbl2">Qué incluye</div><div class="exl">${p[4].map(k => `<div class="exr"><span class="check on">${ic('check', 0).replace('ph ', 'ph-bold ')}</span><span class="tx"><span class="a">${EXAMS[k][0]}</span><span class="b">${(EXBM[k] && EXBM[k].length > 1 ? EXBM[k].join(', ') + ' · ' : '') + exSub(k)}</span></span></div>`).join('')}</div>
     <div class="lbl2">Precio</div>${kv('Por separado', clp(sm))}${kv('Descuento pack', '−' + clp(sm - pr), 'dsc')}${kv('Precio del pack', clp(pr))}${kv('Toma a domicilio', clp(TOMA()))}${exD(pr) ? kv('Primer pedido de exámenes (20%)', '−' + clp(exD(pr)), 'dsc') : ''}${kv('Total', clp(pkTot(p)), 'tot')}
     <div class="xs t2 mt8">${pr >= EXD_MIN ? 'El 20% de descuento aplica a tu primer pedido de exámenes (sobre $30.000, hasta $20.000).' : 'La toma a domicilio se suma al precio del pack.'} El costo por servicio (${S.svcP}%) y el descuento CUIDA15 en la toma se ven al pagar.</div>
-    <div class="lbl2">Preparación</div>${row('box:' + (pkAy(p) ? 'fork-knife' : 'coffee'), pkAy(p) ? 'Ayuno de 8 a 12 horas' : 'No necesitas ayuno', pkAy(p) ? 'Puedes tomar agua. Agenda temprano en la mañana.' : 'Puedes comer normal', '', '')}${row('box:test-tube', 'Muestras', tubes.join(' · '), '', '')}${p[4].includes('x62') ? row('box:clock', 'Cortisol antes de las 9:30', 'Agenda la toma temprano', '', '') : ''}
+    <div class="lbl2">Preparación</div>${row('box:' + (pkAy(p).h > 0 ? 'fork-knife' : pkAy(p).pend ? 'question' : 'coffee'), pkAy(p).txt + (pkAy(p).h > 0 ? ' (el mayor del pack)' : ''), pkAy(p).h > 0 ? 'Solo agua. Agenda temprano en la mañana.' + (pkAy(p).pend ? ' ' + pkAy(p).pend + (pkAy(p).pend > 1 ? ' exámenes' : ' examen') + ' por confirmar.' : '') : pkAy(p).pend ? 'Te confirmamos antes de la toma si algún examen pide ayuno' : 'Puedes comer normal', '', '')}${row('box:clock', plAgg(p[4]).txt, 'Todos los resultados del pack, contando desde la toma' + (plAgg(p[4]).pend ? ' · ' + plAgg(p[4]).pend + ' por confirmar' : ''), '', '')}${row('box:test-tube', 'Muestras', tubes.join(' · '), '', '')}${p[4].includes('x62') ? row('box:clock', 'Cortisol antes de las 9:30', 'Agenda la toma temprano', '', '') : ''}
     <div class="lbl2">Orden médica y reembolso</div>${row('box:file-text', 'No necesitas orden médica', 'Si la necesitas, la gestionamos por ti', '', '')}
     <div class="mt8">${note('receipt', 'Con orden médica suele ser más fácil reembolsar en la Isapre o Fonasa. Revisa las condiciones de tu plan.')}</div>`; },
-  foot: () => `<div class="fbar"><div class="fb-l"><b class="num">${clp(pkPr(pkOf(S.pk)))}</b><span>${pkOf(S.pk)[4].length} exámenes · ${exD(pkPr(pkOf(S.pk))) ? '20% de descuento' : 'toma aparte'}</span></div>${abtn('Agregar pack', 'pkGo', S.pk || PACKS[0][0], 'fbtn', 'P40')}</div>` });
+  foot: () => `<div class="fbar"><div class="fb-l"><b class="num">${clp(pkPr(pkOf(S.pk)))}</b><span>${pkOf(S.pk)[4].length} exámenes · ${exD(pkPr(pkOf(S.pk))) ? 'con 20% dto.' : 'toma aparte'}</span></div>${abtn('Agregar pack', 'pkGo', S.pk || PACKS[0][0], 'fbtn', 'P40')}</div>` });
 
 /* ---------- P76 · Seguimiento de exámenes ---------- */
 def({ id: 'P76', name: 'Seguimiento de exámenes', kind: 'page', back: true, title: 'Estado de los exámenes', next: ['P72'],

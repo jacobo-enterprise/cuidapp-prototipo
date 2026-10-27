@@ -14,7 +14,14 @@ function exFind(q, lim = 9999) {
 const exF = q => exFind(q, 1)[0];
 const ptag = k => EXAMS[k][4] === 'c' ? '<span class="ptag c">Costo + recargo</span>' : '<span class="ptag p">Particular + recargo</span>';
 const fon = k => EXAMS[k][6] ? `Fonasa ${EXAMS[k][6]}` : `Cód. ${EXAMS[k][5] || 's/c'}`;
-const exSub = k => { const e = EXAMS[k]; return [e[7], e[8], e[3] ? 'con ayuno' : '', fon(k)].filter(Boolean).join(' · '); };
+const exSub = k => { const e = EXAMS[k]; return [e[7], ayLbl(e[3]), plLbl(k), fon(k)].filter(Boolean).join(' · '); };
+/* preparación y entrega de lo que lleva la paciente: filas reutilizadas en selección, resumen, pago y confirmación */
+const prepRows = () => {
+  if (byOrder()) return row('box:file-text', 'Ayuno y entrega según tu orden', 'Te los confirmamos cuando revisemos tu orden', '', '');
+  const ks = examKeys(), a = ayAgg(ks), p = plAgg(ks), n = ks.length > 1 ? ' (el mayor entre tus exámenes)' : '';
+  return row('box:' + (a.h > 0 ? 'fork-knife' : a.pend ? 'question' : 'coffee'), a.txt, a.h > 0 ? `Solo agua${n}${a.pend ? ' · ' + a.pend + ' por confirmar' : ''}` : a.pend ? 'Te confirmamos antes de la toma si algún examen pide ayuno' : 'Puedes comer y tomar normal', '', '')
+    + row('box:clock', p.txt, ks.length > 1 && p.plazo ? 'Todos tus resultados, contando desde la toma' + (p.pend ? ' · ' + p.pend + ' por confirmar' : '') : 'Contando desde la toma · te avisamos cuando estén', '', '');
+};
 const exRow = (k, q = '', act = 'ex', on = S.exams[k]) => `<button class="exr" data-act="${act}" data-arg="${k}"><span class="check ${on ? 'on' : ''}">${on ? ic('check', 0).replace('ph ', 'ph-bold ') : ''}</span><span class="tx"><span class="a">${q ? hl(EXAMS[k][0], q) : EXAMS[k][0]}</span><span class="b">${exSub(k)}</span></span><span class="exp"><span class="pp num">${clp(EXAMS[k][1])}</span></span></button>`;
 
 /* búsqueda en vivo: los inputs con data-q actualizan solo su lista de resultados (no se pierde el foco) */
@@ -102,6 +109,7 @@ def({ id: 'P40', name: 'Exámenes de laboratorio', kind: 'page', back: true, tit
     ${pkAct() ? `<div class="pkon mt16"><span class="ri box">${ic('package')}</span><span class="tx"><b>Pack ${pkAct()[1]}</b><span class="xs t2">${pkAct()[4].length} exámenes · ahorras ${clp(pkD())}</span></span><button class="lk sm" data-act="pkOff">Quitar</button></div>` : S.pack ? `<div class="mt16">${note('info', 'Quitaste un examen del pack, así que ahora se cobran por separado.')}</div>` : ''}
     ${pkSec()}
     <div class="soonr mt24"><button class="soonc" data-go="P83"><span class="ri box">${ic('storefront')}</span><span class="tx"><b>Agendar directo en un laboratorio</b><span class="xs t2">Elige laboratorio, día y si vas tú o te visitan</span></span><span class="pr soonb">Muy pronto</span></button></div>
+    ${examKeys().length ? `<div class="lbl2">Tu selección</div>${prepRows()}` : ''}
     <div class="lbl2">Buscar exámenes</div><div>${qin('exq', 'exres', 'Busca: hemograma, vitamina D, 0301045…', 'exLim')}</div><div id="exres">${QRES.exres()}</div>
     <div class="lbl2">Orden médica</div>${checkRow('Necesito orden médica', S.needOrd, 'tog', 'needOrd', 'La gestionamos con un médico · precio por confirmar')}
 `;
@@ -179,18 +187,18 @@ const AORD = [['Rosa Muñoz Pérez', 'Ñuñoa', 'Hace 6 min', 'Dra. Marcela Orti
 QRES.aexres = () => {
   const q = S.aexq || '', f = S.aexF || 'all', per = 25;
   let l = q.trim() ? exFind(q) : Object.keys(EXAMS);
-  if (f === 'c') l = l.filter(k => EXAMS[k][4] === 'c'); if (f === 'p') l = l.filter(k => EXAMS[k][4] === 'p'); if (f === 'sf') l = l.filter(k => !EXAMS[k][6]);
+  if (f === 'c') l = l.filter(k => EXAMS[k][4] === 'c'); if (f === 'p') l = l.filter(k => EXAMS[k][4] === 'p'); if (f === 'sf') l = l.filter(k => !EXAMS[k][6]); if (f === 'ay') l = l.filter(k => EXAMS[k][3] < 0);
   const pg = Math.min(S.aexPage || 0, Math.max(0, Math.ceil(l.length / per) - 1)), n = Math.max(1, Math.ceil(l.length / per));
-  return `<table class="t mt12"><tr><th>Código</th><th>Fonasa</th><th>Examen</th><th>Muestra</th><th>Plazo</th><th style="text-align:right">Precio</th><th>Tipo</th></tr>
-  ${l.slice(pg * per, pg * per + per).map(k => { const e = EXAMS[k]; return `<tr><td class="num">${e[5] || '—'}</td><td class="num">${e[6] || '<span class="t3">—</span>'}</td><td>${q ? hl(e[0], q) : e[0]}</td><td class="t2">${e[7] || '—'}</td><td class="t2">${e[8] || '—'}</td><td class="num" style="text-align:right">${clp(e[1])}</td><td>${ptag(k)}</td></tr>`; }).join('')}</table>
+  return `<table class="t mt12"><tr><th>Código</th><th>Fonasa</th><th>Examen</th><th>Muestra</th><th>Entrega</th><th>Ayuno</th><th style="text-align:right">Precio</th><th>Tipo</th></tr>
+  ${l.slice(pg * per, pg * per + per).map(k => { const e = EXAMS[k]; return `<tr><td class="num">${e[5] || '—'}</td><td class="num">${e[6] || '<span class="t3">—</span>'}</td><td>${q ? hl(e[0], q) : e[0]}</td><td class="t2">${e[7] || '—'}</td><td class="t2">${plDias(k) == null ? 'Por confirmar' : e[8]}</td><td class="t2">${e[3] >= 0 ? ayLbl(e[3]) + ' <span class="t3">· referencia</span>' : 'Por confirmar'}</td><td class="num" style="text-align:right">${clp(e[1])}</td><td>${ptag(k)}</td></tr>`; }).join('')}</table>
   <div class="pgr mt12"><span class="t2 sm">${l.length} exámenes · página ${pg + 1} de ${n}</span><span class="sp"></span><button class="pill" data-act="aexPg" data-arg="-1" ${pg ? '' : 'disabled'}>${ic('caret-left')}Anterior</button><button class="pill" data-act="aexPg" data-arg="1" ${pg < n - 1 ? '' : 'disabled'}>Siguiente${ic('caret-right')}</button></div>`;
 };
 def({ id: 'A08', name: 'Catálogo de exámenes', kind: 'adm', side: 'lab',
   body: () => { const all = Object.keys(EXAMS), c = all.filter(k => EXAMS[k][4] === 'c').length, f = S.aexF || 'all';
     return `<div class="ahd"><div><h1 class="h-xl">Catálogo de exámenes</h1><div class="t2 sm mt4">Importado desde el Excel del laboratorio el 26 oct 2026</div></div><button class="btn sec" style="width:auto;padding:0 18px" data-act="toast" data-arg="Sube el Excel actualizado y te mostramos los cambios antes de publicarlos.">${ic('file-arrow-up')}Importar Excel</button></div>
-    <div class="kpis mt16">${[[all.length, 'Exámenes publicados'], [c, 'Costo del laboratorio + recargo'], [all.length - c, 'Particular + recargo (sin costo)'], [all.filter(k => EXAMS[k][6]).length, 'Con código Fonasa']].map(t => `<div class="kpi"><b class="num">${t[0]}</b><span>${t[1]}</span></div>`).join('')}</div>
-    <div class="row8 mt16" style="align-items:center"><div style="flex:1;max-width:420px">${qin('aexq', 'aexres', 'Buscar por nombre o código', 'aexPage')}</div><div class="chips">${[['all', 'Todos'], ['c', 'Costo + recargo'], ['p', 'Particular + recargo'], ['sf', 'Sin código Fonasa']].map(t => chip(t[1], f === t[0], 'aexF', t[0])).join('')}</div></div>
-    <div id="aexres">${QRES.aexres()}</div><div class="xs t3 mt12">Precio paciente = costo del laboratorio + recargo; si no hay costo, precio particular + recargo. Los costos internos del Excel no se publican.</div>`; } });
+    <div class="kpis mt16">${[[all.length, 'Exámenes publicados'], [c, 'Costo del laboratorio + recargo'], [all.length - c, 'Particular + recargo (sin costo)'], [all.filter(k => EXAMS[k][6]).length, 'Con código Fonasa'], [all.filter(k => EXAMS[k][3] >= 0).length, 'Ayuno por referencia clínica'], [all.filter(k => EXAMS[k][3] < 0).length, 'Ayuno por confirmar con el laboratorio'], [all.filter(k => plDias(k) == null).length, 'Entrega por confirmar']].map(t => `<div class="kpi"><b class="num">${t[0]}</b><span>${t[1]}</span></div>`).join('')}</div>
+    <div class="row8 mt16" style="align-items:center"><div style="flex:1;max-width:420px">${qin('aexq', 'aexres', 'Buscar por nombre o código', 'aexPage')}</div><div class="chips">${[['all', 'Todos'], ['c', 'Costo + recargo'], ['p', 'Particular + recargo'], ['sf', 'Sin código Fonasa'], ['ay', 'Ayuno por confirmar']].map(t => chip(t[1], f === t[0], 'aexF', t[0])).join('')}</div></div>
+    <div id="aexres">${QRES.aexres()}</div><div class="xs t3 mt12">Precio paciente = costo del laboratorio + recargo; si no hay costo, precio particular + recargo. Los costos internos del Excel no se publican. El laboratorio informa la entrega pero no el ayuno: el ayuno se asignó por referencia clínica estándar donde es conocido y el resto está por confirmar con el laboratorio.</div>`; } });
 
 def({ id: 'A09', name: 'Órdenes por revisar', kind: 'adm', side: 'ord', next: ['A10'],
   body: () => `<div class="ahd"><div><h1 class="h-xl">Órdenes por revisar</h1><div class="t2 sm mt4">Fotos de órdenes médicas subidas por pacientes. Marca los exámenes del catálogo y envíalos para que confirmen.</div></div></div>

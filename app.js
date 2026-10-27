@@ -214,7 +214,7 @@ const SUR = { get dom() { return rcPct(PRO(), 'dom') / 100; }, get fest() { retu
 const FEST = { '31-10': 'Día de las Iglesias Evangélicas', '1-11': 'Todos los Santos', '8-12': 'Inmaculada Concepción' };
 /* iconos 3D de servicios (img/iconos-3d); el resto de la interfaz usa Phosphor */
 const i3k = k => CAT[k] ? (CAT[k].i || IC3[CAT[k].g] || CAT[k].g) : (IC3[k] || k);
-const i3 = (k, c = '') => `<img class="i3d ${c}" src="img/iconos-3d/${i3k(k)}.webp?v=20261026q" alt="" draggable="false">`;
+const i3 = (k, c = '') => `<img class="i3d ${c}" src="img/iconos-3d/${i3k(k)}.webp?v=20261026r" alt="" draggable="false">`;
 const INC = { ins: 'Insumos: jeringa, aguja, tórulas y guantes', pre: 'Control de presión antes y después', res: 'Retiro de residuos clínicos', edu: 'Indicaciones escritas para la familia' };
 /* catálogo del laboratorio: precios fijos, no los pone la profesional */
 const LAB = 'Laboratorio';
@@ -230,7 +230,13 @@ const EXD_P = 20, EXD_MIN = 30000, EXD_MAX = 20000; /* primer pedido de exámene
 const exDiscOf = () => S.exFirst && typeof byOrder === 'function' && !byOrder() && examSum() >= EXD_MIN ? Math.min(EXD_MAX, Math.round(examSum() * EXD_P / 100 / 10) * 10) : 0;
 const examSum = () => examGross() - (typeof pkD === 'function' ? pkD() : 0); /* neto: con descuento de pack */
 const byOrder = () => S.mmode === 'orden' && S.ord !== 'ok';
-const fasting = () => !byOrder() && examKeys().some(k => EXAMS[k][3]) || byOrder();
+/* Ayuno y entrega de resultados. EXAMS[k][3] = horas de ayuno (0 = sin ayuno, 8, 12; -1 = por confirmar con el laboratorio; el Excel del laboratorio no trae ayuno, se asigna por referencia clínica estándar donde es conocido). EXAMS[k][8] = plazo informado por el laboratorio. */
+const ayLbl = h => h > 0 ? `Ayuno ${h} h` : h === 0 ? 'Sin ayuno' : 'Ayuno por confirmar';
+const plDias = k => { const m = /^(\d+)\s*(d[ií]as?|horas)/i.exec(EXAMS[k][8] || ''); return m ? (/hora/i.test(m[2]) ? +m[1] / 24 : +m[1]) : null; };
+const plLbl = k => plDias(k) == null ? 'Entrega por confirmar' : `Resultados en ${EXAMS[k][8]}`;
+const ayAgg = ks => { const hs = ks.map(k => EXAMS[k][3]), h = Math.max(0, ...hs), pend = hs.filter(x => x < 0).length; return { h, pend, txt: h > 0 ? `Ayuno ${h} h` : pend ? 'Ayuno por confirmar' : 'Sin ayuno' }; };
+const plAgg = ks => { const ds = ks.map(plDias), ok = ds.filter(d => d != null), pend = ds.length - ok.length; if (!ok.length) return { pend, txt: 'Entrega por confirmar', plazo: '' }; const k = ks[ds.indexOf(Math.max(...ok))]; return { pend, plazo: EXAMS[k][8], txt: `Resultados en ${EXAMS[k][8]}` }; };
+const fasting = () => byOrder() || (a => a.h > 0 || a.pend > 0)(ayAgg(examKeys()));
 const tubes = () => [...new Set(examList().map(e => e[2]))];
 const DAYS = [['Lun', 26, 'Hoy', 'hoy lun 26 oct'], ['Mar', 27, 'Mañana', 'mar 27 oct'], ['Mié', 28, '', 'mié 28 oct'], ['Jue', 29, '', 'jue 29 oct'], ['Vie', 30, '', 'vie 30 oct'], ['Sáb', 31, '', 'sáb 31 oct']];
 const dayShort = i => DAYS[i][2] || `${DAYS[i][0]} ${DAYS[i][1]}`;
@@ -470,7 +476,7 @@ const row = (i, a, b = '', go = '', end = ic('caret-right'), cls = '', act = '',
 const ST_I = { ok: 'check-circle', warn: 'clock', inf: 'clock-countdown', bad: 'x-circle' };
 const st = (k, t, i) => { i = i === '' ? '' : (i || ST_I[k]); return `<span class="st ${k}">${i ? ic(i, 1) : ''}${t}</span>`; };
 const PHOTO = ['CR', 'FA', 'MC', 'PG', 'VM', 'FL', 'DN', 'JS', 'CD', 'IP', 'RS', 'XV', 'MP'];
-const V = '?v=20261026q';
+const V = '?v=20261026r';
 const slug = n => n.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\./g, '').trim().replace(/\s+/g, '-');
 const PACPH = { DF: 'daniela-fuentes', RM: 'rosa-m', LF: 'luis-fuentes', MIb: 'isabel-montt', RVa: 'rodrigo-vial', CHe: 'valeria-cortes', FAr: 'francisco-lagos', JCa: 'soledad-rios' };
 const phSrc = ini => ini === 'CR' && typeof S !== 'undefined' && S.proPh ? S.proPh : PHOTO.includes(ini) ? `img/pro/${ini.toLowerCase()}.webp${V}` : PACPH[ini] ? `img/pac/${PACPH[ini]}.webp${V}` : '';

@@ -118,11 +118,11 @@ def({ id: 'P85', name: 'Agendar en laboratorio', kind: 'page', back: true, title
   body: () => { const { l, ex, s, t } = lbTot(), m = S.lbMode;
     return `<div class="row8" style="align-items:center;gap:10px">${labLogo(l, 'sm')}<b>${l.n}</b></div>
     ${l.mods.length > 1 ? `<div class="seg mt16">${l.mods.map(x => `<button class="${m === x ? 'on' : ''}" data-act="lbMode" data-arg="${x}">${MODN[x]}</button>`).join('')}</div>` : `<div class="mt12"><span class="mtag">${MODN[m]}</span></div>`}
-    <div class="lbl2">Exámenes</div>${EXPOP.filter(k => labHas(l, k)).slice(0, 8).map(k => checkRow(`${EXAMS[k][0]} · ${clp(lpp(l, k))}`, S.lbEx.includes(k), 'lbEx', k, EXAMS[k][3] ? 'Requiere ayuno' : 'Sin ayuno')).join('')}
+    <div class="lbl2">Exámenes</div>${EXPOP.filter(k => labHas(l, k)).slice(0, 8).map(k => checkRow(`${EXAMS[k][0]} · ${clp(lpp(l, k))}`, S.lbEx.includes(k), 'lbEx', k, ayLbl(EXAMS[k][3]))).join('')}
     ${m === 'pre' ? `<div class="lbl2">Sucursal</div>${l.sucs.map((x, i) => checkRow(`${x[0]} · ${x[1]}`, S.lbSuc === i, 'lbSuc', i, `${String(x[2]).replace('.', ',')} km de ti`)).join('')}` : `<div class="lbl2">Dirección</div>${row('box:map-pin', P().n, P().c + ' · la enfermera o TENS va a tu casa', 'P08', '<span class="lk">Cambiar</span>', '', 'set', 'addrNext=P85')}`}
     <div class="lbl2">Día</div><div class="chips">${LDAYS.map(d => chip(d, S.lbDay === d, 'lbDay', d)).join('')}</div>
     <div class="lbl2">Hora</div><div class="chips">${LHRS.map(h => chip(h, S.lbHr === h, 'lbHr', h)).join('')}</div>
-    ${ex.some(k => EXAMS[k][3]) ? `<div class="mt16">${note('fork-knife', m === 'pre' ? 'Llega en ayunas de 8 a 12 horas. Puedes tomar agua. Lleva tu carnet y la orden médica si tienes.' : 'Ayuno de 8 a 12 horas antes de la toma. Puedes tomar agua.', 'warn')}</div>` : ''}`; },
+    ${ayAgg(ex).h > 0 || ayAgg(ex).pend ? `<div class="mt16">${note('fork-knife', ayAgg(ex).txt + (m === 'pre' ? '. Llega en ayunas, solo agua. Lleva tu carnet y la orden médica si tienes.' : '. Solo agua antes de la toma.'), 'warn')}</div>` : ''}`; },
   foot: () => { const { ex, tot } = lbTot(); return `<div class="fbar"><div class="fb-l"><b class="num">${clp(tot)}</b><span class="xs t2">${ex.length} exámenes${S.lbMode === 'dom' ? ' · con toma' : ''}</span></div>${btn('Continuar', 'P86', 'fbtn', ex.length && S.lbDay && S.lbHr ? '' : 'disabled')}</div>`; } });
 
 def({ id: 'P86', name: 'Pagar exámenes', kind: 'page', back: true, title: 'Revisa y paga', next: ['P87'],
@@ -138,7 +138,7 @@ def({ id: 'P87', name: 'Exámenes agendados', kind: 'page', title: '', next: ['P
   body: () => { const { l, ex } = lbTot(), m = S.lbMode, su = l.sucs[S.lbSuc] || l.sucs[0];
     return `<div class="okh">${ic('check-circle', 1)}</div><h1 class="h-l mt16">Exámenes agendados</h1><div class="t2 mt8">${l.n} · ${MODN[m]} · ${S.lbDay || 'Mié 28'} a las ${S.lbHr || '08:00'}</div>
     <div class="mt16">${row('box:' + (m === 'dom' ? 'house-line' : 'storefront'), m === 'dom' ? 'Toma en tu casa' : `Sucursal ${su[0]}`, m === 'dom' ? `${P().n} · te avisamos quién va` : su[1], '', '')}${row('box:test-tube', `${ex.length} exámenes`, ex.map(k => EXAMS[k][0]).join(', '), '', '')}</div>
-    ${ex.some(k => EXAMS[k][3]) ? note('fork-knife', m === 'pre' ? 'Llega en ayunas de 8 a 12 horas. Lleva tu carnet.' : 'Ayuno de 8 a 12 horas. Puedes tomar agua.', 'warn') : ''}
+    ${ayAgg(ex).h > 0 || ayAgg(ex).pend ? note('fork-knife', ayAgg(ex).txt + (m === 'pre' ? '. Llega en ayunas, solo agua. Lleva tu carnet.' : '. Solo agua antes de la toma.'), 'warn') : ''}
     <div class="mt12">${note('bell', 'Te avisamos por notificación push cuando estén los resultados. La notificación no incluye valores.')}</div>`; },
   foot: () => `${btn('Seguir el estado', 'P76')}${btn('Volver al inicio', 'P06', 'sec')}` });
 

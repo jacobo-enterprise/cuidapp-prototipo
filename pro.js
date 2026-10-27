@@ -304,7 +304,7 @@ def({ id: 'R30', name: 'Solicitud de toma de muestras', kind: 'page', back: true
   <div class="xs t2 mt8">Los exámenes los cobra Cuidapp a la paciente y no pasan por tu pago. Tú tomas la muestra y la entregas en el laboratorio.</div>
   <div class="lbl2">Exámenes</div>${ex.map(e => `<div class="kv"><span class="k">${e[0]}</span><span class="t2 sm">${e[2]}</span></div>`).join('')}
   <div class="lbl2">Lleva</div><div class="tubes">${tb.map(t => `<span class="tube"><span class="dot" style="background:${TUBE[t]}"></span>${t} × ${ex.filter(e => e[2] === t).length}</span>`).join('')}</div>
-  <div class="mt16">${row('box:clock-countdown', 'Paciente en ayuno de 8 horas', 'Perfil bioquímico', '', '')}
+  <div class="mt16">${row('box:clock-countdown', 'Paciente en ayuno de 12 horas', 'Perfil bioquímico', '', '')}
   ${row('box:map-pin', 'Providencia · 2,4 km de tu casa', 'La dirección exacta aparece al aceptar', '', '')}
   ${row('box:flask', 'Entrega en el laboratorio · Providencia', 'Antes de las 12:00, en la caja refrigerada', 'R45', '<span class="lk">Ver laboratorios</span>')}</div>`; },
   foot: () => `${abtn('Aceptar solicitud', 'req', 'r2:ok', '', 'R16')}<button class="btn danger" data-act="req" data-arg="r2:no" data-go="R16">Rechazar</button>` });
