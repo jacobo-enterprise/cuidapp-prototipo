@@ -36,7 +36,8 @@ function navItems(r) {
 headerD = function (s) {
   const r = roleOf(s.id), on = navOn(s);
   const nav = s.noNav ? '' : `<nav>${navItems(r).filter(t => SC[t[2]]).map(t => `<button class="${t[3] === on ? 'on' : ''}" data-go="${t[2]}">${ic(t[0], t[3] === on)}<span>${t[1]}</span></button>`).join('')}</nav>`;
-  return `<header class="dh pdh"><button class="plogo" data-go="${r === 'pro' ? 'R16' : r === 'ase' ? 'Q03' : 'P06'}" aria-label="Inicio">${logoImg('horizontal-nm', 30)}</button>${r === 'pro' ? '<span class="tag">Profesionales</span>' : r === 'ase' ? '<span class="tag">Asesores</span>' : ''}<span class="sp"></span>${nav}</header>`;
+  const srch = r === 'pac' && !s.noNav && s.id !== 'P07' ? `<button class="psearch" data-act="set" data-arg="scope=" data-go="P07" aria-label="Buscar">${ic('magnifying-glass')}<span>Inyección, vitaminas, exámenes…</span></button>` : '';
+  return `<header class="dh pdh"><button class="plogo" data-go="${r === 'pro' ? 'R16' : r === 'ase' ? 'Q03' : 'P06'}" aria-label="Inicio">${logoImg('simbolo-nm', 36)}</button>${r === 'pro' ? '<span class="tag">Profesionales</span>' : r === 'ase' ? '<span class="tag">Asesores</span>' : ''}<span class="psp">${srch}</span><span class="pnv">${nav}</span></header>`;
 };
 
 /* ---------- escritorio: el pie de la app (total + botón) pasa a una tarjeta fija a la derecha ---------- */
